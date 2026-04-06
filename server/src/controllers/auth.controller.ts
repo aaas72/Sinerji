@@ -1,9 +1,25 @@
-import { Request, Response, NextFunction } from 'express';
+import { Request, Response, NextFunction, CookieOptions } from 'express';
 import { AuthService } from '../services/auth.service';
 import { registerSchema, loginSchema } from '../utils/validation';
 import { AppError } from '../utils/AppError';
 
 const authService = new AuthService();
+const isProduction = process.env.NODE_ENV === 'production';
+
+const authCookieOptions: CookieOptions = {
+  httpOnly: true,
+  secure: isProduction,
+  sameSite: isProduction ? 'none' : 'lax',
+  maxAge: 24 * 60 * 60 * 1000,
+  path: '/',
+};
+
+const authCookieClearOptions: CookieOptions = {
+  httpOnly: true,
+  secure: isProduction,
+  sameSite: isProduction ? 'none' : 'lax',
+  path: '/',
+};
 
 export const register = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -19,9 +35,10 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
     // Remove password from response
     const { password_hash, ...userWithoutPassword } = user;
 
+    res.cookie('token', token, authCookieOptions);
+
     res.status(201).json({
       status: 'success',
-      token,
       data: {
         user: userWithoutPassword,
       },
@@ -44,12 +61,25 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
     // Remove password from response
     const { password_hash, ...userWithoutPassword } = user;
 
+    res.cookie('token', token, authCookieOptions);
+
     res.status(200).json({
       status: 'success',
-      token,
       data: {
         user: userWithoutPassword,
       },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const logout = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    res.clearCookie('token', authCookieClearOptions);
+    res.status(200).json({
+      status: 'success',
+      message: 'Logged out successfully',
     });
   } catch (error) {
     next(error);

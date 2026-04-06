@@ -1,10 +1,10 @@
 import { Request, Response, NextFunction } from 'express';
-import jwt, { JwtPayload } from 'jsonwebtoken';
+import { JwtPayload } from 'jsonwebtoken';
 import { AppError } from '../utils/AppError';
 import { PrismaClient } from '@prisma/client';
+import { verifyToken } from '../utils/jwt';
 
 const prisma = new PrismaClient();
-const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key';
 
 // Extend Express Request interface to include user
 declare global {
@@ -16,9 +16,9 @@ declare global {
 }
 
 export const protect = async (req: Request, res: Response, next: NextFunction) => {
-    let token;
+    let token: string | undefined = req.cookies?.token;
 
-    if (req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
+    if (!token && req.headers.authorization && req.headers.authorization.startsWith('Bearer')) {
         token = req.headers.authorization.split(' ')[1];
     }
 
@@ -27,7 +27,11 @@ export const protect = async (req: Request, res: Response, next: NextFunction) =
     }
 
     try {
-        const decoded = jwt.verify(token, JWT_SECRET) as JwtPayload;
+        const decoded = verifyToken(token) as JwtPayload;
+
+        if (!decoded?.id) {
+            return next(new AppError('Invalid token payload. Please log in again!', 401));
+        }
 
         const currentUser = await prisma.user.findUnique({
             where: { id: decoded.id },
