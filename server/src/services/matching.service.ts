@@ -4,54 +4,75 @@ import logger from '../utils/logger';
 
 const prisma = new PrismaClient();
 
-type MatcherSkill = {
-  name: string;
-  level: number;
+type ScoreStudentTaskResponse = {
+  task_id: number;
+  student_user_id: number;
+  score: number;
+  hard_score?: number;
+  semantic_score?: number;
+  breakdown?: Record<string, number>;
+  reasons?: string[];
+  top_projects?: Array<{ task_id: number; title: string; similarity: number }>;
+  missing_skills?: string[];
 };
 
-type MatcherJob = {
-  id: string;
-  location: string;
-  max_budget?: number;
-  required_skills: MatcherSkill[];
-  required_languages: string[];
-  description: string;
+type RankTaskCandidatesResponse = {
+  task_id: number;
   alpha?: number;
+  top_k?: number;
+  min_score?: number;
+  filtered_out?: number;
+  candidates: Array<{
+    student_user_id: number;
+    score: number;
+    hard_score?: number;
+    semantic_score?: number;
+    breakdown?: Record<string, number>;
+    reasons?: string[];
+    top_projects?: Array<{ task_id: number; title: string; similarity: number }>;
+    missing_skills?: string[];
+  }>;
 };
 
-type MatcherStudent = {
-  id: string;
-  location: string;
-  expected_budget?: number;
-  skills: MatcherSkill[];
-  languages: string[];
-  description: string;
-};
-
-type MatcherResponse = {
-  job_id: string;
-  matches: Array<{
-    student_id: string;
-    deterministic_score: number;
-    semantic_score: number;
-    final_score: number;
+type RecommendTasksResponse = {
+  student_user_id: number;
+  alpha?: number;
+  top_k?: number;
+  min_score?: number;
+  tasks: Array<{
+    task_id: number;
+    score: number;
+    hard_score?: number;
+    semantic_score?: number;
+    breakdown?: Record<string, number>;
+    reasons?: string[];
+    top_projects?: Array<{ task_id: number; title: string; similarity: number }>;
+    missing_skills?: string[];
   }>;
 };
 
 // Matching Service to calculate match percentages between students and tasks
 export class MatchingService {
   private readonly matchingServiceUrl = (process.env.MATCHING_SERVICE_URL || '').trim();
-  private readonly matchingEndpoint = (process.env.MATCHING_SERVICE_ENDPOINT || '/api/v1/match').trim();
   private readonly matchingTimeoutMs = Number(process.env.MATCHING_SERVICE_TIMEOUT_MS || 5000);
-  private readonly defaultAlpha = Number(process.env.MATCHING_DEFAULT_ALPHA || 0.6);
+  private readonly matchingAlpha = process.env.MATCHING_ALPHA ? Number(process.env.MATCHING_ALPHA) : undefined;
+  private readonly matchingTopK = process.env.MATCHING_TOP_K ? Number(process.env.MATCHING_TOP_K) : undefined;
+  private readonly matchingMinScore = process.env.MATCHING_MIN_SCORE ? Number(process.env.MATCHING_MIN_SCORE) : undefined;
 
-  private parseBudget(value?: string | null): number | undefined {
-    if (!value) return undefined;
-    const normalized = value.replace(/,/g, '.');
-    const match = normalized.match(/[0-9]+(?:\.[0-9]+)?/);
-    if (!match) return undefined;
-    const parsed = Number(match[0]);
-    return Number.isFinite(parsed) ? parsed : undefined;
+  private buildRuntimeConfig() {
+    const config: { alpha?: number; top_k?: number; min_score?: number } = {};
+
+    if (Number.isFinite(this.matchingAlpha)) {
+      config.alpha = Math.max(0, Math.min(1, Number(this.matchingAlpha)));
+    }
+    if (Number.isFinite(this.matchingTopK) && Number(this.matchingTopK) > 0) {
+      config.top_k = Math.floor(Number(this.matchingTopK));
+    }
+    if (Number.isFinite(this.matchingMinScore)) {
+      config.min_score = Math.max(0, Math.min(100, Number(this.matchingMinScore)));
+    }
+
+    return config;
   }
 
   private normalizeScoreToPercentage(score: number): number {
@@ -60,83 +81,36 @@ export class MatchingService {
     return Math.max(0, Math.min(100, Math.round(scaled)));
   }
 
-  private buildJobPayload(task: any): MatcherJob {
-    const alpha = Number.isFinite(this.defaultAlpha)
-      ? Math.max(0, Math.min(1, this.defaultAlpha))
-      : 0.6;
-
-    return {
-      id: String(task.id),
-      location: task.location || task.work_type || 'Remote',
-      max_budget: this.parseBudget(task.budget) ?? this.parseBudget(task.reward_amount),
-      required_skills: (task.requiredSkills || []).map((ts: any) => ({
-        name: ts.skill.name,
-        level: ts.level || 3,
-      })),
-      required_languages: [],
-      description: [task.title, task.description, task.detail_title, task.detail_body]
-        .filter(Boolean)
-        .join(' '),
-      alpha,
-    };
-  }
-
-  private buildStudentPayload(student: any): MatcherStudent {
-    return {
-      id: String(student.user_id),
-      location: student.availability_status || 'Remote',
-      skills: (student.skills || []).map((s: any) => ({
-        name: s.skill.name,
-        level: s.level || 3,
-      })),
-      languages: [],
-      description: [student.bio, student.major, student.categories_of_interest]
-        .filter(Boolean)
-        .join(' '),
-    };
-  }
-
-  private getMatchUrl(): string {
+  private getBaseUrl(): string {
     if (!this.matchingServiceUrl) {
       throw new AppError('MATCHING_SERVICE_URL is required to use matching microservice', 500);
     }
 
-    const base = this.matchingServiceUrl.replace(/\/+$/, '');
-    const endpoint = this.matchingEndpoint.startsWith('/')
-      ? this.matchingEndpoint
-      : `/${this.matchingEndpoint}`;
-
-    return `${base}${endpoint}`;
+    return this.matchingServiceUrl.replace(/\/+$/, '');
   }
 
-  private async requestMatcher(job: MatcherJob, students: MatcherStudent[]): Promise<MatcherResponse> {
-    const matchUrl = this.getMatchUrl();
-    if (students.length === 0) {
-      throw new AppError('No students provided for matching request', 400);
-    }
-
+  private async postJson<TResponse>(endpoint: string, body: unknown): Promise<TResponse> {
+    const baseUrl = this.getBaseUrl();
+    const url = `${baseUrl}${endpoint}`;
     const controller = new AbortController();
     const timeout = setTimeout(() => controller.abort(), this.matchingTimeoutMs);
 
     try {
-      const response = await fetch(matchUrl, {
+      const response = await fetch(url, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ job, students }),
+        body: JSON.stringify(body),
         signal: controller.signal,
       });
 
       if (!response.ok) {
-        throw new Error(`Matching service responded with ${response.status}`);
+        throw new Error(`Matching service responded with ${response.status} for ${endpoint}`);
       }
 
-      const body = (await response.json()) as MatcherResponse;
-      if (!body || !Array.isArray(body.matches)) {
-        throw new Error('Invalid response schema from matching microservice');
-      }
-      return body;
+      return (await response.json()) as TResponse;
     } catch (error) {
       logger.error('Matching microservice call failed', {
+        endpoint,
         error: error instanceof Error ? error.message : String(error),
       });
       throw new AppError('Matching microservice is unavailable or returned invalid response', 502);
@@ -146,64 +120,87 @@ export class MatchingService {
   }
 
   async getMatchPercentageForTaskAndStudent(task: any, student: any): Promise<number> {
-    const jobPayload = this.buildJobPayload(task);
-    const studentPayload = this.buildStudentPayload(student);
-    const result = await this.requestMatcher(jobPayload, [studentPayload]);
+    const taskId = Number(task?.id);
+    const studentUserId = Number(student?.user_id);
 
-    const score = result?.matches?.find((m) => m.student_id === String(student.user_id))?.final_score;
-    if (typeof score !== 'number') {
+    if (!Number.isFinite(taskId) || !Number.isFinite(studentUserId)) {
+      throw new AppError('Invalid task or student payload for matching', 400);
+    }
+
+    const response = await this.postJson<ScoreStudentTaskResponse>(
+      '/api/v1/match/score-student-task',
+      {
+        task_id: taskId,
+        student_user_id: studentUserId,
+        ...this.buildRuntimeConfig(),
+      }
+    );
+
+    if (typeof response?.score !== 'number') {
       throw new AppError('Matching microservice response missing final score for student', 502);
     }
 
-    return this.normalizeScoreToPercentage(score);
+    return this.normalizeScoreToPercentage(response.score);
   }
   
   // Get tasks that match a student's skills
   async getRecommendedTasksForStudent(studentUserId: number) {
-    const student = await prisma.studentProfile.findUnique({
-      where: { user_id: studentUserId },
-      include: { skills: { include: { skill: true } } }
+    const recommendation = await this.postJson<RecommendTasksResponse>(
+      '/api/v1/match/recommend-tasks',
+      {
+        student_user_id: studentUserId,
+        ...this.buildRuntimeConfig(),
+      }
+    );
+
+    const rankedTaskIds = recommendation?.tasks?.map((t) => t.task_id) || [];
+    if (rankedTaskIds.length === 0) {
+      return [];
+    }
+
+    const scoreMap = new Map<number, number>();
+    recommendation.tasks.forEach((item) => {
+      scoreMap.set(item.task_id, this.normalizeScoreToPercentage(item.score));
     });
 
-    if (!student) throw new AppError('Student profile not found', 404);
-
     const tasks = await prisma.task.findMany({
-      where: { status: 'Open' },
+      where: { id: { in: rankedTaskIds } },
       include: {
         company: { select: { company_name: true, logo_url: true } },
         requiredSkills: { include: { skill: true } }
       }
     });
 
-    const matchedTasks = await Promise.all(tasks.map(async (task: any) => {
-      const matchPercentage = await this.getMatchPercentageForTaskAndStudent(task, student);
-      return { ...task, matchPercentage };
-    }));
-
-    return matchedTasks
-      .filter((t: any) => t.matchPercentage > 0)
+    return tasks
+      .map((task: any) => ({ ...task, matchPercentage: scoreMap.get(task.id) ?? 0 }))
+      .filter((task: any) => task.matchPercentage > 0)
       .sort((a: any, b: any) => b.matchPercentage - a.matchPercentage);
   }
 
   // Get students who match a task's required skills
   async getMatchingStudentsForTask(companyUserId: number, taskId: number) {
-    const task = await prisma.task.findUnique({
-      where: { id: taskId, company_user_id: companyUserId },
-      include: { requiredSkills: { include: { skill: true } } }
+    const ranking = await this.postJson<RankTaskCandidatesResponse>(
+      '/api/v1/match/rank-task-candidates',
+      {
+        task_id: taskId,
+        company_user_id: companyUserId,
+        ...this.buildRuntimeConfig(),
+      }
+    );
+
+    const rankedStudentIds = ranking?.candidates?.map((candidate) => candidate.student_user_id) || [];
+    if (rankedStudentIds.length === 0) {
+      return [];
+    }
+
+    const scoreMap = new Map<number, number>();
+    ranking.candidates.forEach((candidate) => {
+      scoreMap.set(candidate.student_user_id, this.normalizeScoreToPercentage(candidate.score));
     });
-
-    if (!task) throw new AppError('Task not found or not authorized', 404);
-
-    const taskSkillIds = task.requiredSkills.map((ts: any) => ts.skill_id);
-    if (taskSkillIds.length === 0) return [];
 
     const students = await prisma.studentProfile.findMany({
       where: {
-        skills: {
-          some: {
-            skill_id: { in: taskSkillIds }
-          }
-        }
+        user_id: { in: rankedStudentIds },
       },
       include: {
         skills: { include: { skill: true } },
@@ -211,17 +208,8 @@ export class MatchingService {
       }
     });
 
-    const jobPayload = this.buildJobPayload(task);
-    const studentPayloads = students.map((student) => this.buildStudentPayload(student));
-    const matcherResult = await this.requestMatcher(jobPayload, studentPayloads);
-
-    const scoreMap = new Map<string, number>();
-    matcherResult?.matches?.forEach((match) => {
-      scoreMap.set(match.student_id, this.normalizeScoreToPercentage(match.final_score));
-    });
-
     const matchedStudents = students.map((student: any) => {
-      const matchPercentage = scoreMap.get(String(student.user_id)) ?? 0;
+      const matchPercentage = scoreMap.get(student.user_id) ?? 0;
       return { ...student, matchPercentage };
     });
 
