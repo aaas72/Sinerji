@@ -134,7 +134,12 @@ export class SubmissionService {
           include: {
               task: {
                   include: {
-                      company: true
+                      company: true,
+                      requiredSkills: {
+                          include: {
+                              skill: true
+                          }
+                      }
                   }
               },
               review: true

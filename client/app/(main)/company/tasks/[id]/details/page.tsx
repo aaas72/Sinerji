@@ -53,7 +53,7 @@ function SectionCard({
         <div className={`w-7 h-7 rounded-lg flex items-center justify-center ${accent ? "bg-primary/15" : "bg-white border border-gray-200"}`}>
           <Icon className={accent ? "text-primary" : "text-gray-500"} size={14} />
         </div>
-        <h3 className="text-sm font-semibold text-gray-800">{title}</h3>
+        <h3 className="text-sm font-semibold text-gray-800 break-words flex-1">{title}</h3>
       </div>
       <div className="px-5 py-4">{children}</div>
     </div>
@@ -62,10 +62,10 @@ function SectionCard({
 
 function InfoRow({ icon: Icon, label, value }: { icon: React.ElementType; label: string; value: string }) {
   return (
-    <div className="flex items-center gap-3 py-2.5 border-b border-gray-50 last:border-0">
-      <Icon className="text-gray-400 shrink-0" size={14} />
-      <span className="text-xs text-gray-500 w-40 shrink-0">{label}</span>
-      <span className="text-sm font-medium text-gray-800">{value}</span>
+    <div className="flex items-start gap-3 py-2.5 border-b border-gray-50 last:border-0">
+      <Icon className="text-gray-400 shrink-0 mt-0.5" size={14} />
+      <span className="text-xs text-gray-500 w-32 md:w-40 shrink-0 break-words">{label}</span>
+      <span className="text-sm font-medium text-gray-800 break-words whitespace-pre-wrap flex-1 min-w-0">{value}</span>
     </div>
   );
 }
@@ -82,10 +82,10 @@ function RewardRow({
   highlight?: boolean;
 }) {
   return (
-    <div className="flex items-center gap-3 py-2.5 border-b last:border-0" style={{ borderColor: "rgba(255,255,255,0.10)" }}>
-      <Icon size={14} style={{ color: highlight ? "#fbb049" : "rgba(255,255,255,0.55)", flexShrink: 0 }} />
-      <span className="text-xs w-40 shrink-0" style={{ color: "rgba(255,255,255,0.65)" }}>{label}</span>
-      <span className="text-sm font-semibold" style={{ color: highlight ? "#fbb049" : "#ffffff" }}>{value}</span>
+    <div className="flex items-start gap-3 py-2.5 border-b last:border-0" style={{ borderColor: "rgba(255,255,255,0.10)" }}>
+      <Icon size={14} style={{ color: highlight ? "#fbb049" : "rgba(255,255,255,0.55)", flexShrink: 0, marginTop: "2px" }} />
+      <span className="text-xs w-32 md:w-40 shrink-0 break-words" style={{ color: "rgba(255,255,255,0.65)" }}>{label}</span>
+      <span className="text-sm font-semibold break-words whitespace-pre-wrap flex-1 min-w-0" style={{ color: highlight ? "#fbb049" : "#ffffff" }}>{value}</span>
     </div>
   );
 }
@@ -160,13 +160,13 @@ export default function TaskDetailsPage() {
                 </span>
               )}
               {task.category && (
-                <span className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary border border-primary/20">
+                <span className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary border border-primary/20 break-words max-w-full">
                   {task.category}{task.subcategory ? ` › ${task.subcategory}` : ""}
                 </span>
               )}
             </div>
 
-            <h1 className="text-xl font-bold text-gray-900 leading-snug">{task.title}</h1>
+            <h1 className="text-xl font-bold text-gray-900 leading-snug break-words">{task.title}</h1>
 
             {task.created_at && (
               <p className="text-xs text-gray-400 flex items-center gap-1 mt-1">
@@ -229,13 +229,13 @@ export default function TaskDetailsPage() {
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
 
           {/* Left column — 2/3 */}
-          <div className="lg:col-span-2 space-y-5">
+          <div className="lg:col-span-2 space-y-5 min-w-0">
 
             {/* Description */}
             {task.description && (
               <SectionCard icon={FiFileText} title="Açıklama">
                 <div
-                  className="prose prose-sm prose-slate max-w-none text-sm text-gray-600 leading-relaxed"
+                  className="prose prose-sm prose-slate max-w-none text-sm text-gray-600 leading-relaxed break-words whitespace-pre-wrap"
                   dangerouslySetInnerHTML={{ __html: task.description }}
                 />
               </SectionCard>
@@ -246,7 +246,7 @@ export default function TaskDetailsPage() {
               <SectionCard icon={FiFileText} title={task.detail_title}>
                 {task.detail_body && (
                   <div
-                    className="prose prose-sm prose-slate max-w-none text-sm text-gray-600 leading-relaxed"
+                    className="prose prose-sm prose-slate max-w-none text-sm text-gray-600 leading-relaxed break-words whitespace-pre-wrap"
                     dangerouslySetInnerHTML={{ __html: task.detail_body }}
                   />
                 )}
@@ -271,7 +271,7 @@ export default function TaskDetailsPage() {
           </div>
 
           {/* Right column — 1/3 */}
-          <div className="space-y-5">
+          <div className="space-y-5 min-w-0">
 
             {/* Task info */}
             {(task.work_type || task.experience_level || task.positions || task.preferred_major || task.location || task.deadline) && (

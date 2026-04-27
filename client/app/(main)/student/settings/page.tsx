@@ -32,7 +32,7 @@ const studentProfileSchema = z.object({
   university: z.string().optional(),
   bio: z
     .string()
-    .max(1000, "Biyografi 1000 karakterden az olmalıdır")
+    .max(2000, "Biyografi 2000 karakterden az olmalıdır")
     .optional(),
   phone: z.string().optional(),
   linkedin_url: z

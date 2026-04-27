@@ -32,7 +32,7 @@ export const loginSchema = z.object({
 export const updateStudentProfileSchema = z.object({
   full_name: z.string().min(1, "Full name cannot be empty").optional(),
   university: z.string().optional(),
-  bio: z.string().max(500, "Bio must be less than 500 characters").optional(),
+  bio: z.string().max(2000, "Bio must be less than 2000 characters").optional(),
   phone: z.string().optional(),
   linkedin_url: z.string().url("Invalid URL format").optional().or(z.literal('')),
   github_url: z.string().url("Invalid URL format").optional().or(z.literal('')),

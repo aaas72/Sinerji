@@ -40,12 +40,12 @@ export default function ApplicationsPage() {
         const subs = await submissionService.getMySubmissions();
         const mapped: Application[] = subs.map((s: any) => ({
           id: s.id,
-          title: s.task.title,
-          tags: s.task.requiredSkills.map((sk: any) => sk.skill.name),
-          companyName: s.task.company.company_name,
-          date: new Date(s.submitted_at).toLocaleDateString("tr-TR"),
+          title: s?.task?.title || "İsimsiz Görev",
+          tags: s?.task?.requiredSkills?.map((sk: any) => sk.skill?.name).filter(Boolean) || [],
+          companyName: s?.task?.company?.company_name || "Bilinmeyen Şirket",
+          date: s?.submitted_at ? new Date(s.submitted_at).toLocaleDateString("tr-TR") : "—",
           status: mapBackendStatus(s.status),
-          rewardType: s.task.reward_type as RewardType,
+          rewardType: s?.task?.reward_type as RewardType,
         }));
         setApplications(mapped);
       } catch (error) {
