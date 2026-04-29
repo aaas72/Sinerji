@@ -51,7 +51,7 @@ export class SubmissionService {
     }
 
      // Calculate AI Match Score via Python matching microservice with local fallback
-     const aiMatchScore = await matchingService.getMatchPercentageForTaskAndStudent(task, student);
+     const aiAnalysis = await matchingService.getMatchAnalysis(task, student);
 
     // Create Submission
     const submission = await prisma.submission.create({
@@ -61,7 +61,8 @@ export class SubmissionService {
         submission_content: data.submission_content,
         proposed_budget: data.proposed_budget,
         estimated_delivery_days: data.estimated_delivery_days,
-        ai_match_score: aiMatchScore,
+        ai_match_score: aiAnalysis.score,
+        ai_match_details: aiAnalysis as any,
         status: 'pending',
       },
       include: {

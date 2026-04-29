@@ -8,6 +8,14 @@ export interface Submission {
     proposed_budget?: string | null;
     estimated_delivery_days?: number | null;
     ai_match_score?: number | null;
+    ai_match_details?: {
+        score: number;
+        hard_score?: number;
+        semantic_score?: number;
+        reasons?: string[];
+        missing_skills?: string[];
+        top_projects?: Array<{ task_id: number; title: string; similarity: number }>;
+    } | null;
     student: {
         user_id: number;
         full_name: string;

@@ -129,7 +129,7 @@ export class MatchingService {
     }
   }
 
-  async getMatchPercentageForTaskAndStudent(task: any, student: any): Promise<number> {
+  async getMatchAnalysis(task: any, student: any): Promise<ScoreStudentTaskResponse> {
     const taskId = Number(task?.id);
     const studentUserId = Number(student?.user_id);
 
@@ -150,7 +150,7 @@ export class MatchingService {
       throw new AppError('Matching microservice response missing final score for student', 502);
     }
 
-    return this.normalizeScoreToPercentage(response.score);
+    return response;
   }
   
   // Get tasks that match a student's skills

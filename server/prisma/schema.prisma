@@ -155,6 +155,7 @@ model Submission {
   proposed_budget         String?
   estimated_delivery_days Int?
   ai_match_score          Float?
+  ai_match_details        Json?
 
   task    Task           @relation(fields: [task_id], references: [id])
   student StudentProfile @relation(fields: [student_user_id], references: [user_id])

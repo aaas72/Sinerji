@@ -34,6 +34,7 @@ DEFAULT_MIN_SCORE = float(os.getenv("MATCHING_DEFAULT_MIN_SCORE", "0"))
 REQUIRED_LEVEL_GAP_TOLERANCE = int(os.getenv("MATCHING_REQUIRED_SKILL_GAP_TOLERANCE", "0"))
 SEMANTIC_MODEL_NAME = (os.getenv("MATCHING_SEMANTIC_MODEL", "sentence-transformers/all-MiniLM-L6-v2") or "").strip()
 SEMANTIC_ENABLED = (os.getenv("MATCHING_ENABLE_SEMANTIC", "true") or "true").strip().lower() == "true"
+MANDATORY_THRESHOLD = float(os.getenv("MATCHING_MANDATORY_THRESHOLD", "0.85"))
 
 if DEFAULT_ALPHA < 0 or DEFAULT_ALPHA > 1:
     raise RuntimeError("MATCHING_DEFAULT_ALPHA must be between 0 and 1")
@@ -351,8 +352,17 @@ def evaluate_hard_filter(required: List[SkillRequirement], student_map: Dict[str
         level_ratio = min(float(student_skill.level) / max(float(req.required_level), 1.0), 1.0)
         weighted_sum += level_ratio * weight
 
+    mandatory_requirements = [r for r in required if r.is_required]
+    if not mandatory_requirements:
+        passed = True
+    else:
+        failed_count = len(missing_skills) + len(below_level_skills)
+        met_count = len(mandatory_requirements) - failed_count
+        success_rate = met_count / len(mandatory_requirements)
+        passed = success_rate >= MANDATORY_THRESHOLD
+        print(f"[DEBUG] Student {met_count}/{len(mandatory_requirements)} mandatory skills. Rate: {success_rate:.2f} >= {MANDATORY_THRESHOLD}? {passed}")
+
     score = 0.0 if total_weight == 0 else max(0.0, min(100.0, (weighted_sum / total_weight) * 100.0))
-    passed = len(missing_skills) == 0 and len(below_level_skills) == 0
     return HardFilterResult(
         passed=passed,
         score=score,

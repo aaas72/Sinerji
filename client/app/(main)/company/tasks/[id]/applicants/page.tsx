@@ -206,6 +206,64 @@ function ReviewModal({
           </p>
         </div>
 
+        {/* AI Analysis Details */}
+        {submission.ai_match_details && (
+          <div className="bg-primary/5 rounded-xl p-4 mb-5 border border-primary/10">
+            <p className="text-xs font-bold text-primary uppercase tracking-wider mb-3 flex items-center gap-1.5">
+              <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+              AI Analiz Raporu
+            </p>
+            
+            <div className="space-y-4">
+              {/* Reasons */}
+              {submission.ai_match_details.reasons && submission.ai_match_details.reasons.length > 0 && (
+                <div>
+                  <p className="text-[11px] font-bold text-gray-400 uppercase mb-1.5">Analiz Notları</p>
+                  <ul className="space-y-1.5">
+                    {submission.ai_match_details.reasons.map((reason, idx) => (
+                      <li key={idx} className="text-sm text-gray-700 flex items-start gap-2 leading-snug">
+                        <span className="text-primary mt-1">•</span>
+                        {reason}
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              )}
+
+              {/* Missing Skills */}
+              {submission.ai_match_details.missing_skills && submission.ai_match_details.missing_skills.length > 0 && (
+                <div>
+                  <p className="text-[11px] font-bold text-red-400 uppercase mb-1.5">Eksik Beceriler</p>
+                  <div className="flex flex-wrap gap-1.5">
+                    {submission.ai_match_details.missing_skills.map((skill, idx) => (
+                      <span key={idx} className="px-2 py-0.5 bg-red-50 text-red-600 text-[11px] font-bold rounded-md border border-red-100">
+                        {skill}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Top Projects */}
+              {submission.ai_match_details.top_projects && submission.ai_match_details.top_projects.length > 0 && (
+                <div>
+                  <p className="text-[11px] font-bold text-green-600 uppercase mb-1.5">Eşleşen Benzer Çalışmalar</p>
+                  <div className="space-y-2">
+                    {submission.ai_match_details.top_projects.map((proj, idx) => (
+                      <div key={idx} className="flex items-center justify-between bg-white/50 p-2 rounded-lg border border-green-100/50">
+                        <span className="text-xs text-gray-700 font-medium truncate pr-4">{proj.title}</span>
+                        <span className="text-[10px] font-bold text-green-600 bg-green-50 px-1.5 py-0.5 rounded shrink-0">
+                          %{proj.similarity} Uyum
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
+
         {/* date */}
         <p className="text-xs text-gray-400 flex items-center gap-1 mb-6">
           <FiCalendar className="w-3.5 h-3.5" />
