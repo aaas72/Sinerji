@@ -129,7 +129,7 @@ function ReviewModal({
       {/* backdrop */}
       <div className="absolute inset-0 bg-black/40" onClick={onClose} />
 
-      <div className="relative bg-white rounded-2xl shadow-2xl max-w-lg w-full p-6 z-10">
+      <div className="relative bg-white rounded-2xl shadow-2xl max-w-4xl w-full p-8 z-10 animate-slideUp">
         {/* close */}
         <button
           onClick={onClose}
@@ -139,181 +139,146 @@ function ReviewModal({
         </button>
 
         {/* header */}
-        <div className="flex items-center gap-4 mb-5">
-          <div className="w-14 h-14 rounded-full bg-primary/10 text-primary font-bold text-xl flex items-center justify-center shrink-0">
+        <div className="flex items-center gap-4 mb-6">
+          <div className="w-16 h-16 rounded-full bg-[#004d40]/10 text-[#004d40] font-bold text-2xl flex items-center justify-center shrink-0">
             {submission.student.full_name.charAt(0)}
           </div>
           <div>
-            <h3 className="text-lg font-bold text-gray-900">
+            <h3 className="text-xl font-black text-gray-900">
               {submission.student.full_name}
             </h3>
-            <div className="flex items-center gap-3 text-sm text-gray-500 flex-wrap">
+            <div className="flex items-center gap-4 text-sm text-gray-500 flex-wrap mt-1">
               {submission.student.university && (
-                <span className="flex items-center gap-1">
-                  <FiBookOpen className="w-3.5 h-3.5" />
+                <span className="flex items-center gap-1.5">
+                  <FiBookOpen className="w-4 h-4 text-gray-400" />
                   {submission.student.university}
                 </span>
               )}
-              <span className="flex items-center gap-1">
-                <FiMail className="w-3.5 h-3.5" />
+              <span className="flex items-center gap-1.5">
+                <FiMail className="w-4 h-4 text-gray-400" />
                 {submission.student.user.email}
               </span>
             </div>
           </div>
         </div>
 
-        {/* status */}
-        <div className="flex items-center justify-between mb-4 border-b border-gray-100 pb-4">
-          <div className="flex items-center gap-2">
-            <span className="text-sm text-gray-500">Mevcut Durum:</span>
-            <span className={`text-xs font-semibold px-2.5 py-1 rounded-full ${statusCls}`}>
-              {statusLabel}
-            </span>
-          </div>
-          {typeof submission.ai_match_score === 'number' && (
-             <div className="flex items-center gap-2">
-               <span className="text-sm text-gray-500">AI Eşleşme Oranı:</span>
-               <span className="text-sm font-bold text-[#004d40]">% {submission.ai_match_score}</span>
-             </div>
-          )}
-        </div>
-
-        {/* Financials / Timeline if available */}
-        {(submission.proposed_budget || submission.estimated_delivery_days) && (
-          <div className="flex gap-6 mb-4">
-            {submission.proposed_budget && (
-              <div>
-                 <p className="text-xs text-gray-400 mb-1">Talep Edilen Bütçe</p>
-                 <p className="text-sm font-semibold text-gray-900">${submission.proposed_budget}</p>
+        {/* Main Grid: 2 Columns */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
+          
+          {/* Column 1: Submission Data */}
+          <div className="space-y-6">
+            {/* status & financials */}
+            <div className="bg-gray-50 rounded-2xl p-5 border border-gray-100">
+              <div className="flex items-center justify-between mb-4 pb-4 border-b border-gray-200/50">
+                <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Başvuru Durumu</span>
+                <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full uppercase ${statusCls}`}>
+                  {statusLabel}
+                </span>
               </div>
-            )}
-            {submission.estimated_delivery_days && (
-              <div>
-                 <p className="text-xs text-gray-400 mb-1">Teslim Süresi</p>
-                 <p className="text-sm font-semibold text-gray-900">{submission.estimated_delivery_days} Gün</p>
+              
+              <div className="grid grid-cols-2 gap-4">
+                {submission.proposed_budget && (
+                  <div>
+                    <p className="text-[10px] text-gray-400 font-bold uppercase mb-1">Talep Edilen Bütçe</p>
+                    <p className="text-lg font-black text-[#004d40]">${submission.proposed_budget}</p>
+                  </div>
+                )}
+                {submission.estimated_delivery_days && (
+                  <div>
+                    <p className="text-[10px] text-gray-400 font-bold uppercase mb-1">Teslim Süresi</p>
+                    <p className="text-lg font-black text-[#004d40]">{submission.estimated_delivery_days} Gün</p>
+                  </div>
+                )}
               </div>
-            )}
-          </div>
-        )}
+            </div>
 
-        {/* submission content */}
-        <div className="bg-gray-50 rounded-xl p-4 mb-5">
-          <p className="text-xs font-semibold text-gray-400 uppercase tracking-wide mb-2">
-            Başvuru İçeriği
-          </p>
-          <div className="max-h-40 overflow-y-auto pr-2 custom-scrollbar">
-            <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">
-              {formatSubmissionContent(submission.submission_content, "İçerik belirtilmemiş.")}
+            {/* cover letter */}
+            <div>
+              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3 flex items-center gap-2">
+                <FiUser className="text-primary" /> Başvuru Mektubu
+              </p>
+              <div className="bg-white border border-gray-100 rounded-2xl p-5 max-h-72 overflow-y-auto custom-scrollbar shadow-sm">
+                <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">
+                  {formatSubmissionContent(submission.submission_content, "İçerik belirtilmemiş.")}
+                </p>
+              </div>
+            </div>
+
+            <p className="text-xs text-gray-400 flex items-center gap-1.5 italic">
+              <FiCalendar className="w-3.5 h-3.5" />
+              Başvuru Tarihi: {new Date(submission.submitted_at || Date.now()).toLocaleDateString("tr-TR")}
             </p>
           </div>
-        </div>
 
-        {/* AI Analysis Details */}
-        {submission.ai_match_details && (
-          <div className="bg-primary/5 rounded-xl p-5 mb-5 border border-primary/10 shadow-sm">
-            <div className="flex items-center justify-between mb-4">
-              <p className="text-xs font-bold text-primary uppercase tracking-wider flex items-center gap-1.5">
-                <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-                AI Detaylı Analiz Raporu
-              </p>
-              {submission.ai_match_details.score > 0 && (
-                <span className="text-[10px] font-bold bg-primary/10 text-primary px-2 py-0.5 rounded-full border border-primary/20">
-                  Genel Uyumluluk: %{submission.ai_match_details.score}
-                </span>
-              )}
-            </div>
-            
-            <div className="space-y-5">
-              {/* Skill Matrix (Structured) */}
-              {submission.ai_match_details.skill_details && submission.ai_match_details.skill_details.length > 0 && (
-                <div>
-                  <p className="text-[11px] font-bold text-gray-400 uppercase mb-2.5 flex items-center gap-1">
-                    <FiCheckCircle className="w-3 h-3" /> Beceri Eşleşme Matrisi
-                  </p>
-                  <div className="grid grid-cols-1 gap-2">
-                    {submission.ai_match_details.skill_details.map((skill, idx) => (
-                      <div key={idx} className="flex items-center justify-between bg-white/80 p-2.5 rounded-lg border border-gray-100/50 hover:border-primary/20 transition-all group">
-                        <div className="flex flex-col">
-                          <span className="text-xs font-bold text-gray-800">{skill.required}</span>
-                          <span className="text-[10px] text-gray-500 flex items-center gap-1">
-                            {skill.match_type === 'exact' ? (
-                              <span className="text-green-600 font-medium">Tam Eşleşme</span>
-                            ) : skill.match_type.includes('semantic') ? (
-                              <span className="text-blue-600 font-medium">Anlamsal Yakınlık: {skill.matched_to}</span>
-                            ) : skill.match_type.includes('ontology') ? (
-                              <span className="text-purple-600 font-medium">İlişkili Beceri: {skill.matched_to}</span>
-                            ) : (
-                              <span className="text-red-400 font-medium">Eksik</span>
+          {/* Column 2: AI Analysis */}
+          <div>
+            {submission.ai_match_details ? (
+              <div className="border border-gray-100 rounded-2xl overflow-hidden shadow-sm h-full flex flex-col">
+                {/* Header Area */}
+                <div className="bg-[#004d40] px-5 py-4 flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className="w-2 h-2 bg-[#fbb049] rounded-full animate-pulse" />
+                    <span className="text-xs font-bold text-white uppercase tracking-widest">
+                      AI Eşleşme Analizi
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <span className="text-sm font-black text-[#fbb049]">%{submission.ai_match_details.score}</span>
+                  </div>
+                </div>
+
+                <div className="p-5 bg-white flex-1 overflow-y-auto custom-scrollbar max-h-[450px]">
+                  {/* Skill Matrix */}
+                  {submission.ai_match_details.skill_details && submission.ai_match_details.skill_details.length > 0 && (
+                    <div className="space-y-3">
+                      <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-4">Yetenek Uyumluluk Matrisi</p>
+                      {submission.ai_match_details.skill_details.map((skill, idx) => (
+                        <div key={idx} className="flex items-center justify-between py-2.5 border-b border-gray-50 last:border-0 group">
+                          <div className="flex flex-col">
+                            <span className="text-xs font-bold text-[#004d40] group-hover:text-[#00695c] transition-colors">{skill.required}</span>
+                            <span className="text-[9px] font-medium text-gray-400 uppercase mt-0.5">
+                              {skill.match_type === 'exact' ? 'Tam Eşleşme' : 
+                               skill.match_type.includes('semantic') ? `Benzerlik: ${skill.matched_to}` :
+                               skill.match_type.includes('ontology') ? `İlişkili: ${skill.matched_to}` : 'Eksik'}
+                            </span>
+                          </div>
+                          <div className="flex items-center gap-4">
+                            {skill.similarity > 0 && skill.match_type !== 'exact' && (
+                              <span className="text-[10px] font-bold text-[#004d40]/40">%{Math.round(skill.similarity * 100)}</span>
                             )}
-                          </span>
+                            <div className={`h-1.5 w-10 rounded-full ${
+                              skill.satisfaction > 0.8 ? 'bg-[#004d40]' : 
+                              skill.satisfaction > 0.4 ? 'bg-[#fbb049]' : 'bg-gray-100'
+                            }`} />
+                          </div>
                         </div>
-                        <div className="flex items-center gap-3">
-                           {skill.similarity > 0 && skill.match_type !== 'exact' && (
-                             <div className="text-right">
-                               <p className="text-[10px] font-bold text-gray-400">BENZERLİK</p>
-                               <p className="text-[11px] font-bold text-primary">%{Math.round(skill.similarity * 100)}</p>
-                             </div>
-                           )}
-                           <div className={`w-2 h-2 rounded-full ${
-                             skill.satisfaction > 0.8 ? 'bg-green-500' :
-                             skill.satisfaction > 0.4 ? 'bg-yellow-400' : 'bg-gray-200'
-                           }`} />
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
+                      ))}
+                    </div>
+                  )}
 
-              {/* Summary Reasons (Cleaned) */}
-              {submission.ai_match_details.reasons && submission.ai_match_details.reasons.length > 0 && (
-                <div className="pt-2 border-t border-primary/5">
-                  <p className="text-[11px] font-bold text-gray-400 uppercase mb-2">Özet Değerlendirme</p>
-                  <div className="space-y-1.5">
-                    {submission.ai_match_details.reasons
-                      .filter(r => !r.includes("Semantically matched") && !r.includes("Missing required skills"))
-                      .map((reason, idx) => (
-                      <div key={idx} className="text-[13px] text-gray-700 bg-primary/5 p-2 rounded-lg border border-primary/10 leading-snug">
-                        {reason}
-                      </div>
-                    ))}
-                  </div>
+                  {/* Projects Evidence */}
+                  {submission.ai_match_details.top_projects && submission.ai_match_details.top_projects.length > 0 && (
+                    <div className="mt-6 pt-6 border-t border-gray-100">
+                       <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-3">Deneyim Kanıtları</p>
+                       <div className="grid grid-cols-1 gap-2">
+                         {submission.ai_match_details.top_projects.map((proj, idx) => (
+                           <div key={idx} className="flex items-center justify-between bg-gray-50 px-3 py-2.5 rounded-xl border border-gray-100">
+                             <span className="text-[11px] text-gray-700 font-bold line-clamp-1">{proj.title}</span>
+                             <span className="text-[10px] font-black text-[#004d40] bg-white px-2 py-1 rounded-md shadow-sm">%{proj.similarity}</span>
+                           </div>
+                         ))}
+                       </div>
+                    </div>
+                  )}
                 </div>
-              )}
-
-              {/* Top Projects */}
-              {submission.ai_match_details.top_projects && submission.ai_match_details.top_projects.length > 0 && (
-                <div>
-                  <p className="text-[11px] font-bold text-green-600 uppercase mb-2 flex items-center gap-1">
-                    <FiExternalLink className="w-3 h-3" /> Portfolyo Kanıtları
-                  </p>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
-                    {submission.ai_match_details.top_projects.map((proj, idx) => (
-                      <div key={idx} className="bg-white/50 p-2 rounded-lg border border-green-100/50 flex flex-col justify-between">
-                        <span className="text-[11px] text-gray-700 font-medium line-clamp-1 mb-1">{proj.title}</span>
-                        <div className="flex items-center justify-between">
-                          <span className="text-[9px] uppercase font-bold text-gray-400">Uyumluluk</span>
-                          <span className="text-[10px] font-bold text-green-600">%{proj.similarity}</span>
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-            </div>
+              </div>
+            ) : (
+              <div className="h-full flex items-center justify-center border-2 border-dashed border-gray-100 rounded-2xl text-gray-400 text-sm">
+                Analiz verisi bulunamadı.
+              </div>
+            )}
           </div>
-        )}
-
-        {/* date */}
-        <p className="text-xs text-gray-400 flex items-center gap-1 mb-6">
-          <FiCalendar className="w-3.5 h-3.5" />
-          Başvuru Tarihi:{" "}
-          {new Date(submission.submitted_at || Date.now()).toLocaleDateString("tr-TR", {
-            day: "2-digit",
-            month: "long",
-            year: "numeric",
-          })}
-        </p>
+        </div>
 
         {/* actions */}
         {submission.status === "pending" ? (
@@ -411,6 +376,18 @@ export default function TaskApplicantsPage() {
   const [statusFilter, setStatusFilter] = useState<"all" | "pending" | "approved" | "rejected">("all");
   const [minAiScore, setMinAiScore] = useState<string>("");
   const [sortBy, setSortBy] = useState<"ai_desc" | "ai_asc" | "newest" | "oldest">("ai_desc");
+
+  // Lock body scroll when modal is open
+  useEffect(() => {
+    if (selected) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      document.body.style.overflow = 'unset';
+    };
+  }, [selected]);
 
   useEffect(() => {
     const fetchData = async () => {
