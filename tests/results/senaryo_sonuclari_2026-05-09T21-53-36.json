@@ -1,12 +1,12 @@
 {
-  "olusturulma_tarihi": "2026-05-09T21:35:03.266Z",
+  "olusturulma_tarihi": "2026-05-09T21:53:36.712Z",
   "sirket": {
     "email": "techcorp@sinerji-test.com",
     "sifre": "Test@1234",
-    "kullanici_id": null
+    "kullanici_id": 1
   },
   "gorev": {
-    "id": null,
+    "id": 1,
     "baslik": "Full-Stack Web Gelistirici - E-Ticaret Platformu"
   },
   "ogrenciler": [
@@ -356,5 +356,362 @@
       ]
     }
   ],
-  "ai_siralama": null
+  "ai_siralama": {
+    "task_id": 1,
+    "alpha": 0.7,
+    "top_k": 25,
+    "min_score": 0,
+    "candidates": [
+      {
+        "student_user_id": 7,
+        "score": 94,
+        "hard_score": 100,
+        "semantic_score": 79.26,
+        "breakdown": {
+          "skill_score": 100,
+          "semantic_score": 79.26,
+          "alpha": 0.7,
+          "profile_similarity": 79.26
+        },
+        "reasons": [
+          "Strong match — skill compatibility 100%, semantic relevance 79%."
+        ],
+        "top_projects": [],
+        "missing_skills": []
+      },
+      {
+        "student_user_id": 8,
+        "score": 92,
+        "hard_score": 100,
+        "semantic_score": 74,
+        "breakdown": {
+          "skill_score": 100,
+          "semantic_score": 74,
+          "alpha": 0.7,
+          "profile_similarity": 74
+        },
+        "reasons": [
+          "Strong match — skill compatibility 100%, semantic relevance 74%."
+        ],
+        "top_projects": [],
+        "missing_skills": []
+      },
+      {
+        "student_user_id": 2,
+        "score": 91,
+        "hard_score": 100,
+        "semantic_score": 69.92,
+        "breakdown": {
+          "skill_score": 100,
+          "semantic_score": 69.92,
+          "alpha": 0.7,
+          "profile_similarity": 69.92
+        },
+        "reasons": [
+          "Strong match — skill compatibility 100%, semantic relevance 70%."
+        ],
+        "top_projects": [],
+        "missing_skills": []
+      },
+      {
+        "student_user_id": 9,
+        "score": 91,
+        "hard_score": 100,
+        "semantic_score": 68.88,
+        "breakdown": {
+          "skill_score": 100,
+          "semantic_score": 68.88,
+          "alpha": 0.7,
+          "profile_similarity": 68.88
+        },
+        "reasons": [
+          "Strong match — skill compatibility 100%, semantic relevance 69%."
+        ],
+        "top_projects": [],
+        "missing_skills": []
+      },
+      {
+        "student_user_id": 10,
+        "score": 91,
+        "hard_score": 100,
+        "semantic_score": 70.05,
+        "breakdown": {
+          "skill_score": 100,
+          "semantic_score": 70.05,
+          "alpha": 0.7,
+          "profile_similarity": 70.05
+        },
+        "reasons": [
+          "Strong match — skill compatibility 100%, semantic relevance 70%."
+        ],
+        "top_projects": [],
+        "missing_skills": []
+      },
+      {
+        "student_user_id": 11,
+        "score": 91,
+        "hard_score": 100,
+        "semantic_score": 71.45,
+        "breakdown": {
+          "skill_score": 100,
+          "semantic_score": 71.45,
+          "alpha": 0.7,
+          "profile_similarity": 71.45
+        },
+        "reasons": [
+          "Strong match — skill compatibility 100%, semantic relevance 71%."
+        ],
+        "top_projects": [],
+        "missing_skills": []
+      },
+      {
+        "student_user_id": 6,
+        "score": 90,
+        "hard_score": 100,
+        "semantic_score": 67.62,
+        "breakdown": {
+          "skill_score": 100,
+          "semantic_score": 67.62,
+          "alpha": 0.7,
+          "profile_similarity": 67.62
+        },
+        "reasons": [
+          "Strong match — skill compatibility 100%, semantic relevance 68%."
+        ],
+        "top_projects": [],
+        "missing_skills": []
+      },
+      {
+        "student_user_id": 5,
+        "score": 89,
+        "hard_score": 100,
+        "semantic_score": 64.49,
+        "breakdown": {
+          "skill_score": 100,
+          "semantic_score": 64.49,
+          "alpha": 0.7,
+          "profile_similarity": 64.49
+        },
+        "reasons": [
+          "Strong match — skill compatibility 100%, semantic relevance 64%."
+        ],
+        "top_projects": [],
+        "missing_skills": []
+      },
+      {
+        "student_user_id": 4,
+        "score": 88,
+        "hard_score": 100,
+        "semantic_score": 59.71,
+        "breakdown": {
+          "skill_score": 100,
+          "semantic_score": 59.71,
+          "alpha": 0.7,
+          "profile_similarity": 59.71
+        },
+        "reasons": [
+          "Strong match — skill compatibility 100%, semantic relevance 60%."
+        ],
+        "top_projects": [],
+        "missing_skills": []
+      },
+      {
+        "student_user_id": 3,
+        "score": 87,
+        "hard_score": 100,
+        "semantic_score": 56.17,
+        "breakdown": {
+          "skill_score": 100,
+          "semantic_score": 56.17,
+          "alpha": 0.7,
+          "profile_similarity": 56.17
+        },
+        "reasons": [
+          "Strong match — skill compatibility 100%, semantic relevance 56%."
+        ],
+        "top_projects": [],
+        "missing_skills": []
+      },
+      {
+        "student_user_id": 12,
+        "score": 73,
+        "hard_score": 71.96,
+        "semantic_score": 74.59,
+        "breakdown": {
+          "skill_score": 71.96,
+          "semantic_score": 74.59,
+          "alpha": 0.7,
+          "profile_similarity": 74.59
+        },
+        "reasons": [
+          "Strong match — skill compatibility 72%, semantic relevance 75%."
+        ],
+        "top_projects": [],
+        "missing_skills": []
+      },
+      {
+        "student_user_id": 13,
+        "score": 72,
+        "hard_score": 71.96,
+        "semantic_score": 71.33,
+        "breakdown": {
+          "skill_score": 71.96,
+          "semantic_score": 71.33,
+          "alpha": 0.7,
+          "profile_similarity": 71.33
+        },
+        "reasons": [
+          "Strong match — skill compatibility 72%, semantic relevance 71%."
+        ],
+        "top_projects": [],
+        "missing_skills": []
+      },
+      {
+        "student_user_id": 15,
+        "score": 72,
+        "hard_score": 71.96,
+        "semantic_score": 72.27,
+        "breakdown": {
+          "skill_score": 71.96,
+          "semantic_score": 72.27,
+          "alpha": 0.7,
+          "profile_similarity": 72.27
+        },
+        "reasons": [
+          "Strong match — skill compatibility 72%, semantic relevance 72%."
+        ],
+        "top_projects": [],
+        "missing_skills": []
+      },
+      {
+        "student_user_id": 14,
+        "score": 70,
+        "hard_score": 71.96,
+        "semantic_score": 65.85,
+        "breakdown": {
+          "skill_score": 71.96,
+          "semantic_score": 65.85,
+          "alpha": 0.7,
+          "profile_similarity": 65.85
+        },
+        "reasons": [
+          "Strong match — skill compatibility 72%, semantic relevance 66%."
+        ],
+        "top_projects": [],
+        "missing_skills": []
+      },
+      {
+        "student_user_id": 16,
+        "score": 68,
+        "hard_score": 71.96,
+        "semantic_score": 58.85,
+        "breakdown": {
+          "skill_score": 71.96,
+          "semantic_score": 58.85,
+          "alpha": 0.7,
+          "profile_similarity": 58.85
+        },
+        "reasons": [
+          "Strong match — skill compatibility 72%, semantic relevance 59%."
+        ],
+        "top_projects": [],
+        "missing_skills": []
+      },
+      {
+        "student_user_id": 17,
+        "score": 0,
+        "hard_score": 39.43,
+        "semantic_score": 0,
+        "breakdown": {
+          "skill_score": 39.43,
+          "semantic_score": 0,
+          "alpha": 0.7,
+          "filtered": 1
+        },
+        "reasons": [
+          "Missing too many mandatory skills (1 missing)."
+        ],
+        "top_projects": [],
+        "missing_skills": [
+          "PostgreSQL"
+        ]
+      },
+      {
+        "student_user_id": 18,
+        "score": 0,
+        "hard_score": 39.43,
+        "semantic_score": 0,
+        "breakdown": {
+          "skill_score": 39.43,
+          "semantic_score": 0,
+          "alpha": 0.7,
+          "filtered": 1
+        },
+        "reasons": [
+          "Missing too many mandatory skills (1 missing)."
+        ],
+        "top_projects": [],
+        "missing_skills": [
+          "PostgreSQL"
+        ]
+      },
+      {
+        "student_user_id": 19,
+        "score": 0,
+        "hard_score": 39.43,
+        "semantic_score": 0,
+        "breakdown": {
+          "skill_score": 39.43,
+          "semantic_score": 0,
+          "alpha": 0.7,
+          "filtered": 1
+        },
+        "reasons": [
+          "Missing too many mandatory skills (1 missing)."
+        ],
+        "top_projects": [],
+        "missing_skills": [
+          "PostgreSQL"
+        ]
+      },
+      {
+        "student_user_id": 20,
+        "score": 0,
+        "hard_score": 39.43,
+        "semantic_score": 0,
+        "breakdown": {
+          "skill_score": 39.43,
+          "semantic_score": 0,
+          "alpha": 0.7,
+          "filtered": 1
+        },
+        "reasons": [
+          "Missing too many mandatory skills (1 missing)."
+        ],
+        "top_projects": [],
+        "missing_skills": [
+          "PostgreSQL"
+        ]
+      },
+      {
+        "student_user_id": 21,
+        "score": 0,
+        "hard_score": 39.43,
+        "semantic_score": 0,
+        "breakdown": {
+          "skill_score": 39.43,
+          "semantic_score": 0,
+          "alpha": 0.7,
+          "filtered": 1
+        },
+        "reasons": [
+          "Missing too many mandatory skills (1 missing)."
+        ],
+        "top_projects": [],
+        "missing_skills": [
+          "PostgreSQL"
+        ]
+      }
+    ]
+  }
 }

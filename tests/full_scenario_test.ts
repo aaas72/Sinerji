@@ -83,10 +83,20 @@ function ok(label: string, res: { status: number; data: any }) {
 }
 
 async function registerLogin(email: string, password: string, role: string, name: string) {
-  await request("POST", `${SERVER}/auth/register`, { email, password, role, full_name: name });
+  const payload: any = { email, password, role };
+  if (role === "company") payload.company_name = name;
+  else payload.full_name = name;
+
+  const reg = await request("POST", `${SERVER}/auth/register`, payload);
+  if (reg.status >= 400) {
+    log(`[UYARI] Kayit: ${email} -> ${JSON.stringify(reg.data)}`);
+  }
   const r = await request("POST", `${SERVER}/auth/login`, { email, password });
+  if (r.status >= 400) {
+    log(`[HATA] Giris: ${email} -> ${JSON.stringify(r.data)}`);
+  }
   const token: string =
-    r.data?.token || r.data?.data?.token || "";
+    r.data?.data?.token || r.data?.token || "";
   return token;
 }
 
@@ -217,7 +227,10 @@ async function main() {
       website_url:  "https://techcorp-cozumleri.example.com",
     }, authH(companyToken));
     const d = ok("Sirket profili guncellendi", r);
-    if (d) companyUserId = d?.data?.user_id ?? d?.user_id ?? null;
+    if (d) {
+        companyUserId = d?.data?.profile?.user_id ?? d?.data?.user_id ?? d?.profile?.user_id ?? d?.user_id ?? null;
+        log(`Sirket Kullanici ID = ${companyUserId}`);
+    }
   }
 
   // 2. Gorev ──────────────────────────────────────────────────────────────────
@@ -230,19 +243,19 @@ async function main() {
       description:      "Sifirdan bir e-ticaret platformu gelistirecek deneyimli Full-Stack gelistirici ariyoruz. React.js on yuz, Node.js/Express arka yuz, PostgreSQL veritabani ve bulut dagitimi gereklidir.",
       category:         "Web Gelistirme",
       subcategory:      "Full-Stack",
-      reward_type:      "ucretli",
+      reward_type:      "money",
       reward_amount:    "5000",
       budget:           "5000",
       currency:         "TRY",
       positions:        1,
-      experience_level: "orta",
+      experience_level: "intermediate",
       preferred_major:  "Bilgisayar Muhendisligi",
-      work_type:        "uzaktan",
-      employment_type:  "sozlesmeli",
+      work_type:        "remote",
+      employment_type:  "contract",
       status:           "open",
       detail_title:     "Kapsamli E-Ticaret Platformu Projesi",
       detail_body:      "## Teknik Gereksinimler\n- TypeScript destekli React.js arayuzu\n- Node.js ve Express.js REST API\n- Prisma ORM ile PostgreSQL veritabani\n- Odeme altyapisi entegrasyonu (Stripe)\n- AWS veya Vercel uzerinde dagitim\n- Jest ile birim testleri\n- Redux ile durum yonetimi\n- JWT kimlik dogrulama\n\n## Proje Suresi\n3 ay\n\n## Beklenen Ciktilar\n- GitHub'da kaynak kodu\n- Eksiksiz API dokumantasyonu\n- Yayinda uygulama",
-      skills:           TASK_SKILLS,
+      hardSkills: TASK_SKILLS.map(s => ({ skill: s.name, level: s.level, isRequired: s.is_required })),
     }, authH(companyToken));
     const d = ok("Gorev olusturuldu", r);
     if (d) {
@@ -272,6 +285,7 @@ async function main() {
       full_name:               s.name,
       bio:                     s.bio,
       major:                   s.major,
+      graduation_year:         2026,
       university:              s.university,
       categories_of_interest:  s.categories,
       availability_status:     "musait",
@@ -281,7 +295,7 @@ async function main() {
 
     for (const sk of s.skills) {
       const sr = await request("POST", `${SERVER}/students/skills`,
-        { name: sk.name, level: sk.level, category: sk.category }, authH(token));
+        { skillName: sk.name, level: sk.level, category: sk.category }, authH(token));
       if (sr.status < 400) log(`  [OK] Beceri: ${sk.name} Seviye ${sk.level}`);
       else log(`  [HATA] Beceri ${sk.name}: ${sr.status}`);
     }
