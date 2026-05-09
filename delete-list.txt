@@ -1,3 +1,0 @@
-tests/
-ai-matching-service/README.md
-server/prisma/delete-all-data.ts
