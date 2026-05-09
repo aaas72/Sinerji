@@ -246,7 +246,7 @@ async function main() {
     }, authH(companyToken));
     const d = ok("Gorev olusturuldu", r);
     if (d) {
-      taskId = d?.data?.id ?? d?.task?.id ?? d?.id ?? null;
+      taskId = d?.data?.task?.id ?? d?.data?.id ?? d?.task?.id ?? d?.id ?? null;
       log(`Gorev ID = ${taskId}`);
     }
   }
@@ -305,7 +305,7 @@ async function main() {
   // company_user_id yoksa al
   if (!companyUserId && companyToken) {
     const r = await request("GET", `${SERVER}/companies/me`, undefined, authH(companyToken));
-    companyUserId = r.data?.data?.user_id ?? r.data?.user_id ?? null;
+    companyUserId = r.data?.data?.profile?.user_id ?? r.data?.profile?.user_id ?? r.data?.data?.user_id ?? r.data?.user_id ?? null;
     log(`Sirket kullanici ID = ${companyUserId}`);
   }
 

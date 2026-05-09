@@ -41,6 +41,7 @@ export const register = async (req: Request, res: Response, next: NextFunction) 
       status: 'success',
       data: {
         user: userWithoutPassword,
+        token,
       },
     });
   } catch (error) {
@@ -67,6 +68,7 @@ export const login = async (req: Request, res: Response, next: NextFunction) => 
       status: 'success',
       data: {
         user: userWithoutPassword,
+        token,
       },
     });
   } catch (error) {
