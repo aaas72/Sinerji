@@ -1,5 +1,5 @@
 import google.generativeai as genai # type: ignore
-from typing import List
+from typing import List, Dict, Optional
 from app.core.config import GEMINI_API_KEY, SKILL_ALIASES
 from app.core.logger import logger
 
@@ -26,6 +26,16 @@ def ensure_ontology_table(cur):
     """
     )
 
+def load_ontology_cache(cur) -> Dict[str, List[str]]:
+    """Load ALL ontology mappings into memory in a single query for fast lookup."""
+    cur.execute("SELECT skill_name, parent_name FROM skill_ontology")
+    cache: Dict[str, List[str]] = {}
+    for row in cur.fetchall():
+        skill = str(row[0])
+        parent = str(row[1])
+        cache.setdefault(skill, []).append(parent)
+    return cache
+
 def infer_skill_parents(skill_name: str) -> List[str]:
     """Ask Gemini to identify parent technologies for a new skill."""
     if not _genai_model:
@@ -47,20 +57,26 @@ def infer_skill_parents(skill_name: str) -> List[str]:
         logger.error(f"Gemini inference failed for {skill_name}: {e}")
         return []
 
-def get_skill_parents_cached(cur, skill_name: str) -> List[str]:
-    """Get parents from DB or infer via Gemini and cache them."""
+def get_skill_parents(cur, skill_name: str, cache: Optional[Dict[str, List[str]]] = None) -> List[str]:
+    """Get parents from in-memory cache, DB, or infer via Gemini and cache them."""
     skill_key = canonicalize_skill_name(skill_name)
+
+    # 1. Check in-memory cache first (fastest)
+    if cache is not None and skill_key in cache:
+        return cache[skill_key]
     
-    cur.execute(
-        "SELECT parent_name FROM skill_ontology WHERE skill_name = %s", (skill_key,)
-    )
+    # 2. Check DB
+    cur.execute("SELECT parent_name FROM skill_ontology WHERE skill_name = %s", (skill_key,))
     rows = cur.fetchall()
     if rows:
-        return [str(r[0]) for r in rows]
+        parents = [str(r[0]) for r in rows]
+        if cache is not None:
+            cache[skill_key] = parents
+        return parents
     
+    # 3. Infer via Gemini (only for truly unknown skills)
     logger.info(f"[ONTOLOGY] Learning new skill: {skill_key}")
     parents = infer_skill_parents(skill_key)
-    
     for p in parents:
         try:
             cur.execute(
@@ -69,5 +85,7 @@ def get_skill_parents_cached(cur, skill_name: str) -> List[str]:
             )
         except Exception as e:
             logger.error(f"Failed to cache ontology for {skill_key} -> {p}: {e}")
-            
+    
+    if cache is not None:
+        cache[skill_key] = parents
     return parents
