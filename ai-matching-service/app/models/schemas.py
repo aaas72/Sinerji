@@ -1,55 +1,75 @@
-"""
-Pydantic models for API request / response payloads.
-"""
-
 from __future__ import annotations
-
+from dataclasses import dataclass
 from typing import Any, Dict, List, Optional
+from pydantic import BaseModel, Field # type: ignore
 
-from pydantic import BaseModel, Field
+@dataclass
+class SkillRequirement:
+    skill_name: str
+    required_level: int
+    is_required: bool
 
+@dataclass
+class StudentSkill:
+    skill_name: str
+    level: int
 
-# ── Request models ────────────────────────────────────────────────────────────
+@dataclass
+class ProjectEvidence:
+    title: str
+    description: str
+    similarity: float = 0.0
 
-class MatchRequestBase(BaseModel):
-    alpha: Optional[float] = Field(default=None, ge=0.0, le=1.0)
-    top_k: Optional[int] = Field(default=None, gt=0)
-    min_score: Optional[float] = Field(default=None, ge=0.0, le=100.0)
+@dataclass
+class HardFilterResult:
+    passed: bool
+    score: float
+    missing_skills: List[str]
+    below_level_skills: List[str]
 
-
-class ScoreStudentTaskRequest(MatchRequestBase):
-    task_id: int = Field(gt=0)
-    student_user_id: int = Field(gt=0)
-
-
-class RankTaskCandidatesRequest(MatchRequestBase):
-    task_id: int = Field(gt=0)
-    company_user_id: int = Field(gt=0)
-
-
-class RecommendTasksRequest(MatchRequestBase):
-    student_user_id: int = Field(gt=0)
-
-
-# ── Response models ───────────────────────────────────────────────────────────
+# API Request/Response Models
+class MatchRequest(BaseModel):
+    task_id: int
+    alpha: Optional[float] = None
+    top_k: Optional[int] = None
+    min_score: Optional[float] = None
 
 class CandidateScore(BaseModel):
     student_user_id: int
-    score: int
-    hard_score: float
-    semantic_score: float
-    breakdown: Dict[str, float]
+    score: float
+    filtered: bool
     reasons: List[str]
     top_projects: List[Dict[str, Any]]
-    missing_skills: List[str]
 
+class TaskMatchResponse(BaseModel):
+    task_id: int
+    top_candidates: List[CandidateScore]
+    filtered_out: int = 0
+    alpha: float = 0.5
+
+class StudentMatchRequest(BaseModel):
+    student_user_id: int
+    alpha: Optional[float] = None
+    min_score: Optional[float] = None
 
 class TaskScore(BaseModel):
     task_id: int
-    score: int
-    hard_score: float
-    semantic_score: float
-    breakdown: Dict[str, float]
+    score: float
     reasons: List[str]
-    top_projects: List[Dict[str, Any]]
-    missing_skills: List[str]
+
+class StudentMatchResponse(BaseModel):
+    student_user_id: int
+    matched_tasks: List[TaskScore]
+
+class SingleMatchRequest(BaseModel):
+    task_id: int
+    student_user_id: int
+    alpha: Optional[float] = None
+
+class SingleMatchResponse(BaseModel):
+    task_id: int
+    student_user_id: int
+    score: float
+    filtered: bool
+    reasons: List[str]
+    semantic_details: Dict[str, Any]
