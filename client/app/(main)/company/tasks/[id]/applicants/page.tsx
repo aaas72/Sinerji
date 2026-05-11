@@ -228,6 +228,18 @@ function ReviewModal({
                 </div>
 
                 <div className="p-5 bg-white flex-1 overflow-y-auto custom-scrollbar max-h-[450px]">
+                  {/* AI Explanation Summary */}
+                  {submission.ai_match_details.explanation && (
+                    <div className="mb-6 bg-[#004d40]/5 border border-[#004d40]/10 rounded-2xl p-5">
+                      <p className="text-[10px] font-bold text-[#004d40] uppercase tracking-wider mb-3 flex items-center gap-2">
+                        <FiCheckCircle className="w-3.5 h-3.5" /> التحليل الذكي للمطابقة
+                      </p>
+                      <p className="text-sm text-gray-800 leading-relaxed whitespace-pre-wrap font-medium italic">
+                        "{submission.ai_match_details.explanation}"
+                      </p>
+                    </div>
+                  )}
+
                   {/* Skill Matrix */}
                   {submission.ai_match_details.skill_details && submission.ai_match_details.skill_details.length > 0 && (
                     <div className="space-y-3">

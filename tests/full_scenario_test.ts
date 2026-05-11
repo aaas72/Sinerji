@@ -28,12 +28,17 @@ interface Student {
   major: string; university: string; categories: string;
 }
 interface Candidate {
-  student_user_id: number; score: number;
-  hard_score: number; semantic_score: number;
-  missing_skills: string[];
+  student_user_id: number; 
+  score: number;
+  filtered: boolean;
+  reasons: string[];
+  explanation?: string;
+  top_projects: any[];
 }
 interface AiResult {
-  candidates: Candidate[]; filtered_out: number; alpha: number;
+  top_candidates: Candidate[]; 
+  filtered_out: number; 
+  alpha: number;
 }
 
 // ── HTTP helper ───────────────────────────────────────────────────────────────
@@ -389,17 +394,17 @@ async function main() {
   w("\n" + sep2);
 
   w("\n" + sep2); w("  AI ESLESTIRME SONUCLARI – SIRALI ADAYLAR"); w(sep2);
-  if (aiResults?.candidates?.length) {
-    const cands = aiResults.candidates;
+  if (aiResults?.top_candidates?.length) {
+    const cands = aiResults.top_candidates;
     w(`  Toplam Siralanan : ${cands.length}`);
     w(`  Elenen           : ${aiResults.filtered_out ?? 0}`);
     w(`  Alpha            : ${aiResults.alpha ?? 0.7}`);
     w("");
-    w(`  ${"Siralama".padEnd(9)} ${"Puan".padEnd(7)} ${"Sert".padEnd(8)} ${"Semantik".padEnd(11)} ${"OgrenciID".padEnd(12)} Eksik Beceriler`);
-    w("  " + "-".repeat(62));
+    w(`  ${"Siralama".padEnd(9)} ${"Puan".padEnd(7)} ${"OgrenciID".padEnd(12)} Temsili Aciklama`);
+    w("  " + "-".repeat(70));
     cands.forEach((c, i) => {
-      const missing = c.missing_skills?.join(", ") || "—";
-      w(`  #${String(i + 1).padEnd(8)} ${String(c.score).padEnd(7)} ${c.hard_score.toFixed(1).padEnd(8)} ${c.semantic_score.toFixed(2).padEnd(11)} ${String(c.student_user_id).padEnd(12)} Eksik: ${missing}`);
+      const exp = c.explanation ? c.explanation.replace(/\n/g, " ") : "—";
+      w(`  #${String(i + 1).padEnd(8)} ${String(c.score.toFixed(2)).padEnd(7)} ${String(c.student_user_id).padEnd(12)} ${exp.substring(0, 100)}...`);
     });
   } else {
     w("  AI sonucu alinamadi (servis calismiyor olabilir)");
@@ -426,10 +431,11 @@ async function main() {
   console.log(`  Sirket     : ${COMPANY_EMAIL} / ${COMPANY_PASSWORD}`);
   console.log(`  Gorev ID   : ${taskId}`);
   console.log(`  Ogrenciler : ${Object.keys(studentTokens).length} olusturuldu ve basvurdu`);
-  if (aiResults?.candidates?.length) {
+  if (aiResults?.top_candidates?.length) {
     console.log("\n  EN IYI 5 AI SIRALAMA:");
-    aiResults.candidates.slice(0, 5).forEach((c, i) => {
-      console.log(`    #${i + 1}  Puan=${c.score}  Sert=${c.hard_score.toFixed(1)}  Semantik=${c.semantic_score.toFixed(2)}  OgrenciID=${c.student_user_id}`);
+    aiResults.top_candidates.slice(0, 5).forEach((c, i) => {
+      console.log(`    #${i + 1}  Puan=${c.score.toFixed(2)}  OgrenciID=${c.student_user_id}`);
+      if (c.explanation) console.log(`       Aciklama: ${c.explanation.split('\n')[0]}...`);
     });
   }
   console.log(`\n  Raporlar: ${RESULTS_DIR}`);

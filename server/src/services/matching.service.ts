@@ -13,6 +13,7 @@ type ScoreStudentTaskResponse = {
   semantic_score?: number;
   breakdown?: Record<string, number>;
   reasons?: string[];
+  explanation?: string;
   top_projects?: Array<{ task_id: number; title: string; similarity: number }>;
   missing_skills?: string[];
 };
@@ -30,6 +31,7 @@ type RankTaskCandidatesResponse = {
     semantic_score?: number;
     breakdown?: Record<string, number>;
     reasons?: string[];
+    explanation?: string;
     top_projects?: Array<{ task_id: number; title: string; similarity: number }>;
     missing_skills?: string[];
   }>;
@@ -204,8 +206,12 @@ export class MatchingService {
     }
 
     const scoreMap = new Map<number, number>();
+    const explanationMap = new Map<number, string>();
     ranking.candidates.forEach((candidate) => {
       scoreMap.set(candidate.student_user_id, this.normalizeScoreToPercentage(candidate.score));
+      if (candidate.explanation) {
+        explanationMap.set(candidate.student_user_id, candidate.explanation);
+      }
     });
 
     const students = await prisma.studentProfile.findMany({
@@ -220,7 +226,8 @@ export class MatchingService {
 
     const matchedStudents = students.map((student: any) => {
       const matchPercentage = scoreMap.get(student.user_id) ?? 0;
-      return { ...student, matchPercentage };
+      const matchExplanation = explanationMap.get(student.user_id) ?? '';
+      return { ...student, matchPercentage, matchExplanation };
     });
 
     return matchedStudents

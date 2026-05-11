@@ -13,6 +13,7 @@ export interface Submission {
         hard_score?: number;
         semantic_score?: number;
         reasons?: string[];
+        explanation?: string;
         missing_skills?: string[];
         top_projects?: Array<{ task_id: number; title: string; similarity: number }>;
         strengths?: string[];
