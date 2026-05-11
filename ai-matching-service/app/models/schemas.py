@@ -39,6 +39,7 @@ class CandidateScore(BaseModel):
     score: float
     filtered: bool
     reasons: List[str]
+    explanation: Optional[str] = None
     top_projects: List[Dict[str, Any]]
 
 class TaskMatchResponse(BaseModel):
@@ -56,6 +57,7 @@ class TaskScore(BaseModel):
     task_id: int
     score: float
     reasons: List[str]
+    explanation: Optional[str] = None
 
 class StudentMatchResponse(BaseModel):
     student_user_id: int
@@ -72,4 +74,5 @@ class SingleMatchResponse(BaseModel):
     score: float
     filtered: bool
     reasons: List[str]
+    explanation: Optional[str] = None
     semantic_details: Dict[str, Any]
