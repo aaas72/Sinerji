@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -11,69 +8,59 @@ datasource db {
 }
 
 model User {
-  id            Int      @id @default(autoincrement())
-  email         String   @unique
-  password_hash String
-  role          String
-  created_at    DateTime @default(now())
-
-  // Relations
-  studentProfile StudentProfile?
+  id             Int             @id @default(autoincrement())
+  email          String          @unique
+  password_hash  String
+  role           String
+  created_at     DateTime        @default(now())
   companyProfile CompanyProfile?
+  studentProfile StudentProfile?
   supportTickets SupportTicket[]
 
   @@map("users")
 }
 
 model StudentProfile {
-  user_id    Int     @id
-  full_name  String
-  university String?
-  bio        String?
-  phone      String?
-  linkedin_url String?
-  github_url   String?
-  twitter_url  String?
-  website_url  String?
-  major               String?
-  graduation_year     Int?
-  availability_status String @default("available")
+  user_id                Int              @id
+  full_name              String
+  university             String?
+  bio                    String?
+  github_url             String?
+  linkedin_url           String?
+  phone                  String?
+  twitter_url            String?
+  website_url            String?
+  availability_status    String           @default("available")
   categories_of_interest String?
-
-  user User @relation(fields: [user_id], references: [id])
-
-  // Relations
-  skills          StudentSkill[]
-  submissions     Submission[]
-  recommendations Recommendation[]
-  savedTasks      SavedTask[]
+  graduation_year        Int?
+  major                  String?
+  recommendations        Recommendation[]
+  savedTasks             SavedTask[]
+  user                   User             @relation(fields: [user_id], references: [id])
+  skills                 StudentSkill[]
+  submissions            Submission[]
 
   @@map("student_profiles")
 }
 
 model CompanyProfile {
-  user_id      Int     @id
-  company_name String
-  description  String?
-  website_url  String?
-  industry     String?
-  location     String?
-  logo_url     String?
-
-  user User @relation(fields: [user_id], references: [id])
-
-  // Relations
-  tasks                  Task[]
+  user_id                Int              @id
+  company_name           String
+  description            String?
+  website_url            String?
+  industry               String?
+  location               String?
+  logo_url               String?
+  user                   User             @relation(fields: [user_id], references: [id])
   recommendationsWritten Recommendation[]
+  tasks                  Task[]
 
   @@map("company_profiles")
 }
 
 model Skill {
-  id   Int    @id @default(autoincrement())
-  name String @unique
-
-  // Relations
+  id       Int            @id @default(autoincrement())
+  name     String         @unique
   students StudentSkill[]
   tasks    TaskSkill[]
 
@@ -83,109 +70,96 @@ model Skill {
 model StudentSkill {
   student_user_id Int
   skill_id        Int
-  category        String @default("General")
-  level           Int    @default(3)
-
-  student StudentProfile @relation(fields: [student_user_id], references: [user_id])
-  skill   Skill          @relation(fields: [skill_id], references: [id])
+  category        String         @default("General")
+  level           Int            @default(3)
+  skill           Skill          @relation(fields: [skill_id], references: [id])
+  student         StudentProfile @relation(fields: [student_user_id], references: [user_id])
 
   @@id([student_user_id, skill_id])
   @@map("student_skills")
 }
 
 model Task {
-  id                   Int       @id @default(autoincrement())
-  company_user_id      Int
-  title                String
-  description          String?
-  category             String?
-  subcategory          String?
-  reward_type          String?
-  reward_amount        String?
-  budget               String?
-  currency             String?
-  internship_duration  String?
+  id                    Int            @id @default(autoincrement())
+  company_user_id       Int
+  title                 String
+  description           String?
+  reward_type           String?
+  status                String?
+  deadline              DateTime?
+  employment_type       String?
+  location              String?
+  created_at            DateTime       @default(now())
+  detail_body           String?
+  detail_title          String?
+  reward_amount         String?
+  budget                String?
+  category              String?
+  certificate_issuer    String?
+  certificate_name      String?
+  currency              String?
+  experience_level      String?
   internship_department String?
-  internship_is_paid   String?
-  certificate_name     String?
-  certificate_issuer   String?
-  positions            Int?
-  experience_level     String?
-  preferred_major      String?
-  work_type            String?
-  detail_title         String?
-  detail_body          String?
-  created_at           DateTime  @default(now())
-  status               String?
-  deadline             DateTime?
-  location             String?
-  employment_type      String?
-
-  company CompanyProfile @relation(fields: [company_user_id], references: [user_id])
-
-  // Relations
-  requiredSkills TaskSkill[]
-  submissions    Submission[]
-  savedTasks     SavedTask[]
+  internship_duration   String?
+  internship_is_paid    String?
+  positions             Int?
+  preferred_major       String?
+  subcategory           String?
+  work_type             String?
+  savedTasks            SavedTask[]
+  submissions           Submission[]
+  requiredSkills        TaskSkill[]
+  company               CompanyProfile @relation(fields: [company_user_id], references: [user_id])
 
   @@map("tasks")
 }
 
 model TaskSkill {
-  task_id           Int
-  skill_id          Int
-  level             Int     @default(5)
-  is_required       Boolean @default(true)
+  task_id             Int
+  skill_id            Int
+  is_required         Boolean @default(true)
+  level               Int     @default(5)
   years_of_experience Int?
-
-  task  Task  @relation(fields: [task_id], references: [id])
-  skill Skill @relation(fields: [skill_id], references: [id])
+  skill               Skill   @relation(fields: [skill_id], references: [id])
+  task                Task    @relation(fields: [task_id], references: [id])
 
   @@id([task_id, skill_id])
   @@map("task_skills")
 }
 
 model Submission {
-  id                 Int      @id @default(autoincrement())
-  task_id            Int
-  student_user_id    Int
-  status             String?
-  submission_content String?
-  submitted_at       DateTime @default(now())
-  proposed_budget         String?
-  estimated_delivery_days Int?
+  id                      Int            @id @default(autoincrement())
+  task_id                 Int
+  student_user_id         Int
+  status                  String?
+  submission_content      String?
+  submitted_at            DateTime       @default(now())
   ai_match_score          Float?
+  estimated_delivery_days Int?
+  proposed_budget         String?
   ai_match_details        Json?
-
-  task    Task           @relation(fields: [task_id], references: [id])
-  student StudentProfile @relation(fields: [student_user_id], references: [user_id])
-
-  // Relations
-  review Review?
+  review                  Review?
+  student                 StudentProfile @relation(fields: [student_user_id], references: [user_id])
+  task                    Task           @relation(fields: [task_id], references: [id])
 
   @@map("submissions")
 }
 
 model Review {
-  submission_id Int     @id
+  submission_id Int            @id
   rating        Int?
   feedback      String?
-
-  submission Submission @relation(fields: [submission_id], references: [id])
-
-  // Relations
   awardedBadges AwardedBadge[]
+  submission    Submission     @relation(fields: [submission_id], references: [id])
 
   @@map("reviews")
 }
 
 model Badge {
-  id       Int     @id @default(autoincrement())
+  id       Int            @id @default(autoincrement())
   name     String
   icon_url String?
-
-  // Relations
-  awarded AwardedBadge[]
+  awarded  AwardedBadge[]
 
   @@map("badges")
 }
@@ -193,23 +167,21 @@ model Badge {
 model AwardedBadge {
   review_id Int
   badge_id  Int
-
-  review Review @relation(fields: [review_id], references: [submission_id])
-  badge  Badge  @relation(fields: [badge_id], references: [id])
+  badge     Badge  @relation(fields: [badge_id], references: [id])
+  review    Review @relation(fields: [review_id], references: [submission_id])
 
   @@id([review_id, badge_id])
   @@map("awarded_badges")
 }
 
 model Recommendation {
-  id              Int      @id @default(autoincrement())
+  id              Int            @id @default(autoincrement())
   company_user_id Int
   student_user_id Int
   content         String
-  created_at      DateTime @default(now())
-
-  company CompanyProfile @relation(fields: [company_user_id], references: [user_id])
-  student StudentProfile @relation(fields: [student_user_id], references: [user_id])
+  created_at      DateTime       @default(now())
+  company         CompanyProfile @relation(fields: [company_user_id], references: [user_id])
+  student         StudentProfile @relation(fields: [student_user_id], references: [user_id])
 
   @@map("recommendations")
 }
@@ -221,8 +193,7 @@ model SupportTicket {
   message    String
   status     String   @default("open")
   created_at DateTime @default(now())
-
-  user User @relation(fields: [user_id], references: [id])
+  user       User     @relation(fields: [user_id], references: [id])
 
   @@map("support_tickets")
 }
@@ -230,11 +201,18 @@ model SupportTicket {
 model SavedTask {
   student_user_id Int
   task_id         Int
-  saved_at        DateTime @default(now())
-
-  student StudentProfile @relation(fields: [student_user_id], references: [user_id])
-  task    Task           @relation(fields: [task_id], references: [id])
+  saved_at        DateTime       @default(now())
+  student         StudentProfile @relation(fields: [student_user_id], references: [user_id])
+  task            Task           @relation(fields: [task_id], references: [id])
 
   @@id([student_user_id, task_id])
   @@map("saved_tasks")
+}
+
+model skill_ontology {
+  id          Int    @id @default(autoincrement())
+  skill_name  String @db.VarChar(255)
+  parent_name String @db.VarChar(255)
+
+  @@unique([skill_name, parent_name])
 }
