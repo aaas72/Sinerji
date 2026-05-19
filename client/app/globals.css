@@ -2,15 +2,15 @@
 @plugin "@tailwindcss/typography";
 
 :root {
-  --color-body-bg: #f3f4f6;
-  /* خلفية البدي الرئيسي */
+  --color-body-bg: #faf9f6;
+  /* خلفية البدي الرئيسي المعتمدة */
   --color-section-bg: #ffffff;
   /* خلفية القسم */
   --color-primary: #004d40;
   /* اللون الرئيسي */
-  --color-secondary: #787878;
+  --color-secondary: #0b1c30;
   /* اللون الثانوي */
-  --color-special: #fbb049;
+  --color-special: #e28743;
   /* اللون الخاص */
 }
 
@@ -116,6 +116,15 @@ h6 {
   background-color: #00695c;
 }
 
+/* Hide scrollbars completely while maintaining scroll behavior */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;  /* IE and Edge */
+  scrollbar-width: none;  /* Firefox */
+}
+
 /* Auth Modal Animations */
 @keyframes fadeIn {
   from {
@@ -146,3 +155,31 @@ h6 {
 .animate-slideUp {
   animation: slideUp 0.3s ease-out;
 }
+
+/* Sinerji Dynamic Connectivity Styles */
+.organic-line {
+  position: absolute;
+  right: -24px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 48px;
+  height: 2px;
+  background: linear-gradient(90deg, #e28743 0%, transparent 100%);
+  z-index: 10;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+
+.active-card .organic-line {
+  opacity: 1;
+}
+
+.ai-match-gradient {
+  background: linear-gradient(135deg, rgba(0,77,64,0.06) 0%, rgba(226,135,67,0.08) 100%);
+}
+
+.glass-panel {
+  background: rgba(255, 255, 255, 0.8) !important;
+  backdrop-filter: blur(12px);
+}

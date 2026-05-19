@@ -130,18 +130,14 @@ export default function Navbar({ authenticated, userName, role }: NavbarProps) {
   const isLanding = pathname === "/" && !isAuth;
 
   // Don't render inconsistent state during hydration
+  // Don't render inconsistent state during hydration
   if (!_hasHydrated) {
-    // أثناء التحميل، استخدم نفس مظهر صفحة الهبوط
     return (
-      <header className={cn(
-        "w-full z-50 absolute top-0 left-0 right-0 bg-transparent"
-      )}>
-        <nav className="mx-auto max-w-6xl px-4 py-3 grid grid-cols-3 items-center gap-4">
-          <div className="flex justify-start">
-            <span className="text-white font-heading text-xl font-bold tracking-wider">
-              SİNERJİ
-            </span>
-          </div>
+      <header className="w-full z-50 absolute top-0 left-0 right-0 bg-transparent">
+        <nav className="mx-auto max-w-6xl px-6 py-4 flex items-center justify-between">
+          <span className="text-[#004d40] font-bold text-lg tracking-tight">
+            Sinerji
+          </span>
         </nav>
       </header>
     );
@@ -150,67 +146,78 @@ export default function Navbar({ authenticated, userName, role }: NavbarProps) {
   return (
     <header
       className={cn(
-        "w-full z-50",
+        "w-full z-50 transition-all duration-300",
         isLanding
           ? "absolute top-0 left-0 right-0 bg-transparent"
-          : "bg-white border-b border-gray-300"
+          : "bg-white/95 backdrop-blur-md border-b border-[#f1f0ea] sticky top-0"
       )}
     >
-      <nav className="mx-auto max-w-6xl px-4 py-3 grid grid-cols-3 items-center gap-4">
-        <div className="flex justify-start">
+      <nav className="mx-auto max-w-6xl px-6 py-3.5 flex items-center justify-between">
+        {/* Left: Brand logo & Navigation links */}
+        <div className="flex items-center gap-8 lg:gap-12">
           <Link
             href={homeLink}
             className={cn(
-              "font-heading text-xl font-bold tracking-wider",
-              isLanding ? "text-white" : "text-primary"
+              "font-bold text-lg tracking-tight transition-opacity hover:opacity-90",
+              isLanding ? "text-white" : "text-[#004d40]"
             )}
           >
-            SİNERJİ
+            Sinerji
           </Link>
+          
+          {isAuth && (
+            <div className="hidden md:flex items-center gap-6 lg:gap-8">
+              {navbarLinks.map((link) => {
+                const isActive = pathname === link.href;
+                return (
+                  <Link
+                    key={link.href}
+                    href={link.href}
+                    className={cn(
+                      "text-[13px] font-medium transition-all relative py-1",
+                      isActive
+                        ? "text-gray-900 font-semibold border-b-2 border-[#004d40] pb-[5px]"
+                        : "text-gray-500 hover:text-gray-900"
+                    )}
+                  >
+                    {link.label}
+                  </Link>
+                );
+              })}
+            </div>
+          )}
         </div>
 
-        <div className="flex justify-center gap-8">
-          {isAuth &&
-            navbarLinks.map((link) => (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={cn(
-                  "flex items-center gap-2 transition-colors font-medium",
-                  pathname === link.href
-                    ? "text-[#004d40]"
-                    : "text-gray-400 hover:text-[#004d40]"
-                )}
-              >
-                <span>{link.label}</span>
-              </Link>
-            ))}
-        </div>
-
-        <div className="flex justify-end">
+        {/* Right Actions */}
+        <div className="flex items-center gap-4">
           {!isAuth ? (
             <div className="flex items-center gap-3">
               {isLanding ? (
                 <>
                   <button
                     onClick={openLogin}
-                    className="text-white/70 hover:text-white hover:bg-white/10 font-medium text-sm px-3 py-1.5 rounded-md border border-white/20 transition-all"
+                    className="text-white/70 hover:text-white hover:bg-white/10 font-medium text-xs px-3.5 py-1.5 rounded-full border border-white/20 transition-all"
                   >
                     Giriş Yap
                   </button>
                   <button
                     onClick={openRegister}
-                    className="text-white/70 hover:text-white hover:bg-white/10 font-medium text-sm px-3 py-1.5 rounded-md border border-white/20 transition-all"
+                    className="text-white bg-white/15 hover:bg-white/25 font-bold text-xs px-4 py-1.5 rounded-full border border-white/10 transition-all"
                   >
                     Kayıt Ol
                   </button>
                 </>
               ) : (
                 <>
-                  <Button variant="primary" onClick={openLogin}>Giriş Yap</Button>
+                  <button
+                    onClick={openLogin}
+                    className="text-gray-600 hover:text-gray-950 font-bold text-xs px-4 py-2 transition-all"
+                  >
+                    Giriş Yap
+                  </button>
                   <Button
-                    variant="default"
-                    className="border border-primary bg-transparent"
+                    variant="primary"
+                    className="bg-[#004d40] hover:bg-[#003d33] text-white px-5 py-2 rounded-full font-bold text-xs shadow-xs"
                     onClick={openRegister}
                   >
                     Kayıt Ol
@@ -221,24 +228,36 @@ export default function Navbar({ authenticated, userName, role }: NavbarProps) {
           ) : (
             <div className="relative" ref={menuRef}>
               <div className="flex items-center gap-4">
-                <button className="text-[#004d40] hover:text-[#004d40] transition-colors">
-                  <FiBell size={20} className="text-[#004d40]" />
+                {/* Notification Bell */}
+                <button className="text-gray-400 hover:text-gray-900 transition-colors relative p-1 rounded-full hover:bg-gray-50">
+                  <FiBell size={18} />
+                  <span className="absolute top-1 right-1 w-1.5 h-1.5 bg-[#e28743] rounded-full animate-ping" />
                 </button>
+
+                {/* Settings Gear */}
+                <Link
+                  href={userRole === "company" ? "/company/settings" : "/student/profile"}
+                  className="text-gray-400 hover:text-gray-900 transition-colors p-1 rounded-full hover:bg-gray-50 hidden sm:inline-block"
+                >
+                  <FiSettings size={18} />
+                </Link>
+
+                {/* Profile Circle Menu */}
                 <div
-                  className="flex items-center gap-2 cursor-pointer"
+                  className="w-8 h-8 rounded-full border border-gray-200 overflow-hidden flex items-center justify-center bg-gray-50 hover:border-[#004d40] transition-all cursor-pointer shadow-2xs select-none"
                   onClick={() => setMenuOpen(!menuOpen)}
                 >
-                  <div className="w-8 h-8 rounded-full bg-primary text-white flex items-center justify-center font-bold">
-                    {name.charAt(0).toUpperCase()}
-                  </div>
+                  <span className="text-[10px] font-bold text-[#004d40]">
+                    {name.substring(0, 2).toUpperCase()}
+                  </span>
                 </div>
               </div>
 
               {menuOpen && (
-                <div className="absolute right-0 mt-2 w-56 bg-white rounded-md shadow-lg border border-gray-200 py-1 z-50">
-                  <div className="px-4 py-3 border-b border-gray-100">
-                    <p className="text-sm font-medium text-gray-900">{name}</p>
-                    <p className="text-xs text-gray-500 truncate">
+                <div className="absolute right-0 mt-2.5 w-56 bg-white rounded-xl shadow-lg border border-[#f1f0ea] py-1.5 z-50 animate-slideUp">
+                  <div className="px-4 py-3 border-b border-gray-100/60">
+                    <p className="text-sm font-bold text-gray-900">{name}</p>
+                    <p className="text-xs text-gray-400 truncate mt-0.5">
                       {user?.email}
                     </p>
                   </div>
@@ -247,18 +266,18 @@ export default function Navbar({ authenticated, userName, role }: NavbarProps) {
                       {item.isLogout ? (
                         <button
                           onClick={handleLogout}
-                          className="w-full text-left flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 transition-colors"
+                          className="w-full text-left flex items-center gap-2 px-4 py-2 text-xs font-semibold text-red-600 hover:bg-red-50 transition-colors mt-1"
                         >
-                          <item.icon size={16} />
+                          <item.icon size={14} />
                           {item.label}
                         </button>
                       ) : (
                         <Link
                           href={item.href}
-                          className="flex items-center gap-2 px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+                          className="flex items-center gap-2 px-4 py-2 text-xs font-semibold text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors"
                           onClick={() => setMenuOpen(false)}
                         >
-                          <item.icon size={16} />
+                          <item.icon size={14} />
                           {item.label}
                         </Link>
                       )}

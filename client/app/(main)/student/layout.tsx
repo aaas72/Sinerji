@@ -6,7 +6,7 @@ export default function StudentLayout({ children }: { children: React.ReactNode 
   return (
     <ProtectedRoute allowedRoles={["student"]}>
       <Navbar authenticated={false} userName={undefined} role={"student"} />
-      <div className="mx-auto max-w-6xl px-4">{children}</div>
+      <div className="w-full bg-[#faf9f6]">{children}</div>
     </ProtectedRoute>
   );
 }

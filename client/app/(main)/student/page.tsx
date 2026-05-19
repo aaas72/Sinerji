@@ -6,6 +6,7 @@ import { Task } from "@/components/features/tasks/types";
 import { taskService } from "@/services/task.service";
 import { studentService } from "@/services/student.service";
 import { useAuthStore } from "@/hooks/useAuth";
+import { cn } from "@/utils/cn";
 import Button from "@/components/ui/Button";
 import {
   FiCheckCircle,
@@ -129,75 +130,21 @@ export default function StudentDashboard() {
     );
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-8 space-y-8">
-      {/* Welcome Banner */}
-      <div className="relative overflow-hidden bg-linear-to-br from-[#004d40] via-[#00695c] to-[#004d40] rounded-2xl p-8 text-white">
-        {/* Decorative elements */}
-        <div className="absolute top-0 right-0 w-64 h-64 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/3" />
-        <div className="absolute bottom-0 left-0 w-40 h-40 bg-[#fbb049]/10 rounded-full translate-y-1/2 -translate-x-1/4" />
-
-        <div className="relative z-10">
-          <p className="text-white/70 text-sm font-medium mb-1">Hoş Geldin</p>
-          <h1 className="text-2xl md:text-3xl font-bold mb-2">{name}</h1>
-          <p className="text-white/60 text-sm max-w-lg">
-            Yeteneklerine uygun görevleri keşfet, başvur ve kariyerini inşa et.
-          </p>
-        </div>
-      </div>
-
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-5 md:p-6">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-          <div>
-            <div className="inline-flex items-center gap-2 rounded-full bg-[#004d40]/10 px-3 py-1 text-xs font-semibold text-[#004d40] mb-3">
-              <FiZap /> AI Eşleşme Testi
-            </div>
-            <h2 className="text-lg font-bold text-gray-900">Frontend'den eşleşen görevleri çek</h2>
-            <p className="text-sm text-gray-500 mt-1 max-w-2xl">
-              Bu bölüm doğrudan backend'deki <span className="font-medium text-gray-700">/tasks/recommended</span> endpoint'ini çağırır ve mikroservis skorunu kartlarda gösterir.
-            </p>
-          </div>
-          <div className="flex items-center gap-3">
-            <Button
-              type="button"
-              variant={viewMode === "recommended" ? "primary" : "outline"}
-              onClick={fetchRecommendedTasks}
-              isLoading={isRecommendedLoading}
-            >
-              Eşleşen Görevleri Getir
-            </Button>
-            <Button
-              type="button"
-              variant={viewMode === "all" ? "primary" : "outline"}
-              onClick={() => setViewMode("all")}
-              icon={FiRefreshCw}
-            >
-              Tüm Görevler
-            </Button>
-          </div>
-        </div>
-        {recommendedError && (
-          <p className="mt-4 rounded-lg border border-red-100 bg-red-50 px-4 py-3 text-sm text-red-600">
+    <div className="w-full h-full bg-[#faf9f6]">
+      {recommendedError && (
+        <div className="mx-auto max-w-6xl px-6 pt-4">
+          <p className="rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-xs text-red-600">
             {recommendedError}
           </p>
-        )}
-      </div>
-
-      {/* Search & Tasks */}
-      <SearchFilter onSearch={handleSearch} />
-      {visibleTasks.length === 0 ? (
-        <div className="bg-white rounded-xl border border-gray-100 p-12 text-center">
-          <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
-            <FiCheckCircle className="w-8 h-8 text-gray-300" />
-          </div>
-          <p className="text-gray-500">
-            {viewMode === "recommended"
-              ? "Henüz eşleşen görev bulunamadı."
-              : "Henüz görev bulunmamaktadır."}
-          </p>
         </div>
-      ) : (
-        <TasksBoard tasks={visibleTasks} />
       )}
+      <TasksBoard
+        tasks={visibleTasks}
+        viewMode={viewMode}
+        setViewAllTasks={() => setViewMode("all")}
+        fetchRecommendedTasks={fetchRecommendedTasks}
+        isRecommendedLoading={isRecommendedLoading}
+      />
     </div>
   );
 }
