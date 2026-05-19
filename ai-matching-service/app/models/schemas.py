@@ -44,7 +44,7 @@ class CandidateScore(BaseModel):
 
 class TaskMatchResponse(BaseModel):
     task_id: int
-    top_candidates: List[CandidateScore]
+    candidates: List[CandidateScore]
     filtered_out: int = 0
     alpha: float = 0.5
 
@@ -61,7 +61,7 @@ class TaskScore(BaseModel):
 
 class StudentMatchResponse(BaseModel):
     student_user_id: int
-    matched_tasks: List[TaskScore]
+    tasks: List[TaskScore]
 
 class SingleMatchRequest(BaseModel):
     task_id: int

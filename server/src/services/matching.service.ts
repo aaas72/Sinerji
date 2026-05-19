@@ -49,6 +49,7 @@ type RecommendTasksResponse = {
     semantic_score?: number;
     breakdown?: Record<string, number>;
     reasons?: string[];
+    explanation?: string;
     top_projects?: Array<{ task_id: number; title: string; similarity: number }>;
     missing_skills?: string[];
   }>;
@@ -171,8 +172,13 @@ export class MatchingService {
     }
 
     const scoreMap = new Map<number, number>();
+    const explanationMap = new Map<number, string>();
+    const reasonsMap = new Map<number, string[]>();
+
     recommendation.tasks.forEach((item) => {
       scoreMap.set(item.task_id, this.normalizeScoreToPercentage(item.score));
+      if (item.explanation) explanationMap.set(item.task_id, item.explanation);
+      if (item.reasons) reasonsMap.set(item.task_id, item.reasons);
     });
 
     const tasks = await prisma.task.findMany({
@@ -184,7 +190,12 @@ export class MatchingService {
     });
 
     return tasks
-      .map((task: any) => ({ ...task, matchPercentage: scoreMap.get(task.id) ?? 0 }))
+      .map((task: any) => ({ 
+        ...task, 
+        matchPercentage: scoreMap.get(task.id) ?? 0,
+        matchExplanation: explanationMap.get(task.id) ?? '',
+        matchReasons: reasonsMap.get(task.id) ?? []
+      }))
       .filter((task: any) => task.matchPercentage > 0)
       .sort((a: any, b: any) => b.matchPercentage - a.matchPercentage);
   }

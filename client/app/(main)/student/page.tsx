@@ -51,6 +51,8 @@ export default function StudentDashboard() {
     location: t.location || undefined,
     workType: t.work_type || undefined,
     matchPercentage: typeof t.matchPercentage === "number" ? t.matchPercentage : undefined,
+    matchExplanation: t.matchExplanation || undefined,
+    matchReasons: t.matchReasons || undefined,
   });
 
   useEffect(() => {

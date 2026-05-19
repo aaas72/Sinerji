@@ -12,6 +12,8 @@ import {
   FiMapPin,
   FiShare2,
   FiAward,
+  FiZap,
+  FiCheckCircle,
 } from "react-icons/fi";
 import { Task, getRewardIcon } from "./types";
 import { useRouter } from "next/navigation";
@@ -54,18 +56,13 @@ export default function TaskDetail({ task }: TaskDetailProps) {
     });
   };
 
-  // Call getRewardIcon instead of using it as a component to avoid render issues
-  const rewardIconNode = getRewardIcon(task.rewardType)({ className: "w-5 h-5" });
-
   return (
     <div className="flex flex-col h-full bg-white">
       {/* Fixed Header Section */}
       <div className="p-6 pb-4 flex-none border-b border-gray-200 z-10 bg-white">
-        {/* Logo & Title Row */}
         <div className="flex flex-col sm:flex-row items-start justify-between gap-4 mb-4">
             <div className="flex items-start gap-4 flex-1 min-w-0">
             <div className="w-12 h-12 shrink-0 rounded-md border border-gray-200 bg-gray-50 flex items-center justify-center">
-              {/* Placeholder Logo */}
               <span className="text-xs font-bold text-gray-400">LOGO</span>
             </div>
             <div className="min-w-0 flex-1">
@@ -107,7 +104,6 @@ export default function TaskDetail({ task }: TaskDetailProps) {
           </Button>
         </div>
 
-        {/* Action Buttons Row */}
         <div className="flex items-center justify-end mt-2">
           <div className="flex items-center gap-3">
             <div className="flex items-center gap-2">
@@ -118,14 +114,12 @@ export default function TaskDetail({ task }: TaskDetailProps) {
                     ? "border-[#004d40] text-[#004d40] bg-[#004d40]/5"
                     : "border-gray-300 text-gray-600 hover:bg-gray-50 hover:border-[#004d40] hover:text-[#004d40]"
                 }`}
-                title={isSaved ? "Kaydedildi" : "Kaydet"}
               >
                 <FiBookmark className="w-5 h-5" fill={isSaved ? "currentColor" : "none"} />
               </button>
               <button
                 onClick={handleCopyLink}
                 className="w-10 h-10 flex items-center justify-center rounded-full border border-gray-300 text-gray-600 hover:bg-gray-50 hover:border-[#004d40] hover:text-[#004d40] transition-colors"
-                title="Linki Kopyala"
               >
                 <FiLink className="w-5 h-5" />
               </button>
@@ -134,34 +128,19 @@ export default function TaskDetail({ task }: TaskDetailProps) {
         </div>
       </div>
 
-      {/* Scrollable Content Section */}
       <div className="flex-1 overflow-y-auto overflow-x-hidden custom-scrollbar">
         <div className="p-6 space-y-6">
-          {/* Quick Info Grid Section */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Reward Info */}
             <div className="bg-gray-50/50 p-4 rounded-xl border border-gray-100 flex items-start gap-3">
               <div className="p-2.5 bg-white rounded-lg border border-gray-200 text-[#004d40] shadow-sm">
                 <FiAward className="w-5 h-5" />
               </div>
               <div>
                 <span className="block text-xs font-medium text-gray-500 mb-1 uppercase tracking-wider">Ödül Türü</span>
-                {(() => {
-                  const displayText =
-                    task.rewardType === "Nakit" && task.rewardAmount
-                      ? task.rewardAmount
-                      : task.rewardType;
-                  if (!displayText) return <span className="text-sm font-semibold text-gray-800">Belirtilmemiş</span>;
-                  return (
-                    <div className="flex items-center gap-2">
-                       <span className="text-sm font-bold text-gray-800 capitalize">{displayText}</span>
-                    </div>
-                  );
-                })()}
+                <span className="text-sm font-bold text-gray-800 capitalize">{task.rewardType === "Nakit" && task.rewardAmount ? task.rewardAmount : task.rewardType || "Belirtilmemiş"}</span>
               </div>
             </div>
 
-            {/* Location Info */}
             <div className="bg-gray-50/50 p-4 rounded-xl border border-gray-100 flex items-start gap-3">
                <div className="p-2.5 bg-white rounded-lg border border-gray-200 text-[#004d40] shadow-sm">
                 <FiMapPin className="w-5 h-5" />
@@ -183,9 +162,35 @@ export default function TaskDetail({ task }: TaskDetailProps) {
             </div>
           </div>
 
+          {/* AI Analysis Section */}
+          {hasMatchPercentage && task.matchExplanation && (
+            <section className="bg-emerald-50/50 p-5 rounded-xl border border-emerald-100">
+              <h3 className="text-sm font-bold text-emerald-800 mb-3 flex items-center gap-2">
+                <FiZap className="fill-emerald-500 text-emerald-500" /> AI Eşleşme Analizi
+              </h3>
+              <div className="text-sm text-emerald-900 leading-relaxed space-y-3">
+                <div className="bg-white/60 p-3 rounded-lg border border-emerald-100/50 whitespace-pre-line italic text-gray-700">
+                  "{task.matchExplanation}"
+                </div>
+                {task.matchReasons && task.matchReasons.length > 0 && (
+                  <div className="space-y-2">
+                    <p className="text-[11px] font-bold uppercase tracking-wider text-emerald-700/70">Temel Değerlendirmeler:</p>
+                    <ul className="grid grid-cols-1 gap-2">
+                      {task.matchReasons.map((reason, idx) => (
+                        <li key={idx} className="flex items-start gap-2 text-xs text-emerald-800">
+                          <FiCheckCircle className="mt-0.5 shrink-0 text-emerald-500" />
+                          <span>{reason}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
+              </div>
+            </section>
+          )}
+
           <hr className="border-gray-100" />
 
-          {/* Required Skills Section */}
           {task.tags && task.tags.length > 0 && (
             <section className="bg-blue-50/30 p-5 rounded-xl border border-blue-100/50">
               <h3 className="text-sm font-semibold text-gray-800 mb-3 flex items-center gap-2">
@@ -199,14 +204,12 @@ export default function TaskDetail({ task }: TaskDetailProps) {
             </section>
           )}
 
-          {/* Full Job Description Section */}
           <section className="pt-2">
              <h3 className="text-lg font-bold text-gray-900 mb-4 pb-2 border-b border-gray-100">
               {task.detailTitle || "Görev Açıklaması"}
             </h3>
 
             <div className="text-gray-700 leading-relaxed text-[15px] space-y-4 wrap-break-word">
-              {/* Render Detail Body with HTML if it's rich text */}
               {task.detailBody ? (
                 <div
                   className="prose prose-sm prose-slate max-w-full wrap-break-word whitespace-pre-wrap **:whitespace-pre-wrap prose-headings:text-gray-800 prose-a:text-[#004d40] hover:prose-a:text-[#003d33] prose-strong:text-gray-900"
@@ -214,10 +217,8 @@ export default function TaskDetail({ task }: TaskDetailProps) {
                   dangerouslySetInnerHTML={{ __html: task.detailBody }}
                 />
               ) : (
-                <div className="prose prose-sm prose-slate max-w-full wrap-break-word overflow-x-hidden">
-                  <p>
-                    <strong>Genel Tanım:</strong>
-                  </p>
+                <div className="prose prose-sm prose-slate max-w-full wrap-break-word">
+                  <p><strong>Genel Tanım:</strong></p>
                   <p>Bu görev için detaylı bir açıklama girilmemiştir.</p>
                 </div>
               )}

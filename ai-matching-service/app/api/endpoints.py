@@ -50,7 +50,7 @@ async def match_task_candidates(payload: MatchRequest):
     ranked.sort(key=lambda x: x.score, reverse=True)
     return TaskMatchResponse(
         task_id=payload.task_id,
-        top_candidates=ranked[:top_k],
+        candidates=ranked[:top_k],
         filtered_out=filtered_out
     )
 

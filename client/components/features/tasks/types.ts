@@ -21,6 +21,8 @@ export type Task = {
   detailTitle?: string;
   detailBody?: string;
   matchPercentage?: number;
+  matchExplanation?: string;
+  matchReasons?: string[];
 };
 
 export const getRewardIcon = (type?: string) => {
