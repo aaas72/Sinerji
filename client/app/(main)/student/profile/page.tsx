@@ -72,14 +72,14 @@ function ProfileSection({
   className?: string;
 }) {
   return (
-    <div className={`bg-white rounded-2xl border border-gray-100 p-6 md:p-8 shadow-sm hover:shadow-md transition-shadow ${className}`}>
-      <div className="flex items-center gap-4 mb-6">
+    <div className={`bg-white rounded-2xl border border-[#f1f0ea] p-6 md:p-8 shadow-2xs hover:shadow-sm transition-all ${className}`}>
+      <div className="flex items-center gap-4 mb-6 select-none">
         <div className="w-12 h-12 bg-[#004d40]/5 rounded-xl flex items-center justify-center text-[#004d40]">
           <Icon className="w-6 h-6" />
         </div>
         <div>
-          <h2 className="text-xl font-bold text-gray-900">{title}</h2>
-          {subtitle && <p className="text-xs text-gray-500 mt-0.5 uppercase tracking-wider">{subtitle}</p>}
+          <h2 className="text-xl font-bold text-gray-900 leading-tight">{title}</h2>
+          {subtitle && <p className="text-[10px] text-gray-400 font-bold mt-1 uppercase tracking-widest">{subtitle}</p>}
         </div>
       </div>
       {children}
@@ -89,9 +89,9 @@ function ProfileSection({
 
 function SidebarCard({ title, children }: { title: string; children: React.ReactNode }) {
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 p-6 shadow-sm">
-      <h3 className="text-sm font-bold text-gray-900 mb-4 flex items-center gap-2">
-        <span className="w-1.5 h-4 bg-[#fbb049] rounded-full"></span>
+    <div className="bg-white rounded-2xl border border-[#f1f0ea] p-6 shadow-2xs">
+      <h3 className="text-xs font-extrabold uppercase tracking-wider text-gray-900 mb-5 flex items-center gap-2 select-none">
+        <span className="w-1.5 h-4 bg-[#e28743] rounded-full"></span>
         {title}
       </h3>
       {children}
@@ -157,281 +157,316 @@ export default function ProfilePage() {
   const skillsData = transformSkills(profile.skills);
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8 md:py-12">
+    <div className="flex-grow w-full max-w-[1280px] mx-auto px-6 md:px-16 py-16 flex flex-col lg:flex-row gap-16">
       
-      {/* ── Header Card ──────────────────────────────────────────────────────── */}
-      <div className="bg-white rounded-3xl border border-gray-100 overflow-hidden shadow-sm mb-8">
-        <div className="h-48 bg-linear-to-r from-[#004d40] via-[#00695c] to-[#004d40] relative">
-          {/* Decorative elements */}
-          <div className="absolute top-0 right-0 w-96 h-96 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/4 blur-3xl" />
-          <div className="absolute bottom-0 left-0 w-64 h-64 bg-[#fbb049]/10 rounded-full translate-y-1/2 -translate-x-1/4 blur-2xl" />
+      {/* Left: Main Feed (2/3) */}
+      <div className="w-full lg:w-2/3 flex flex-col gap-8">
+        
+        {/* Editorial Header */}
+        <header className="flex flex-col md:flex-row gap-6 items-start md:items-center justify-between pb-6 border border-[#f1f0ea] relative overflow-hidden rounded-xl p-6 bg-[#ffffff]">
+          <div className="absolute inset-0 bg-gradient-to-br from-[#eff4ff] to-transparent opacity-50 pointer-events-none"></div>
           
-          <Link
-            href="/student/settings"
-            className="absolute top-6 right-6 flex items-center gap-2 bg-white/15 backdrop-blur-md border border-white/20 px-5 py-2.5 rounded-2xl text-sm font-bold text-white hover:bg-white/25 transition-all shadow-lg group"
-          >
-            <FiEdit className="w-4 h-4 group-hover:rotate-12 transition-transform" />
-            Profili Düzenle
-          </Link>
-        </div>
-
-        <div className="px-8 pb-10 relative">
-          <div className="flex flex-col md:flex-row gap-8 items-start">
-            {/* Avatar */}
-            <div className="-mt-16 relative">
-              <div className="w-36 h-36 rounded-3xl bg-white border-8 border-white shadow-2xl flex items-center justify-center overflow-hidden">
-                <div className="w-full h-full bg-linear-to-br from-gray-50 to-gray-100 flex items-center justify-center">
-                  <span className="text-5xl font-black text-[#004d40]">
-                    {profile.full_name.charAt(0)}
-                  </span>
-                </div>
-              </div>
-              <div className="absolute -bottom-2 -right-2 bg-white p-1.5 rounded-xl shadow-lg">
-                <div className={`w-4 h-4 rounded-full ${profile.availability_status === 'available' ? 'bg-green-500 shadow-[0_0_10px_rgba(34,197,94,0.5)]' : 'bg-red-500 shadow-[0_0_10px_rgba(239,68,68,0.5)]'}`} />
-              </div>
-            </div>
-
-            {/* Title & Basics */}
-            <div className="flex-1 pt-2">
-              <div className="flex flex-wrap items-center gap-4 mb-2">
-                <h1 className="text-3xl font-black text-gray-900 tracking-tight">{profile.full_name}</h1>
-                <span className={`text-[10px] uppercase tracking-widest px-3 py-1 rounded-lg font-black border ${
-                  profile.availability_status === 'available' 
-                  ? 'bg-green-50 text-green-700 border-green-100' 
-                  : 'bg-red-50 text-red-700 border-red-100'
-                }`}>
-                  {profile.availability_status === 'available' ? 'Müsait' : 'Meşgul'}
-                </span>
+          <div className="relative z-10">
+            <h1 className="text-[32px] md:text-[48px] leading-tight font-extrabold text-[#00342b] mb-1">{profile.full_name}</h1>
+            <p className="text-[20px] font-semibold text-[#565e74]">{profile.major || "UX/UI Designer & Systems Thinker"}</p>
+            
+            <div className="flex items-center flex-wrap gap-4 mt-4">
+              <div className="flex gap-2">
+                <span className="px-4 py-1 rounded-full bg-[#e28743]/10 text-[#e28743] text-sm font-semibold border border-[#e28743]/20">Sinerji Yeteneği</span>
+                {profile.availability_status === 'available' ? (
+                  <span className="px-4 py-1 rounded-full bg-[#00342b]/10 text-[#00342b] text-sm font-semibold border border-[#00342b]/20">Yeni Rollere Açık</span>
+                ) : (
+                  <span className="px-4 py-1 rounded-full bg-gray-100 text-gray-600 text-sm font-semibold border border-gray-200">Şu An Çalışıyor</span>
+                )}
               </div>
               
-              <div className="flex flex-wrap items-center gap-y-2 gap-x-6 text-sm font-medium text-gray-600">
-                <div className="flex items-center gap-2">
-                  <FiBookOpen className="text-[#004d40]" />
-                  <span>{profile.university || "Üniversite belirtilmemiş"}</span>
-                </div>
-                {profile.major && (
-                  <div className="flex items-center gap-2">
-                    <FiLayers className="text-[#004d40]" />
-                    <span>{profile.major}</span>
-                  </div>
-                )}
-                {profile.graduation_year ? (
-                  <div className="flex items-center gap-2">
-                    <FiCalendar className="text-[#004d40]" />
-                    <span>{profile.graduation_year} Mezunu</span>
-                  </div>
-                ) : null}
-              </div>
-            </div>
-
-            {/* Quick Stats Grid */}
-            <div className="grid grid-cols-2 gap-3 w-full md:w-auto lg:min-w-[300px]">
-              <div className="bg-gray-50/50 rounded-2xl p-4 border border-gray-100/50 flex flex-col items-center justify-center">
-                <span className="text-2xl font-black text-[#004d40]">{stats.completedTasks}</span>
-                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">Görevler</span>
-              </div>
-              <div className="bg-gray-50/50 rounded-2xl p-4 border border-gray-100/50 flex flex-col items-center justify-center">
-                <span className="text-2xl font-black text-[#fbb049]">{stats.averageRating ? stats.averageRating.toFixed(1) : "0.0"}</span>
-                <span className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-1">Puan</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* ── Main Layout Grid ─────────────────────────────────────────────────── */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        
-        {/* LEFT COLUMN (2/3) */}
-        <div className="lg:col-span-2 space-y-8">
-          
-          {/* About Me / Description */}
-          <ProfileSection icon={FiUser} title="Hakkımda" subtitle="Kişisel Özet">
-            <div className="prose prose-sm prose-slate max-w-none">
-              <p className="text-gray-600 leading-relaxed text-base whitespace-pre-wrap">
-                {profile.bio || "Henüz bir biyografi eklenmemiş. Kendinizi tanıtmak, hedeflerinizi ve tutkularınızı paylaşmak için profilinizi düzenleyin."}
-              </p>
-            </div>
-          </ProfileSection>
-
-          {/* Education Details */}
-          <ProfileSection icon={FiBookOpen} title="Eğitim Bilgileri" subtitle="Akademik Geçmiş">
-            <div className="relative pl-8 before:absolute before:left-0 before:top-2 before:bottom-2 before:w-0.5 before:bg-gray-100 before:rounded-full">
-              <div className="relative">
-                <div className="absolute -left-[37px] top-1.5 w-4 h-4 rounded-full border-4 border-white bg-[#004d40] shadow-sm" />
-                <h4 className="text-lg font-bold text-gray-900">{profile.university || "Belirtilmemiş"}</h4>
-                <p className="text-[#004d40] font-semibold mt-1">{profile.major || "Bölüm belirtilmemiş"}</p>
-                <div className="flex items-center gap-4 mt-3 text-sm text-gray-500 font-medium">
-                  <div className="flex items-center gap-1.5">
-                    <FiCalendar className="w-4 h-4" />
-                    <span>Mezuniyet: {profile.graduation_year || "—"}</span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <FiMapPin className="w-4 h-4" />
-                    <span>Türkiye</span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </ProfileSection>
-
-          {/* Completed Tasks / Portfolio */}
-          <ProfileSection icon={FiBriefcase} title="Tamamlanan Görevler" subtitle="Deneyim & Portfolyo">
-            <div className="space-y-4">
-              {profile.submissions && profile.submissions.length > 0 ? (
-                profile.submissions.map((submission: any, index: number) => (
-                  <TaskCard
-                    key={submission.id}
-                    id={submission.task.id}
-                    index={index + 1}
-                    title={submission.task.title}
-                    description={submission.task.description}
-                    date={new Date(submission.submitted_at).toLocaleDateString("tr-TR")}
-                    companyName={submission.task.company.company_name}
-                    companyId={submission.task.company.id}
-                    rating={submission.review?.rating || 0}
-                  />
-                ))
-              ) : (
-                <div className="text-center py-12 bg-gray-50/50 rounded-2xl border border-dashed border-gray-200">
-                  <FiBriefcase className="w-8 h-8 text-gray-300 mx-auto mb-3" />
-                  <p className="text-gray-400 text-sm font-medium">Henüz tamamlanmış bir görev bulunmuyor.</p>
-                </div>
-              )}
-            </div>
-          </ProfileSection>
-
-          {/* Recommendations */}
-          <ProfileSection icon={FiAward} title="Tavsiyeler" subtitle="İş Birliği Geri Bildirimleri">
-            <div className="space-y-5">
-              {profile.recommendations && profile.recommendations.length > 0 ? (
-                profile.recommendations.map((rec: any, index: number) => (
-                  <RecommendationCard
-                    key={rec.id}
-                    index={index + 1}
-                    text={rec.content}
-                    recommenderName={rec.company.company_name}
-                    recommenderTitle={rec.company.industry || "Şirket Temsilcisi"}
-                    rating={rec.rating || 5}
-                  />
-                ))
-              ) : (
-                <div className="text-center py-12 bg-gray-50/50 rounded-2xl border border-dashed border-gray-200">
-                  <FiStar className="w-8 h-8 text-gray-300 mx-auto mb-3" />
-                  <p className="text-gray-400 text-sm font-medium">Henüz bir tavsiye mektubu alınmamış.</p>
-                </div>
-              )}
-            </div>
-          </ProfileSection>
-        </div>
-
-        {/* RIGHT COLUMN (1/3) - Sidebar */}
-        <div className="space-y-8">
-          
-          {/* Skills Sidebar */}
-          <div className="bg-[#004d40] rounded-3xl p-8 shadow-xl text-white relative overflow-hidden">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-white/5 rounded-full -translate-y-1/2 translate-x-1/2" />
-            
-            <div className="flex items-center gap-3 mb-8">
-              <div className="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center">
-                <FiCpu className="w-5 h-5" />
-              </div>
-              <h2 className="text-xl font-bold">Yetenekler</h2>
-            </div>
-
-            <div className="space-y-8">
-              {skillsData.length > 0 ? (
-                skillsData.map((section, idx) => (
-                  <div key={idx} className="space-y-4">
-                    <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-[#fbb049]">
-                      {section.subtitle}
-                    </h4>
-                    <div className="flex flex-wrap gap-2">
-                      {section.items.map((skillItem, skillIdx) => (
-                        <div
-                          key={skillIdx}
-                          className="bg-white/10 hover:bg-white/20 border border-white/10 px-3 py-1.5 rounded-xl text-xs font-bold transition-all flex items-center gap-2 group cursor-default"
-                          title={`Seviye: ${skillItem.level}/10`}
-                        >
-                          {skillItem.name}
-                          <span className="text-[10px] text-white/40 group-hover:text-white/60">{skillItem.level}</span>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                ))
-              ) : (
-                <p className="text-white/50 text-xs text-center py-4">Henüz yetenek eklenmemiş.</p>
-              )}
-            </div>
-          </div>
-
-          {/* Contact Information */}
-          <SidebarCard title="İletişim & Sosyal">
-            <div className="space-y-4">
-              <div className="flex items-center gap-3 p-3 rounded-2xl bg-gray-50 border border-gray-100 group transition-all hover:bg-white hover:shadow-sm">
-                <div className="w-10 h-10 rounded-xl bg-white border border-gray-100 flex items-center justify-center text-gray-400 group-hover:text-[#004d40] transition-colors">
-                  <FiMail size={18} />
-                </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">E-posta</p>
-                  <p className="text-sm font-bold text-gray-900 truncate">{profile.user.email}</p>
-                </div>
-              </div>
-
-              {profile.phone && (
-                <div className="flex items-center gap-3 p-3 rounded-2xl bg-gray-50 border border-gray-100 group transition-all hover:bg-white hover:shadow-sm">
-                  <div className="w-10 h-10 rounded-xl bg-white border border-gray-100 flex items-center justify-center text-gray-400 group-hover:text-[#004d40] transition-colors">
-                    <FiPhone size={18} />
-                  </div>
-                  <div className="flex-1 min-w-0">
-                    <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest">Telefon</p>
-                    <p className="text-sm font-bold text-gray-900 truncate">{profile.phone}</p>
-                  </div>
-                </div>
-              )}
-
-              {/* Social Grid */}
-              <div className="grid grid-cols-4 gap-2 pt-2">
-                {profile.linkedin_url && (
-                  <a href={profile.linkedin_url} target="_blank" rel="noopener noreferrer" className="w-full aspect-square rounded-2xl bg-gray-50 border border-gray-100 flex items-center justify-center text-gray-400 hover:bg-[#0077b5] hover:text-white hover:border-[#0077b5] transition-all">
-                    <FiLinkedin size={20} />
+              <div className="flex items-center gap-3 text-[#565e74] ml-2">
+                {profile.github_url && (
+                  <a href={profile.github_url} target="_blank" rel="noopener noreferrer" className="hover:text-[#333] transition-colors" title="GitHub">
+                    <FiGithub size={18} />
                   </a>
                 )}
-                {profile.github_url && (
-                  <a href={profile.github_url} target="_blank" rel="noopener noreferrer" className="w-full aspect-square rounded-2xl bg-gray-50 border border-gray-100 flex items-center justify-center text-gray-400 hover:bg-[#333] hover:text-white hover:border-[#333] transition-all">
-                    <FiGithub size={20} />
+                {profile.linkedin_url && (
+                  <a href={profile.linkedin_url} target="_blank" rel="noopener noreferrer" className="hover:text-[#0077b5] transition-colors" title="LinkedIn">
+                    <FiLinkedin size={18} />
                   </a>
                 )}
                 {profile.twitter_url && (
-                  <a href={profile.twitter_url} target="_blank" rel="noopener noreferrer" className="w-full aspect-square rounded-2xl bg-gray-50 border border-gray-100 flex items-center justify-center text-gray-400 hover:bg-[#1DA1F2] hover:text-white hover:border-[#1DA1F2] transition-all">
-                    <FiTwitter size={20} />
+                  <a href={profile.twitter_url} target="_blank" rel="noopener noreferrer" className="hover:text-[#1DA1F2] transition-colors" title="Twitter">
+                    <FiTwitter size={18} />
                   </a>
                 )}
                 {profile.website_url && (
-                  <a href={profile.website_url} target="_blank" rel="noopener noreferrer" className="w-full aspect-square rounded-2xl bg-gray-50 border border-gray-100 flex items-center justify-center text-gray-400 hover:bg-teal-600 hover:text-white hover:border-teal-600 transition-all">
-                    <FiGlobe size={20} />
+                  <a href={profile.website_url} target="_blank" rel="noopener noreferrer" className="hover:text-[#004d40] transition-colors" title="Website">
+                    <FiGlobe size={18} />
                   </a>
                 )}
               </div>
             </div>
-          </SidebarCard>
-
-          {/* Interests Card */}
-          {profile.categories_of_interest && profile.categories_of_interest.trim() !== "" && (
-            <SidebarCard title="İlgi Alanları">
-              <div className="flex flex-wrap gap-2">
-                {profile.categories_of_interest.split(',').map(cat => cat.trim()).filter(cat => cat !== "").map((cat, idx) => (
-                  <span key={idx} className="bg-gray-50 text-gray-600 px-3 py-1.5 rounded-xl border border-gray-100 text-xs font-bold hover:border-[#fbb049]/30 transition-colors cursor-default">
-                    {cat}
-                  </span>
-                ))}
+          </div>
+          
+          <div className="flex gap-4 relative z-10 shrink-0">
+            {/* Activity Gauge */}
+            <div className="relative w-24 h-24 flex items-center justify-center">
+              <svg className="transform -rotate-90 w-full h-full" viewBox="0 0 100 100">
+                <circle cx="50" cy="50" fill="none" r="40" stroke="#f1f0ea" strokeWidth="8"></circle>
+                <circle 
+                  cx="50" cy="50" fill="none" r="40" stroke="#004d40" 
+                  strokeDasharray="251" 
+                  strokeDashoffset={251 - (251 * Math.min(100, Math.round((stats.completedTasks / 10) * 100))) / 100} 
+                  strokeLinecap="round" strokeWidth="8"
+                  className="transition-all duration-500"
+                ></circle>
+              </svg>
+              <div className="absolute flex flex-col items-center">
+                <span className="font-bold text-lg text-[#00342b]">{stats.completedTasks}</span>
+                <span className="text-[10px] text-[#565e74] uppercase tracking-wider">Activity</span>
               </div>
-            </SidebarCard>
-          )}
+            </div>
+            
+            {/* Impact Gauge */}
+            <div className="relative w-24 h-24 flex items-center justify-center">
+              <svg className="transform -rotate-90 w-full h-full" viewBox="0 0 100 100">
+                <circle cx="50" cy="50" fill="none" r="40" stroke="#f1f0ea" strokeWidth="8"></circle>
+                <circle 
+                  cx="50" cy="50" fill="none" r="40" stroke="#e28743" 
+                  strokeDasharray="251" 
+                  strokeDashoffset={251 - (251 * Math.min(100, Math.round((stats.averageRating / 5) * 100))) / 100} 
+                  strokeLinecap="round" strokeWidth="8"
+                  className="transition-all duration-500"
+                ></circle>
+              </svg>
+              <div className="absolute flex flex-col items-center">
+                <span className="font-bold text-lg text-[#00342b]">{stats.averageRating ? stats.averageRating.toFixed(1) : "0.0"}</span>
+                <span className="text-[10px] text-[#565e74] uppercase tracking-wider">Impact</span>
+              </div>
+            </div>
+          </div>
+        </header>
 
-        </div>
+        {/* Hakkımda (About Me) */}
+        {profile.bio && (
+          <section className="flex flex-col gap-4 relative mb-4">
+            <h2 className="text-[20px] font-semibold text-[#00342b] flex items-center gap-2">
+              <FiUser className="w-6 h-6" /> Hakkımda
+            </h2>
+            <div className="bg-transparent border border-[#f1f0ea] rounded-xl p-6 mt-2 transition-shadow bg-[#ffffff]/50 backdrop-blur-sm">
+              <p className="text-[#565e74] text-sm leading-relaxed whitespace-pre-wrap">
+                {profile.bio}
+              </p>
+            </div>
+          </section>
+        )}
+
+        {/* Experience & Education */}
+        <section className="flex flex-col gap-4 relative">
+          <h2 className="text-[20px] font-semibold text-[#00342b] flex items-center gap-2">
+            <FiBriefcase className="w-6 h-6" /> Experience & Education
+          </h2>
+          
+          <div className="relative pl-6 ml-2 mt-4">
+            
+            {/* Timeline Line */}
+            <div className="absolute left-[20px] top-[24px] bottom-[24px] w-[1px] bg-gradient-to-b from-[#004d40] to-transparent opacity-20 z-0" />
+
+            {/* Submissions (Tasks) */}
+            {profile.submissions && profile.submissions.map((submission: any, index: number) => (
+              <div key={submission.id} className="relative mb-6 group">
+                <div className="absolute left-[-32px] top-1 w-6 h-6 rounded-full bg-[#ffffff] border-2 border-[#00342b] flex items-center justify-center z-10">
+                  <div className="w-2 h-2 rounded-full bg-[#00342b]"></div>
+                </div>
+                
+                <div className="bg-transparent border border-[#f1f0ea] rounded-xl p-4 ml-1 transition-shadow bg-[#ffffff]/50 backdrop-blur-sm">
+                  <div className="flex flex-col sm:flex-row justify-between items-start mb-1">
+                    <h3 className="font-bold text-lg text-[#00342b]">{submission.task.title}</h3>
+                    <span className="text-sm text-[#565e74] flex items-center gap-1 shrink-0 mt-1 sm:mt-0">
+                      <FiCalendar className="w-4 h-4" /> {new Date(submission.submitted_at).getFullYear()}
+                    </span>
+                  </div>
+                  
+                  <h4 className="text-[#565e74] font-medium mb-2 flex items-center gap-1">
+                    <FiAward className="w-4 h-4" /> {submission.task.company.company_name}
+                  </h4>
+                  
+                  <p className="text-[#3f4945] text-sm">
+                    {submission.task.description}
+                  </p>
+
+                  {submission.review && (
+                    <div className="border-t border-[#f1f0ea] pt-3 mt-4 flex items-center justify-between">
+                      <span className="text-xs font-semibold text-gray-400 select-none">Şirket Değerlendirmesi</span>
+                      <div className="flex gap-1 text-[#e28743]">
+                        {Array.from({ length: 5 }).map((_, i) => (
+                          <FiStar key={i} className={`w-3.5 h-3.5 ${i < submission.review.rating ? 'fill-current' : 'opacity-30'}`} />
+                        ))}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            ))}
+
+            {/* Education Node */}
+            <div className="relative mb-6 group">
+              <div className="absolute left-[-32px] top-1 w-6 h-6 rounded-full bg-[#ffffff] border-2 border-[#e28743] flex items-center justify-center z-10">
+                <div className="w-2 h-2 rounded-full bg-[#e28743]"></div>
+              </div>
+              
+              <div className="bg-transparent border border-[#f1f0ea] rounded-xl p-4 ml-1 transition-shadow bg-[#ffffff]/50 backdrop-blur-sm">
+                <div className="flex flex-col sm:flex-row justify-between items-start mb-1">
+                  <h3 className="font-bold text-lg text-[#00342b]">{profile.university || "B.S. Interaction Design"}</h3>
+                  <span className="text-sm text-[#565e74] flex items-center gap-1 shrink-0 mt-1 sm:mt-0">
+                    <FiCalendar className="w-4 h-4" /> {profile.graduation_year ? `${profile.graduation_year} Mezunu` : "2020 - 2024"}
+                  </span>
+                </div>
+                
+                <h4 className="text-[#565e74] font-medium mb-2 flex items-center gap-1">
+                  <FiBookOpen className="w-4 h-4" /> {profile.major || "State University"}
+                </h4>
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+        {/* Recommendations Block */}
+        {profile.recommendations && profile.recommendations.length > 0 && (
+          <section className="flex flex-col gap-4 relative mt-4">
+            <h2 className="text-[20px] font-semibold text-[#00342b] flex items-center gap-2">
+              <FiAward className="w-6 h-6" /> Tavsiyeler
+            </h2>
+            <div className="flex flex-col gap-4 mt-2">
+              {profile.recommendations.map((rec: any, index: number) => (
+                <div key={rec.id} className="bg-transparent border border-[#f1f0ea] rounded-xl p-6 transition-shadow bg-[#ffffff]/50 backdrop-blur-sm">
+                  <p className="text-[#565e74] text-sm italic mb-4 leading-relaxed">"{rec.content}"</p>
+                  <div className="flex justify-between items-center border-t border-[#f1f0ea] pt-4">
+                    <div>
+                      <h4 className="font-bold text-[#00342b] text-sm">{rec.company.company_name}</h4>
+                      <span className="text-xs text-[#565e74]">{rec.company.industry || "Şirket Temsilcisi"}</span>
+                    </div>
+                    <div className="flex gap-1 text-[#e28743]">
+                      {Array.from({ length: 5 }).map((_, i) => (
+                        <FiStar key={i} className={`w-3.5 h-3.5 ${i < (rec.rating || 5) ? 'fill-current' : 'opacity-30'}`} />
+                      ))}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </section>
+        )}
+
       </div>
+
+      {/* Right: Sidebar (1/3) */}
+      <aside className="w-full lg:w-1/3 flex flex-col gap-6">
+        
+        {/* Core Skills Deck */}
+        <div className="bg-[#004d40] text-[#ffffff] rounded-xl p-6 relative overflow-hidden">
+          <div className="absolute -top-10 -right-10 w-32 h-32 bg-white opacity-5 rounded-full blur-xl"></div>
+          
+          <h3 className="text-[20px] font-bold mb-6 text-[#afefdd] flex items-center gap-2">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M15 14c.2-1 .7-1.7 1.5-2.5 1-.9 1.5-2.2 1.5-3.5A6 6 0 0 0 6 8c0 1 .2 2.2 1.5 3.5.7.9 1.2 1.5 1.5 2.5"/><path d="M9 18h6"/><path d="M10 22h4"/></svg> 
+            Core Skills
+          </h3>
+          
+          <div className="flex flex-col gap-6">
+            {skillsData.length > 0 ? (
+              skillsData.map((section, idx) => (
+                <div key={idx} className="space-y-3 relative z-10">
+                  <h4 className="text-[10px] font-black uppercase tracking-[0.2em] text-[#e28743] border-b border-white/10 pb-1.5 select-none">
+                    {section.subtitle}
+                  </h4>
+                  <div className="flex flex-col gap-3">
+                    {section.items.map((skillItem, skillIdx) => {
+                      const percentage = skillItem.level * 10;
+                      return (
+                        <div key={skillIdx}>
+                          <div className="flex justify-between text-xs font-bold mb-1.5">
+                            <span className="text-[#ffffff]/90">{skillItem.name}</span>
+                            <span className="text-[#e28743] text-[10px] font-extrabold">{percentage}%</span>
+                          </div>
+                          <div className="w-full bg-white/10 rounded-full h-1.5">
+                            <div className="bg-[#e28743] h-1.5 rounded-full transition-all duration-500" style={{ width: `${percentage}%` }}></div>
+                          </div>
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              ))
+            ) : (
+              <>
+                <div className="relative z-10">
+                  <div className="flex justify-between text-sm mb-1">
+                    <span className="text-[#ffffff]/90">UI/UX Design</span>
+                    <span className="text-[#e28743] font-bold">95%</span>
+                  </div>
+                  <div className="w-full bg-white/10 rounded-full h-2">
+                    <div className="bg-[#e28743] h-2 rounded-full" style={{ width: "95%" }}></div>
+                  </div>
+                </div>
+                <div className="relative z-10">
+                  <div className="flex justify-between text-sm mb-1">
+                    <span className="text-[#ffffff]/90">Design Systems</span>
+                    <span className="text-[#e28743] font-bold">88%</span>
+                  </div>
+                  <div className="w-full bg-white/10 rounded-full h-2">
+                    <div className="bg-[#e28743] h-2 rounded-full" style={{ width: "88%" }}></div>
+                  </div>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+
+        {/* Contact Information Card */}
+        <div className="bg-transparent border border-[#f1f0ea] rounded-xl p-6 relative overflow-hidden bg-[#ffffff]">
+          <h3 className="text-[16px] font-bold mb-4 text-[#00342b] flex items-center gap-2">
+            <FiMail className="w-5 h-5" /> İletişim Bilgileri
+          </h3>
+          <div className="space-y-3">
+            <div className="flex items-center gap-3 p-2 rounded-xl hover:bg-slate-50 transition-colors">
+              <div className="w-10 h-10 rounded-xl bg-white border border-[#f1f0ea] flex items-center justify-center text-[#565e74]">
+                <FiMail size={18} />
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-[9px] font-extrabold text-[#565e74] uppercase tracking-widest">E-posta</p>
+                <p className="text-sm font-bold text-[#00342b] truncate">{profile.user.email}</p>
+              </div>
+            </div>
+
+            {profile.phone && (
+              <div className="flex items-center gap-3 p-2 rounded-xl hover:bg-slate-50 transition-colors">
+                <div className="w-10 h-10 rounded-xl bg-white border border-[#f1f0ea] flex items-center justify-center text-[#565e74]">
+                  <FiPhone size={18} />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-[9px] font-extrabold text-[#565e74] uppercase tracking-widest">Telefon</p>
+                  <p className="text-sm font-bold text-[#00342b] truncate">{profile.phone}</p>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Interests Card */}
+        {profile.categories_of_interest && profile.categories_of_interest.trim() !== "" && (
+          <div className="bg-transparent border border-[#f1f0ea] rounded-xl p-6 relative overflow-hidden bg-[#ffffff]">
+            <h3 className="text-[16px] font-bold mb-4 text-[#00342b] flex items-center gap-2">
+              <FiLayers className="w-5 h-5" /> İlgi Alanları
+            </h3>
+            <div className="flex flex-wrap gap-2">
+              {profile.categories_of_interest.split(',').map((cat: string) => cat.trim()).filter((cat: string) => cat !== "").map((cat: string, idx: number) => (
+                <span key={idx} className="bg-[#eff4ff] text-[#004d40] px-3 py-1.5 rounded-lg border border-[#f1f0ea] text-xs font-bold hover:border-[#004d40]/30 transition-colors cursor-default select-none">
+                  {cat}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
+
+      </aside>
     </div>
   );
 }

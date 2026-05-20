@@ -34,25 +34,25 @@ export default function SavedTasksPage() {
   };
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-8 space-y-6">
+    <div className="max-w-6xl mx-auto px-6 py-10 space-y-8">
       <div className="flex items-center justify-between">
         <div>
-          <h1 className="text-2xl font-bold text-gray-900">Kaydedilen Görevler</h1>
-          <p className="text-sm text-gray-500 mt-1">
+          <h1 className="text-2xl lg:text-3xl font-extrabold tracking-tight text-gray-900 leading-tight font-heading">Kaydedilen Görevler</h1>
+          <p className="text-sm text-gray-500 mt-1.5 font-medium">
             Daha sonra başvurmak için kaydettiğiniz görevler
           </p>
         </div>
         {!loading && (
-          <div className="flex items-center gap-2 text-sm text-gray-400">
-            <FiBookmark className="w-4 h-4" />
-            <span>{savedTasks.length} görev kaydedildi</span>
+          <div className="flex items-center gap-2 text-xs font-bold text-gray-400 uppercase tracking-wider select-none bg-transparent">
+            <FiBookmark className="w-3.5 h-3.5" />
+            <span>{savedTasks.length} Görev Kaydedildi</span>
           </div>
         )}
       </div>
 
       {loading ? (
         <div className="flex justify-center py-12">
-          <div className="w-8 h-8 border-4 border-primary border-t-transparent rounded-full animate-spin"></div>
+          <div className="w-8 h-8 border-2 border-[#004d40] border-t-transparent rounded-full animate-spin"></div>
         </div>
       ) : savedTasks.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -71,12 +71,12 @@ export default function SavedTasksPage() {
           ))}
         </div>
       ) : (
-        <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
-          <div className="text-center py-16">
-            <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
-              <FiBookmark className="w-8 h-8 text-gray-300" />
+        <div className="rounded-2xl border border-[#f1f0ea] overflow-hidden select-none">
+          <div className="text-center py-20 bg-transparent">
+            <div className="w-16 h-16 bg-transparent border border-[#f1f0ea] rounded-full flex items-center justify-center mx-auto mb-4 text-gray-300">
+              <FiBookmark className="w-6 h-6" />
             </div>
-            <p className="text-gray-500 font-medium">
+            <p className="text-gray-400 text-sm font-semibold">
               Henüz kaydedilmiş bir görev bulunmamaktadır.
             </p>
           </div>

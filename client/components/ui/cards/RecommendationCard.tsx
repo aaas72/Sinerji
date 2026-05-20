@@ -16,38 +16,28 @@ export default function RecommendationCard({
   index,
 }: RecommendationCardProps) {
   return (
-    <div className="bg-gray-100 rounded-lg p-0 flex gap-8">
-      {/* Index Icon */}
-      <div className="bg-[#004D40] text-white w-10 h-10 rounded-tl-lg rounded-br-lg border-[#004D40] shrink-0 flex items-center justify-center font-bold text-lg ">
-        {index}
+    <div className="bg-white rounded-2xl border border-[#f1f0ea] p-6 shadow-2xs hover:shadow-sm transition-all relative overflow-hidden flex flex-col md:flex-row gap-6">
+      {/* Left Side: Index & Text */}
+      <div className="flex-1 space-y-4">
+        <div className="flex items-center gap-3">
+          <span className="w-6 h-6 rounded-lg bg-[#004d40]/5 flex items-center justify-center text-xs font-bold text-[#004d40] select-none">
+            #{index}
+          </span>
+          <span className="text-[10px] font-extrabold text-gray-400 uppercase tracking-widest select-none">Geri Bildirim</span>
+        </div>
+        <p className="text-sm text-gray-650 leading-relaxed italic">"{text}"</p>
       </div>
 
-      {/* Main Content */}
-      <div className="grow flex py-12 gap-8">
-        {/* Left Side: Text */}
-        <div className="w-2/3 text-gray-600 leading-relaxed pr-8">
-          <p>{text}</p>
+      {/* Right Side: Recommender Info & Rating */}
+      <div className="md:w-64 md:pl-6 md:border-l md:border-[#f1f0ea] flex flex-col justify-center space-y-4">
+        <div>
+          <p className="text-[9px] font-extrabold text-[#004d40] uppercase tracking-wider mb-1.5 select-none">Tavsiye Eden</p>
+          <p className="font-bold text-gray-900 text-sm leading-snug">{recommenderName}</p>
+          <p className="text-xs text-gray-400 font-semibold leading-normal mt-0.5">{recommenderTitle}</p>
         </div>
-
-        {/* Right Side: Recommender Info */}
-        <div className="w-1/3 pl-8 border-l border-gray-200 flex flex-col justify-center space-y-6">
-          <div>
-            <h4 className="text-gray-500 font-semibold mb-3">
-              Tavsiye Eden Taraf
-            </h4>
-            <div className="flex items-center gap-3">
-              <div>
-                <p className="font-bold text-primary">{recommenderName}</p>
-                <p className="text-sm text-gray-500">{recommenderTitle}</p>
-              </div>
-            </div>
-          </div>
-          <div>
-            <h4 className="text-gray-500 font-semibold mb-2">
-              Başarı Değerlendirmesi
-            </h4>
-            <StarRating rating={rating} />
-          </div>
+        <div>
+          <p className="text-[9px] font-extrabold text-[#e28743] uppercase tracking-wider mb-2 select-none">Değerlendirme</p>
+          <StarRating rating={rating} />
         </div>
       </div>
     </div>

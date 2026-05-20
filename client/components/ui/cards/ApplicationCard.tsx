@@ -74,15 +74,15 @@ export default function ApplicationCard({
   const reward = rewardType ? getRewardDetails(rewardType) : null;
 
   return (
-    <div className="bg-white rounded-xl p-6 border border-gray-100 hover:border-gray-200 hover:shadow-sm transition-all">
+    <div className="bg-white rounded-2xl p-6 border border-[#f1f0ea] hover:border-gray-300 hover:shadow-2xs transition-all">
       {/* Top Section: Title and Reward */}
-      <div className="flex justify-between items-start mb-4">
+      <div className="flex justify-between items-start mb-4 select-none">
         <h3 className="font-semibold text-gray-900 text-base max-w-[80%] leading-snug">
           {title}
         </h3>
         {reward && (
           <div className="flex items-center gap-2 shrink-0">
-            <span className="font-semibold text-sm text-gray-700">{reward.label}</span>
+            <span className="text-[10px] font-extrabold text-gray-400 uppercase tracking-widest">{reward.label}</span>
             <div
               className={`w-7 h-7 ${reward.color} rounded-xl flex items-center justify-center`}
             >
@@ -95,19 +95,19 @@ export default function ApplicationCard({
       {/* Tags Section */}
       <div className="flex flex-wrap gap-2 mb-6">
         {tags.map((tag, index) => (
-          <SkillBadge className="bg-gray-50 border border-gray-100 text-gray-600 rounded-xl" key={index} label={tag} />
+          <SkillBadge className="bg-transparent border border-[#f1f0ea] text-[#004d40] text-[9px] font-bold uppercase tracking-wider rounded-xl py-1" key={index} label={tag} />
         ))}
       </div>
 
       {/* Bottom Section: Company, Status, Date */}
-      <div className="flex flex-col md:flex-row justify-between items-center text-sm text-gray-500 pt-4 border-t border-gray-100">
+      <div className="flex flex-col md:flex-row justify-between items-center text-xs font-bold uppercase tracking-wider text-gray-400 pt-4 border-t border-[#f1f0ea] select-none">
         <div className="flex items-center gap-2 w-full md:w-auto mb-2 md:mb-0">
           <div className="w-5 h-5 border-2 border-[#004d40] rounded-md shrink-0"></div>
-          <span className="text-gray-600">Şirket: <span className="font-medium">{companyName}</span></span>
+          <span className="text-gray-600">Şirket: <span className="font-bold text-gray-900">{companyName}</span></span>
         </div>
 
         <div className="flex items-center justify-center w-full md:w-auto mb-2 md:mb-0">
-          <span className="text-gray-500">{getStatusText(status)}</span>
+          <span className="text-xs font-extrabold tracking-widest text-gray-450">{getStatusText(status)}</span>
         </div>
 
         <div className="w-full md:w-auto text-right">

@@ -10,6 +10,7 @@ import {
   FiPlay,
   FiCheckCircle,
   FiInbox,
+  FiFileText,
 } from "react-icons/fi";
 import { submissionService } from "@/services/submission.service";
 
@@ -83,22 +84,22 @@ export default function ApplicationsPage() {
   if (isLoading) {
     return (
       <div className="flex items-center justify-center min-h-[50vh]">
-        <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
+        <div className="w-8 h-8 border-2 border-[#004d40] border-t-transparent rounded-full animate-spin" />
       </div>
     );
   }
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-8 space-y-6">
+    <div className="max-w-6xl mx-auto px-6 py-10 space-y-8">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Başvurularım</h1>
-        <p className="text-sm text-gray-500 mt-1">
+        <h1 className="text-2xl lg:text-3xl font-extrabold tracking-tight text-gray-900 leading-tight font-heading">Başvurularım</h1>
+        <p className="text-sm text-gray-500 mt-1.5 font-medium">
           Görev başvurularınızı takip edin ve yönetin
         </p>
       </div>
 
-      <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
-        <div className="flex border-b border-gray-100 px-2">
+      <div className="rounded-2xl overflow-hidden">
+        <div className="flex border-b border-[#f1f0ea] px-4 select-none">
           {tabs.map((tab) => {
             const isActive = activeTab === tab.key;
             const count = applications.filter((app) => {
@@ -112,22 +113,21 @@ export default function ApplicationsPage() {
             return (
               <button
                 key={tab.key}
+                type="button"
                 onClick={() => setActiveTab(tab.key)}
-                className={`flex items-center gap-2 px-5 py-4 text-sm font-medium transition-all relative ${
-                  isActive
-                    ? "text-[#004d40]"
-                    : "text-gray-400 hover:text-gray-600"
-                }`}
+                className={`flex items-center gap-2 px-5 py-4 text-xs font-bold transition-all relative uppercase tracking-wider cursor-pointer ${isActive
+                  ? "text-[#004d40]"
+                  : "text-gray-400 hover:text-gray-600"
+                  }`}
               >
-                <tab.icon className="w-4 h-4" />
+                <tab.icon className="w-3.5 h-3.5" />
                 {tab.label}
                 {count > 0 && (
                   <span
-                    className={`text-xs px-2 py-0.5 rounded-full font-medium ${
-                      isActive
-                        ? "bg-[#004d40]/10 text-[#004d40]"
-                        : "bg-gray-100 text-gray-500"
-                    }`}
+                    className={`text-[10px] px-2 py-0.5 rounded-full font-bold border transition-all ${isActive
+                      ? "bg-[#004d40]/15 border-[#004d40]/30 text-[#004d40]"
+                      : "bg-transparent border-gray-200 text-gray-400"
+                      }`}
                   >
                     {count}
                   </span>
@@ -140,7 +140,7 @@ export default function ApplicationsPage() {
           })}
         </div>
 
-        <div className="p-6">
+        <div className="p-8">
           {filteredApplications.length > 0 ? (
             <div className="space-y-4">
               {filteredApplications.map((app) => (
@@ -156,11 +156,11 @@ export default function ApplicationsPage() {
               ))}
             </div>
           ) : (
-            <div className="text-center py-16">
-              <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4">
-                <FiInbox className="w-8 h-8 text-gray-300" />
+            <div className="text-center py-20 bg-transparent">
+              <div className="w-16 h-16 bg-transparent border border-[#f1f0ea] rounded-full flex items-center justify-center mx-auto mb-4 text-gray-300">
+                <FiInbox className="w-6 h-6" />
               </div>
-              <p className="text-gray-500 font-medium">
+              <p className="text-gray-400 text-sm font-semibold">
                 Bu kategoride başvuru bulunmamaktadır.
               </p>
             </div>

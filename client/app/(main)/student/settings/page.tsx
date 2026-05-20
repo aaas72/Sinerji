@@ -213,8 +213,8 @@ export default function StudentSettingsPage() {
     return (
       <div className="flex items-center justify-center min-h-[50vh]">
         <div className="flex flex-col items-center gap-3">
-          <div className="w-8 h-8 border-2 border-[#004d40] border-t-transparent rounded-full animate-spin" />
-          <p className="text-gray-500 text-sm">Yükleniyor...</p>
+          <div className="w-10 h-10 border-3 border-[#004d40] border-t-transparent rounded-full animate-spin" />
+          <p className="text-gray-500 text-sm font-medium">Yükleniyor...</p>
         </div>
       </div>
     );
@@ -229,36 +229,43 @@ export default function StudentSettingsPage() {
     "w-full px-4 py-3 border border-gray-200 rounded-xl bg-white focus:ring-2 focus:ring-[#004d40]/15 focus:border-[#004d40] outline-none transition-all hover:border-gray-300 text-[#004d40] font-medium placeholder:text-gray-400 placeholder:font-normal";
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-8 space-y-6">
-      {/* Page Header */}
-      <div className="flex items-center gap-3">
-        <div className="w-10 h-10 bg-[#004d40]/5 rounded-xl flex items-center justify-center text-[#004d40]">
-          <FiSettings className="w-5 h-5" />
-        </div>
-        <div>
-          <h1 className="text-2xl font-bold text-gray-900">Profil Ayarları</h1>
-          <p className="text-sm text-gray-500">
-            Kişisel bilgilerinizi ve yeteneklerinizi yönetin
-          </p>
-        </div>
-      </div>
+    <div className="w-full max-w-[1280px] mx-auto px-6 md:px-16 py-16 flex flex-col gap-8">
 
-      {/* Section Tabs */}
-      <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden">
-        <div className="flex border-b border-gray-100 px-2">
+      {/* ── Page Header ── */}
+      <header className="relative overflow-hidden rounded-xl border border-[#f1f0ea] bg-white p-6 md:p-8">
+        <div className="absolute inset-0 bg-gradient-to-br from-[#eff4ff] to-transparent opacity-50 pointer-events-none" />
+        <div className="relative z-10 flex items-center gap-4">
+          <div className="w-12 h-12 bg-[#004d40]/5 rounded-xl flex items-center justify-center text-[#004d40] shrink-0">
+            <FiSettings className="w-6 h-6" />
+          </div>
+          <div>
+            <h1 className="text-[28px] md:text-[36px] font-extrabold leading-tight text-[#00342b] font-heading">
+              Profil Ayarları
+            </h1>
+            <p className="text-sm text-[#565e74] font-medium mt-0.5">
+              Kişisel bilgilerinizi ve yeteneklerinizi yönetin
+            </p>
+          </div>
+        </div>
+      </header>
+
+      {/* ── Section Tabs + Content Card ── */}
+      <div className="bg-white rounded-2xl border border-[#f1f0ea] shadow-2xs overflow-hidden">
+        <div className="flex border-b border-[#f1f0ea] px-4 bg-white select-none">
           {sectionTabs.map((tab) => {
             const isActive = activeSection === tab.key;
             return (
               <button
                 key={tab.key}
+                type="button"
                 onClick={() => setActiveSection(tab.key)}
-                className={`flex items-center gap-2 px-5 py-4 text-sm font-medium transition-all relative ${
+                className={`flex items-center gap-2 px-5 py-4 text-xs font-bold transition-all relative uppercase tracking-wider cursor-pointer ${
                   isActive
                     ? "text-[#004d40]"
                     : "text-gray-400 hover:text-gray-600"
                 }`}
               >
-                <tab.icon className="w-4 h-4" />
+                <tab.icon className="w-3.5 h-3.5" />
                 {tab.label}
                 {isActive && (
                   <span className="absolute bottom-0 left-0 w-full h-0.5 bg-[#004d40] rounded-t-full" />
@@ -270,13 +277,11 @@ export default function StudentSettingsPage() {
 
         <div className="p-8">
 
-
           {activeSection === "profile" && (
             <form
               onSubmit={handleSubmit(onProfileSubmit as any)}
               className="space-y-6 max-w-2xl"
             >
-
 
               <div className="group">
                 <label className="text-sm font-medium text-gray-700 mb-2 flex items-center gap-2 group-focus-within:text-[#004d40] transition-colors">
@@ -296,8 +301,6 @@ export default function StudentSettingsPage() {
                 )}
               </div>
 
-
-
               <div className="group">
                 <label className="text-sm font-medium text-gray-700 mb-2 flex items-center gap-2 group-focus-within:text-[#004d40] transition-colors">
                   <FiBook className="w-4 h-4" />
@@ -310,8 +313,6 @@ export default function StudentSettingsPage() {
                   placeholder="Üniversite Adı"
                 />
               </div>
-
-
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div className="group">
@@ -339,8 +340,6 @@ export default function StudentSettingsPage() {
                   />
                 </div>
               </div>
-
-
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
                 <div className="group">
@@ -370,8 +369,6 @@ export default function StudentSettingsPage() {
                 </div>
               </div>
 
-
-
               <div className="group">
                 <label className="text-sm font-medium text-gray-700 mb-2 flex items-center gap-2 group-focus-within:text-[#004d40] transition-colors">
                   <FiFileText className="w-4 h-4" />
@@ -390,8 +387,6 @@ export default function StudentSettingsPage() {
                 )}
               </div>
 
-
-
               <div className="group">
                 <label className="text-sm font-medium text-gray-700 mb-2 flex items-center gap-2 group-focus-within:text-[#004d40] transition-colors">
                   <FiPhone className="w-4 h-4" />
@@ -404,8 +399,6 @@ export default function StudentSettingsPage() {
                   placeholder="05XX XXX XX XX"
                 />
               </div>
-
-
 
               <div className="pt-4 border-t border-gray-100">
                 <h3 className="text-sm font-semibold text-gray-800 mb-4">
@@ -490,7 +483,7 @@ export default function StudentSettingsPage() {
                 <Button
                   type="submit"
                   variant="primary"
-                  className="min-w-40 rounded-xl py-3"
+                  className="min-w-40 rounded-xl py-3 cursor-pointer"
                   isLoading={isLoading}
                   icon={FiSave}
                 >
@@ -500,14 +493,10 @@ export default function StudentSettingsPage() {
             </form>
           )}
 
-
-
           {activeSection === "skills" && (
             <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-
-
               <div>
-                <div className="bg-gray-50/80 rounded-xl p-6 border border-gray-100">
+                <div className="bg-transparent rounded-xl p-6 border border-[#f1f0ea]">
                   <h3 className="font-semibold text-gray-900 mb-1">
                     Yeni Yetenek Ekle
                   </h3>
@@ -519,7 +508,7 @@ export default function StudentSettingsPage() {
                     className="space-y-4"
                   >
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                      <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2 ml-1">
                         Yetenek Adı
                       </label>
                       <input
@@ -536,7 +525,7 @@ export default function StudentSettingsPage() {
                     </div>
 
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1.5">
+                      <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2 ml-1">
                         Kategori
                       </label>
                       <select
@@ -556,34 +545,77 @@ export default function StudentSettingsPage() {
                       )}
                     </div>
 
-
-
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                      <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2 ml-1">
                         Seviye <span className="text-red-500">*</span>
                       </label>
                       {(() => {
                         const r = 16;
                         const circ = 2 * Math.PI * r;
                         const progress = (skillLevel / 10) * circ;
-                        const levelColor = skillLevel <= 2 ? "#ef4444" : skillLevel <= 4 ? "#fb923c" : skillLevel <= 6 ? "#facc15" : skillLevel <= 8 ? "#84cc16" : "#22c55e";
-                        const levelLabel = skillLevel <= 2 ? "Başlangıç" : skillLevel <= 4 ? "Temel" : skillLevel <= 6 ? "Orta" : skillLevel <= 8 ? "İleri" : "Uzman";
+                        const levelColor =
+                          skillLevel <= 2
+                            ? "#ef4444"
+                            : skillLevel <= 4
+                            ? "#fb923c"
+                            : skillLevel <= 6
+                            ? "#facc15"
+                            : skillLevel <= 8
+                            ? "#e28743"
+                            : "#004d40";
+                        const levelLabel =
+                          skillLevel <= 2
+                            ? "Başlangıç"
+                            : skillLevel <= 4
+                            ? "Temel"
+                            : skillLevel <= 6
+                            ? "Orta"
+                            : skillLevel <= 8
+                            ? "İleri"
+                            : "Uzman";
                         return (
-                          <div className="flex items-center gap-4 p-3 border border-gray-200 rounded-xl bg-white">
-                            <button type="button" onClick={() => setSkillLevel(Math.max(1, skillLevel - 1))} className="w-8 h-8 flex items-center justify-center rounded-full border border-gray-200 hover:border-gray-400 bg-white text-gray-500 hover:text-gray-800 transition-all text-sm font-bold shadow-sm">−</button>
-                            <div className="relative flex items-center justify-center" style={{ width: 52, height: 52 }}>
+                          <div className="flex items-center gap-4 p-3 border border-[#f1f0ea] rounded-xl bg-transparent select-none">
+                            <button
+                              type="button"
+                              onClick={() => setSkillLevel(Math.max(1, skillLevel - 1))}
+                              className="w-8 h-8 flex items-center justify-center rounded-full border border-gray-200 hover:border-gray-450 bg-white text-gray-500 hover:text-gray-800 transition-all text-sm font-bold shadow-2xs cursor-pointer"
+                            >
+                              −
+                            </button>
+                            <div
+                              className="relative flex items-center justify-center"
+                              style={{ width: 52, height: 52 }}
+                            >
                               <svg width="52" height="52" viewBox="0 0 44 44" className="-rotate-90">
                                 <circle cx="22" cy="22" r={r} fill="none" stroke="#e5e7eb" strokeWidth="3" />
-                                <circle cx="22" cy="22" r={r} fill="none" stroke={levelColor} strokeWidth="3" strokeLinecap="round" strokeDasharray={`${progress} ${circ}`} style={{ transition: "stroke-dasharray 0.25s ease, stroke 0.25s ease" }} />
+                                <circle
+                                  cx="22" cy="22" r={r} fill="none"
+                                  stroke={levelColor} strokeWidth="3"
+                                  strokeLinecap="round"
+                                  strokeDasharray={`${progress} ${circ}`}
+                                  style={{ transition: "stroke-dasharray 0.25s ease, stroke 0.25s ease" }}
+                                />
                               </svg>
                               <div className="absolute inset-0 flex items-center justify-center">
-                                <span className="text-[10px] font-semibold text-gray-700 leading-none">
-                                  {skillLevel}<span className="text-[8px] font-normal text-gray-400">/10</span>
+                                <span className="text-[10px] font-bold text-gray-700 leading-none">
+                                  {skillLevel}
+                                  <span className="text-[8px] font-normal text-gray-400">/10</span>
                                 </span>
                               </div>
                             </div>
-                            <button type="button" onClick={() => setSkillLevel(Math.min(10, skillLevel + 1))} className="w-8 h-8 flex items-center justify-center rounded-full border border-gray-200 hover:border-gray-400 bg-white text-gray-500 hover:text-gray-800 transition-all text-sm font-bold shadow-sm">+</button>
-                            <span className="text-sm font-medium" style={{ color: levelColor }}>{levelLabel}</span>
+                            <button
+                              type="button"
+                              onClick={() => setSkillLevel(Math.min(10, skillLevel + 1))}
+                              className="w-8 h-8 flex items-center justify-center rounded-full border border-gray-200 hover:border-gray-450 bg-white text-gray-500 hover:text-gray-800 transition-all text-sm font-bold shadow-2xs cursor-pointer"
+                            >
+                              +
+                            </button>
+                            <span
+                              className="text-xs font-bold uppercase tracking-wider"
+                              style={{ color: levelColor }}
+                            >
+                              {levelLabel}
+                            </span>
                           </div>
                         );
                       })()}
@@ -592,7 +624,7 @@ export default function StudentSettingsPage() {
                     <Button
                       type="submit"
                       variant="primary"
-                      className="w-full rounded-xl py-3"
+                      className="w-full rounded-xl py-3 cursor-pointer"
                       isLoading={isAddingSkill}
                       icon={FiPlus}
                     >
@@ -601,8 +633,6 @@ export default function StudentSettingsPage() {
                   </form>
                 </div>
               </div>
-
-
 
               <div>
                 <h3 className="font-semibold text-gray-900 mb-1">
@@ -621,31 +651,53 @@ export default function StudentSettingsPage() {
                         return acc;
                       }, {} as Record<string, StudentSkill[]>)
                     ).map(([category, skills]) => (
-                      <div key={category} className="bg-gray-50/80 rounded-xl p-5 border border-gray-100">
-                        <h4 className="text-xs font-semibold text-[#004d40] mb-3 uppercase tracking-wide">
+                      <div key={category} className="bg-transparent rounded-xl p-5 border border-[#f1f0ea]">
+                        <h4 className="text-[10px] font-bold text-[#004d40] mb-3 uppercase tracking-widest">
                           {category}
                         </h4>
                         <div className="flex flex-wrap gap-2">
                           {skills.map((skill) => {
                             const filled = Math.round((skill.level / 10) * 5);
-                            const color = skill.level <= 2 ? "#ef4444" : skill.level <= 4 ? "#fb923c" : skill.level <= 6 ? "#facc15" : skill.level <= 8 ? "#84cc16" : "#22c55e";
+                            const color =
+                              skill.level <= 2
+                                ? "#ef4444"
+                                : skill.level <= 4
+                                ? "#fb923c"
+                                : skill.level <= 6
+                                ? "#facc15"
+                                : skill.level <= 8
+                                ? "#e28743"
+                                : "#004d40";
                             return (
                               <div
                                 key={skill.skill.id}
-                                className="flex items-center gap-2 bg-white border border-gray-200 px-3 py-2 rounded-lg shadow-sm hover:shadow-md transition-all group"
+                                className="flex items-center gap-2 bg-transparent border border-[#f1f0ea] px-3 py-2 rounded-xl transition-all group"
                               >
-                                <span className="text-sm text-gray-700">
+                                <span className="text-sm font-semibold text-gray-705">
                                   {skill.skill.name}
                                 </span>
                                 <span className="flex items-end gap-0.5" title={`Seviye: ${skill.level}/10`}>
-                                  {[1,2,3,4,5].map(i => (
-                                    <span key={i} style={{ width: 3, height: 4 + i * 2, borderRadius: 2, backgroundColor: i <= filled ? color : "#e5e7eb", display: "inline-block", transition: "background-color 0.2s" }} />
+                                  {[1, 2, 3, 4, 5].map((i) => (
+                                    <span
+                                      key={i}
+                                      style={{
+                                        width: 3,
+                                        height: 4 + i * 2,
+                                        borderRadius: 2,
+                                        backgroundColor: i <= filled ? color : "#e5e7eb",
+                                        display: "inline-block",
+                                        transition: "background-color 0.2s",
+                                      }}
+                                    />
                                   ))}
                                 </span>
-                                <span className="text-[10px] text-gray-400">{skill.level}/10</span>
+                                <span className="text-[10px] text-gray-400 font-medium">
+                                  {skill.level}/10
+                                </span>
                                 <button
+                                  type="button"
                                   onClick={() => onRemoveSkill(skill.skill.id)}
-                                  className="text-gray-300 hover:text-red-500 transition-colors"
+                                  className="text-gray-305 hover:text-red-500 transition-colors cursor-pointer"
                                   title="Sil"
                                 >
                                   <FiTrash2 size={14} />
@@ -658,10 +710,10 @@ export default function StudentSettingsPage() {
                     ))}
                   </div>
                 ) : (
-                  <div className="text-center py-12 text-gray-400 bg-gray-50 rounded-xl border border-dashed border-gray-200">
+                  <div className="text-center py-12 text-gray-400 bg-transparent rounded-xl border border-dashed border-gray-200">
                     <FiBriefcase className="w-8 h-8 mx-auto mb-3 text-gray-300" />
-                    <p>Henüz yetenek eklenmemiş.</p>
-                    <p className="text-xs mt-1">
+                    <p className="font-semibold text-sm">Henüz yetenek eklenmemiş.</p>
+                    <p className="text-xs mt-1 font-medium">
                       Sol taraftaki formu kullanarak yetenek ekleyin.
                     </p>
                   </div>
@@ -674,12 +726,16 @@ export default function StudentSettingsPage() {
             <div className="max-w-md space-y-8">
               <div>
                 <h3 className="text-lg font-bold text-gray-900 mb-1">Şifre Değiştir</h3>
-                <p className="text-sm text-gray-500">Güvenliğiniz için düzenli aralıklarla şifrenizi güncelleyin.</p>
+                <p className="text-sm text-gray-500">
+                  Güvenliğiniz için düzenli aralıklarla şifrenizi güncelleyin.
+                </p>
               </div>
 
               <form onSubmit={handlePasswordChange} className="space-y-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Mevcut Şifre</label>
+                  <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2 ml-1">
+                    Mevcut Şifre
+                  </label>
                   <input
                     type="password"
                     value={pw.current}
@@ -690,7 +746,9 @@ export default function StudentSettingsPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Yeni Şifre</label>
+                  <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2 ml-1">
+                    Yeni Şifre
+                  </label>
                   <input
                     type="password"
                     value={pw.next}
@@ -701,7 +759,9 @@ export default function StudentSettingsPage() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1.5">Yeni Şifre (Tekrar)</label>
+                  <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2 ml-1">
+                    Yeni Şifre (Tekrar)
+                  </label>
                   <input
                     type="password"
                     value={pw.confirm}
@@ -714,21 +774,21 @@ export default function StudentSettingsPage() {
                 <Button
                   type="submit"
                   variant="primary"
-                  className="w-full py-3 mt-4"
+                  className="w-full py-3 mt-4 cursor-pointer"
                   isLoading={pwLoading}
                 >
                   Şifreyi Güncelle
                 </Button>
               </form>
 
-              <div className="pt-8 border-t border-gray-100">
+              <div className="pt-8 border-t border-[#f1f0ea]">
                 <h3 className="text-sm font-bold text-red-600 mb-2">Hesabı Devre Dışı Bırak</h3>
                 <p className="text-xs text-gray-500 mb-4">
                   Hesabınızı devre dışı bıraktığınızda profiliniz şirketler tarafından görünmez hale gelir.
                 </p>
-                <button 
+                <button
                   type="button"
-                  className="text-sm font-semibold text-red-500 hover:text-red-700 transition-colors"
+                  className="text-xs font-bold uppercase tracking-wider text-red-500 hover:text-red-700 transition-colors cursor-pointer"
                   onClick={() => showToast("Bu özellik yakında eklenecektir.", "info")}
                 >
                   Hesabımı Pasife Al

@@ -141,35 +141,35 @@ export default function ApplyPage() {
   let sectionIndex = 1;
 
   return (
-    <div className="max-w-6xl mx-auto px-4 py-8 space-y-6">
+    <div className="max-w-6xl mx-auto px-6 py-10 space-y-8">
 
       {/* Page Header Outside Box */}
-      <div className="flex flex-col md:flex-row gap-6 items-start justify-between">
+      <div className="flex flex-col md:flex-row gap-6 items-start justify-between select-none">
           <div>
-            <span className="inline-block px-3 py-1 rounded-full text-xs font-semibold bg-[#004d40]/10 text-[#004d40] mb-2">
+            <span className="inline-block px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#004d40]/10 text-[#004d40] mb-3">
               Başvuru Formu
             </span>
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">{task.title}</h1>
-            <div className="flex items-center gap-4 text-sm text-gray-600">
-              <span className="flex items-center gap-1 font-medium text-gray-800">
-                <FiBriefcase className="text-[#004d40]" /> {task.company?.company_name}
+            <h1 className="text-2xl lg:text-3xl font-extrabold tracking-tight text-gray-900 leading-tight mb-2">{task.title}</h1>
+            <div className="flex items-center gap-4 text-xs font-bold uppercase tracking-wider text-gray-450">
+              <span className="flex items-center gap-1.5 text-gray-700">
+                <FiBriefcase className="text-[#004d40] w-4 h-4" /> {task.company?.company_name}
               </span>
-              <span className="flex items-center gap-1">
-                <FiMapPin className="text-gray-400" /> {task.location || "Uzaktan"}
+              <span className="flex items-center gap-1.5">
+                <FiMapPin className="text-gray-400 w-4 h-4" /> {task.location || "Uzaktan"}
               </span>
             </div>
           </div>
           {task.company?.logo_url && (
-            <img src={task.company.logo_url} alt="Logo" className="w-16 h-16 rounded-xl border border-gray-200 object-cover bg-white p-1 shadow-sm" />
+            <img src={task.company.logo_url} alt="Logo" className="w-16 h-16 rounded-2xl border border-[#f1f0ea] object-cover bg-white p-1.5 shadow-2xs" />
           )}
       </div>
 
-      <div className="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 lg:p-8">
+      <div className="bg-white rounded-3xl border border-[#f1f0ea] shadow-2xs p-6 lg:p-10">
         <form onSubmit={handleSubmit(onSubmit as any)} className="space-y-8">
           
 
           <MainSection title={`${sectionIndex++}. Başvuru Mektubu (Zorunlu)`} hideHeader={false}>
-            <p className="text-sm text-gray-500 mb-4">Bu göreve neden uygun olduğunuzu, varsa tecrübelerinizi ve görevi nasıl yapmayı planladığınızı detaylıca açıklayın.</p>
+            <p className="text-sm text-gray-500 mb-5 font-medium leading-relaxed">Bu göreve neden uygun olduğunuzu, varsa tecrübelerinizi ve görevi nasıl yapmayı planladığınızı detaylıca açıklayın.</p>
             <FormField error={errors.coverLetter?.message}>
               <Controller
                 control={control}
@@ -187,18 +187,18 @@ export default function ApplyPage() {
 
           {isProjectTask && (
             <MainSection title={`${sectionIndex++}. Teklifiniz ${isMoneyTask ? "(Opsiyonel)" : ""}`} hideHeader={false}>
-              <p className="text-sm text-gray-500 mb-6">Şirketin değerlendirebilmesi için {isMoneyTask ? "talep ettiğiniz bütçeyi ve " : ""}teslim süresini belirtin.</p>
+              <p className="text-sm text-gray-500 mb-6 font-medium leading-relaxed">Şirketin değerlendirebilmesi için {isMoneyTask ? "talep ettiğiniz bütçeyi ve " : ""}teslim süresini belirtin.</p>
               <FormRow>
                 {isMoneyTask && (
                   <FormField label="Talep Edilen Bütçe ($ - İsteğe Bağlı)" error={errors.proposed_budget?.message}>
                     <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
-                        <span className="font-semibold text-sm">$</span>
+                      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 select-none">
+                        <span className="font-bold text-sm">$</span>
                       </div>
                       <input
                         {...register("proposed_budget")}
                         type="number"
-                        className="w-full pl-8 pr-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#004d40]/20 focus:border-[#004d40] transition-colors outline-none"
+                        className="w-full pl-8 pr-4 py-3 border border-gray-200 rounded-xl bg-white focus:ring-2 focus:ring-[#004d40]/15 focus:border-[#004d40] outline-none transition-all hover:border-gray-300 text-[#004d40] font-medium placeholder:text-gray-400"
                         placeholder="Örn: 150"
                       />
                     </div>
@@ -207,14 +207,14 @@ export default function ApplyPage() {
                 
                 <FormField label="Tahmini Teslim Süresi (Gün - Zorunlu)" error={errors.estimated_delivery_days?.message}>
                   <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-gray-400">
-                      <FiBriefcase />
+                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 select-none">
+                      <FiBriefcase className="w-4 h-4 text-[#004d40]" />
                     </div>
                     <input
                       {...register("estimated_delivery_days")}
                       type="number"
                       required={isProjectTask}
-                      className="w-full pl-10 pr-4 py-2 border border-gray-200 rounded-lg focus:ring-2 focus:ring-[#004d40]/20 focus:border-[#004d40] transition-colors outline-none"
+                      className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl bg-white focus:ring-2 focus:ring-[#004d40]/15 focus:border-[#004d40] outline-none transition-all hover:border-gray-300 text-[#004d40] font-medium placeholder:text-gray-400"
                       placeholder="Örn: 3"
                     />
                   </div>
@@ -224,50 +224,50 @@ export default function ApplyPage() {
           )}
 
           <MainSection title={`${sectionIndex++}. Gereksinim Onayı`} hideHeader={false}>
-             <div className="bg-blue-50/50 border border-blue-100 p-4 rounded-xl mb-4">
-                <p className="text-sm text-gray-700 font-medium mb-2">Bu görev için aranan temel yetenekler şunlardır:</p>
-                <div className="flex flex-wrap gap-2 mt-2">
+             <div className="bg-transparent border border-[#f1f0ea] p-5 rounded-2xl mb-4 select-none">
+                <p className="text-xs font-bold text-gray-450 uppercase tracking-wider mb-3">Bu görev için aranan temel yetenekler:</p>
+                <div className="flex flex-wrap gap-2">
                   {task.requiredSkills && task.requiredSkills.length > 0 ? (
                     task.requiredSkills.map((s: any, idx) => (
-                      <span key={idx} className="bg-white px-2.5 py-1 rounded text-xs text-blue-700 border border-blue-200 font-medium">
+                      <span key={idx} className="bg-[#004d40]/5 px-3 py-1.5 rounded-xl text-[10px] text-[#004d40] border border-[#004d40]/10 font-bold uppercase tracking-wider">
                         {s.skill.name}
                       </span>
                     ))
-                  ) : <span className="text-sm text-gray-500 font-medium italic">Belirtilmemiş</span>}
+                  ) : <span className="text-xs text-gray-400 font-medium italic">Belirtilmemiş</span>}
                 </div>
              </div>
 
-             <label className="flex items-start gap-3 cursor-pointer group mt-4">
+             <label className="flex items-start gap-3 cursor-pointer group mt-6 select-none">
                 <div className="flex items-center h-5">
                   <input
                     type="checkbox"
                     {...register("agreesToRequirements")}
-                    className="w-5 h-5 border-gray-300 rounded text-[#004d40] focus:ring-[#004d40] bg-white cursor-pointer"
+                    className="w-5 h-5 border-gray-300 rounded-lg text-[#004d40] focus:ring-[#004d40]/15 bg-white cursor-pointer transition-all"
                   />
                 </div>
                 <div className="flex flex-col">
-                  <span className="text-sm font-semibold text-gray-800">Gereksinimleri Onaylıyorum</span>
-                  <p className="text-sm text-gray-500 font-normal">Bu görevi üstlenmek için yukarıdaki yeteneklere sahip olduğumu ve görev şartlarını kabul ettiğimi beyan ederim.</p>
+                  <span className="text-sm font-bold text-gray-800">Gereksinimleri Onaylıyorum</span>
+                  <p className="text-xs text-gray-450 mt-1 font-medium leading-relaxed">Bu görevi üstlenmek için yukarıdaki yeteneklere sahip olduğumu ve görev şartlarını kabul ettiğimi beyan ederim.</p>
                 </div>
               </label>
               {errors.agreesToRequirements?.message && (
-                <p className="mt-2 text-sm text-red-500 font-medium">{errors.agreesToRequirements.message}</p>
+                <p className="mt-2 text-xs text-red-500 font-medium">{errors.agreesToRequirements.message}</p>
               )}
           </MainSection>
 
-          <div className="flex items-center justify-end gap-3 pt-6 border-t border-gray-100">
+          <div className="flex items-center justify-end gap-3 pt-6 border-t border-[#f1f0ea] select-none">
             <Button
               type="button"
               variant="outline"
               onClick={() => router.back()}
-              className="px-6 py-2.5"
+              className="px-6 py-3 cursor-pointer rounded-xl"
             >
               İptal
             </Button>
             <Button
               type="submit"
               variant="primary"
-              className="px-8 py-2.5 bg-[#fbb049] hover:bg-[#e59d3c] text-white border-transparent"
+              className="px-8 py-3 bg-[#004d40] hover:bg-[#00332a] text-white border-transparent cursor-pointer rounded-xl"
               disabled={isSubmitting}
             >
               {isSubmitting ? "Gönderiliyor..." : "Başvurumu Tamamla"}

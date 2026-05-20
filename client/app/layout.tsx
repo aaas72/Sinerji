@@ -1,15 +1,15 @@
 import type { Metadata } from "next";
-import { Poppins, Inter } from "next/font/google";
+import { Outfit, Inter } from "next/font/google";
 import ClientWrapper from "@/components/ClientWrapper";
 import "./globals.css";
 
 import { ToastProvider } from "@/context/ToastContext";
 
 
-const poppins = Poppins({
-  variable: "--font-poppins",
+const outfit = Outfit({
+  variable: "--font-outfit",
   subsets: ["latin"],
-  weight: ["100", "200", "300", "400", "500", "600", "700", "800", "900"],
+  weight: ["300", "400", "500", "600", "700", "800", "900"],
   display: "swap",
 });
 const inter = Inter({
@@ -27,7 +27,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="tr" dir="ltr">
-      <body className={`${inter.variable} ${poppins.variable} font-body text-text`}>
+      <body className={`${inter.variable} ${outfit.variable} font-body text-text`}>
         <ToastProvider>
           <ClientWrapper>{children}</ClientWrapper>
         </ToastProvider>
