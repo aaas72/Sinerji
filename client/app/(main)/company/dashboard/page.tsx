@@ -190,7 +190,7 @@ export default function CompanyDashboardPage() {
                   .slice(0, 2);
 
                 return (
-                  <div key={app.id} className="p-4 flex items-center justify-between group transition-all duration-300 ease-out cursor-pointer hover:z-10 hover:bg-white hover:scale-[1.02] bg-transparent border border-transparent hover:border-[#004d40] hover:rounded-2xl hover:shadow-md">
+                  <div key={app.id} className="p-4 flex items-center justify-between group transition-all duration-300 ease-out cursor-pointer hover:z-10 hover:bg-white hover:scale-[1.02] bg-transparent border border-transparent hover:border-[#004d40]/30 hover:rounded-2xl hover:shadow-md">
                     <div className="flex items-center gap-4 min-w-0">
                       {/* Avatar with fallback initials */}
                       <div className="w-12 h-12 rounded-full bg-[#004d40]/5 border border-[#dfded6] flex items-center justify-center text-[#004d40] font-bold text-sm shrink-0">
