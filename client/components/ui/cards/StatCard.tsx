@@ -25,9 +25,7 @@ export default function StatCard({
       className={cn(
         "p-6 flex flex-col justify-between transition-all duration-300 w-full h-full",
         borderless
-          ? variant === "pending"
-            ? "bg-[#e28743]/5"
-            : "bg-transparent"
+          ? "bg-transparent"
           : cn(
               "rounded-xl border",
               variant === "pending" ? "border-[#e28743]" : "border-[#f1f0ea]"
