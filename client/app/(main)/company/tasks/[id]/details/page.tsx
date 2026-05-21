@@ -2,9 +2,10 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import Breadcrumb from "@/components/ui/Breadcrumb";
 import MainSection from "@/components/ui/layouts/MainSection";
 import Button from "@/components/ui/Button";
+import PrimaryButton from "@/components/ui/PrimaryButton";
+import Breadcrumb from "@/components/ui/Breadcrumb";
 import { taskService } from "@/services/task.service";
 import { Task } from "@/types/task";
 import {
@@ -28,10 +29,10 @@ import {
 // ── helpers ────────────────────────────────────────────────────────────────────
 
 const STATUS_MAP: Record<string, { label: string; color: string; dot: string }> = {
-  open:        { label: "Açık",         color: "bg-green-50 text-green-700 border border-green-200",   dot: "bg-green-500" },
-  review:      { label: "İnceleniyor",  color: "bg-blue-50 text-blue-700 border border-blue-200",     dot: "bg-blue-500" },
-  in_progress: { label: "Devam Ediyor", color: "bg-amber-50 text-amber-700 border border-amber-200",  dot: "bg-amber-500" },
-  closed:      { label: "Kapandı",      color: "bg-gray-100 text-gray-500 border border-gray-200",    dot: "bg-gray-400" },
+  open:        { label: "Açık",         color: "bg-[#065043]/10 text-[#065043] border border-[#065043]/20",   dot: "bg-[#065043]" },
+  review:      { label: "İnceleniyor",  color: "bg-[#e28743]/10 text-[#e28743] border border-[#e28743]/20",   dot: "bg-[#e28743] animate-pulse" },
+  in_progress: { label: "Devam Ediyor", color: "bg-[#004d40]/10 text-[#004d40] border border-[#004d40]/20",   dot: "bg-[#004d40]" },
+  closed:      { label: "Kapandı",      color: "bg-[#3f4945]/15 text-[#3f4945] border border-[#3f4945]/20",    dot: "bg-[#3f4945]" },
 };
 
 // ── Sub-components ─────────────────────────────────────────────────────────────
@@ -39,33 +40,31 @@ const STATUS_MAP: Record<string, { label: string; color: string; dot: string }> 
 function SectionCard({
   icon: Icon,
   title,
-  accent = false,
   children,
 }: {
   icon: React.ElementType;
   title: string;
-  accent?: boolean;
   children: React.ReactNode;
 }) {
   return (
-    <div className={`rounded-xl border ${accent ? "border-primary/20 bg-primary/[0.03]" : "border-gray-200 bg-white"} overflow-hidden`}>
-      <div className={`flex items-center gap-2.5 px-5 py-3.5 border-b ${accent ? "border-primary/15 bg-primary/5" : "border-gray-100 bg-gray-50/80"}`}>
-        <div className={`w-7 h-7 rounded-lg flex items-center justify-center ${accent ? "bg-primary/15" : "bg-white border border-gray-200"}`}>
-          <Icon className={accent ? "text-primary" : "text-gray-500"} size={14} />
+    <div className="rounded-2xl border border-[#dfded6] bg-transparent overflow-hidden transition-all duration-300 hover:scale-[1.01] hover:bg-white hover:border-[#004d40]/50 hover:shadow-md hover:rounded-none group/card">
+      <div className="flex items-center gap-2.5 px-5 py-3.5 border-b border-[#dfded6] bg-[#004d40]/5 group-hover/card:bg-[#004d40]/10 transition-colors">
+        <div className="w-8 h-8 rounded-xl flex items-center justify-center bg-white border border-[#dfded6] text-[#004d40]">
+          <Icon size={16} className="text-[#004d40]" />
         </div>
-        <h3 className="text-sm font-semibold text-gray-800 break-words flex-1">{title}</h3>
+        <h3 className="text-[14px] font-semibold text-[#0b1c30] tracking-wide break-words flex-1">{title}</h3>
       </div>
-      <div className="px-5 py-4">{children}</div>
+      <div className="px-5 py-5 bg-transparent">{children}</div>
     </div>
   );
 }
 
 function InfoRow({ icon: Icon, label, value }: { icon: React.ElementType; label: string; value: string }) {
   return (
-    <div className="flex items-start gap-3 py-2.5 border-b border-gray-50 last:border-0">
-      <Icon className="text-gray-400 shrink-0 mt-0.5" size={14} />
-      <span className="text-xs text-gray-500 w-32 md:w-40 shrink-0 break-words">{label}</span>
-      <span className="text-sm font-medium text-gray-800 break-words whitespace-pre-wrap flex-1 min-w-0">{value}</span>
+    <div className="flex items-center gap-3 py-3 border-b border-[#dfded6]/50 last:border-0">
+      <Icon className="text-[#004d40]/60 shrink-0" size={16} />
+      <span className="text-[12px] font-semibold text-[#565e74] w-32 md:w-40 shrink-0 break-words">{label}</span>
+      <span className="text-[14px] font-medium text-[#0b1c30] break-words whitespace-pre-wrap flex-1 min-w-0">{value}</span>
     </div>
   );
 }
@@ -82,19 +81,19 @@ function RewardRow({
   highlight?: boolean;
 }) {
   return (
-    <div className="flex items-start gap-3 py-2.5 border-b last:border-0" style={{ borderColor: "rgba(255,255,255,0.10)" }}>
-      <Icon size={14} style={{ color: highlight ? "#fbb049" : "rgba(255,255,255,0.55)", flexShrink: 0, marginTop: "2px" }} />
-      <span className="text-xs w-32 md:w-40 shrink-0 break-words" style={{ color: "rgba(255,255,255,0.65)" }}>{label}</span>
-      <span className="text-sm font-semibold break-words whitespace-pre-wrap flex-1 min-w-0" style={{ color: highlight ? "#fbb049" : "#ffffff" }}>{value}</span>
+    <div className="flex items-center gap-3 py-3 border-b last:border-0" style={{ borderColor: "rgba(255,255,255,0.08)" }}>
+      <Icon size={16} style={{ color: highlight ? "#ffd54f" : "rgba(255,255,255,0.6)", flexShrink: 0 }} />
+      <span className="text-[12px] font-semibold w-32 md:w-40 shrink-0 break-words" style={{ color: "rgba(255,255,255,0.7)" }}>{label}</span>
+      <span className="text-[14px] font-semibold break-words whitespace-pre-wrap flex-1 min-w-0" style={{ color: highlight ? "#ffd54f" : "#ffffff" }}>{value}</span>
     </div>
   );
 }
 
 function StatBadge({ value, label }: { value: string | number; label: string }) {
   return (
-    <div className="flex flex-col items-center justify-center rounded-xl border border-gray-200 bg-white px-6 py-4 min-w-[100px]">
-      <span className="text-2xl font-bold text-primary leading-none">{value}</span>
-      <span className="text-[10px] uppercase tracking-wider text-gray-400 mt-1.5">{label}</span>
+    <div className="flex flex-col items-center justify-center rounded-2xl border border-[#dfded6] bg-transparent px-6 py-4 min-w-[120px] transition-all duration-300 hover:scale-[1.05] hover:bg-white hover:border-[#004d40]/50 hover:shadow-md hover:rounded-none cursor-pointer">
+      <span className="text-3xl font-semibold text-[#0b1c30] leading-none">{value}</span>
+      <span className="text-[10px] uppercase tracking-wider font-extrabold text-[#565e74] mt-2.5">{label}</span>
     </div>
   );
 }
@@ -129,7 +128,7 @@ export default function TaskDetailsPage() {
     return (
       <div className="min-h-screen p-0 mx-auto flex flex-col justify-center items-center gap-4 text-gray-500">
         <p>Görev bulunamadı.</p>
-        <Button variant="outline" onClick={() => router.back()}>Geri Dön</Button>
+        <Button variant="outline" className="rounded-full px-5 py-2 border-[#dfded6]" onClick={() => router.back()}>Geri Dön</Button>
       </div>
     );
   }
@@ -146,41 +145,42 @@ export default function TaskDetailsPage() {
         { label: task.title,   active: true },
       ]} />
 
-      <MainSection hideHeader>
+      <MainSection hideHeader variant="transparent" bordered={false} padding="none">
 
         {/* ── Top bar ── */}
-        <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 mb-6">
+        <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 mb-8">
           <div className="flex-1 min-w-0">
             {/* Title + badges */}
-            <div className="flex flex-wrap items-center gap-2 mb-1">
+            <div className="flex flex-wrap items-center gap-3 mb-2">
               {statusInfo && (
-                <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-xs font-semibold ${statusInfo.color}`}>
+                <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold ${statusInfo.color}`}>
                   <span className={`w-1.5 h-1.5 rounded-full ${statusInfo.dot}`} />
                   {statusInfo.label}
                 </span>
               )}
               {task.category && (
-                <span className="px-2.5 py-0.5 rounded-full text-xs font-medium bg-primary/10 text-primary border border-primary/20 break-words max-w-full">
+                <span className="px-3 py-1 rounded-full text-xs font-semibold bg-[#004d40]/10 text-[#004d40] border border-[#004d40]/20 break-words max-w-full">
                   {task.category}{task.subcategory ? ` › ${task.subcategory}` : ""}
                 </span>
               )}
             </div>
 
-            <h1 className="text-xl font-bold text-gray-900 leading-snug break-words">{task.title}</h1>
+            <h1 className="text-[28px] md:text-[36px] font-extrabold leading-tight text-[#00342b] font-heading break-words">{task.title}</h1>
 
             {task.created_at && (
-              <p className="text-xs text-gray-400 flex items-center gap-1 mt-1">
-                <FiCalendar size={11} />
+              <p className="text-xs text-[#565e74] font-medium flex items-center gap-1 mt-1">
+                <FiCalendar size={13} className="text-[#004d40]/60" />
                 Oluşturulma: {new Date(task.created_at).toLocaleDateString("tr-TR")}
               </p>
             )}
           </div>
 
           {/* Action buttons */}
-          <div className="flex items-center gap-2 shrink-0">
+          <div className="flex items-center gap-2 shrink-0 self-start md:self-center">
             <Button
               variant="outline"
               icon={FiArrowLeft}
+              className="rounded-full px-5 py-2 border-[#dfded6] hover:bg-white text-gray-700 transition-all duration-300 font-semibold text-sm cursor-pointer"
               onClick={() => router.push("/company/tasks")}
             >
               Görevlerim
@@ -188,27 +188,27 @@ export default function TaskDetailsPage() {
             <Button
               variant="outline"
               icon={FiUsers}
+              className="rounded-full px-5 py-2 border-[#dfded6] hover:bg-white text-gray-700 transition-all duration-300 font-semibold text-sm cursor-pointer"
               onClick={() => router.push(`/company/tasks/${task.id}/applicants`)}
             >
               Başvurular
               {task._count?.submissions !== undefined && task._count.submissions > 0 && (
-                <span className="ml-1.5 px-1.5 py-0.5 rounded-full bg-primary text-white text-[10px] font-bold leading-none">
+                <span className="ml-1.5 px-2 py-0.5 rounded-full bg-[#004d40] text-white text-[10px] font-bold leading-none">
                   {task._count.submissions}
                 </span>
               )}
             </Button>
-            <Button
-              variant="primary"
+            <PrimaryButton
               icon={FiEdit2}
               onClick={() => router.push(`/company/tasks/${task.id}/edit`)}
             >
               Düzenle
-            </Button>
+            </PrimaryButton>
           </div>
         </div>
 
         {/* ── Stats row ── */}
-        <div className="flex flex-wrap gap-3 mb-6">
+        <div className="flex flex-wrap gap-4 mb-8">
           {task._count?.submissions !== undefined && (
             <StatBadge value={task._count.submissions} label="Başvuru" />
           )}
@@ -216,11 +216,11 @@ export default function TaskDetailsPage() {
             <StatBadge value={task.positions} label="Pozisyon" />
           )}
           {task.deadline && (
-            <div className="flex flex-col items-center justify-center rounded-xl border border-gray-200 bg-white px-6 py-4 min-w-[100px]">
-              <span className="text-sm font-bold text-gray-700 leading-none">
+            <div className="flex flex-col items-center justify-center rounded-2xl border border-[#dfded6] bg-transparent px-6 py-4 min-w-[120px] transition-all duration-300 hover:scale-[1.05] hover:bg-white hover:border-[#004d40]/50 hover:shadow-md hover:rounded-none cursor-pointer">
+              <span className="text-[16px] font-semibold text-[#0b1c30] leading-none">
                 {new Date(task.deadline).toLocaleDateString("tr-TR")}
               </span>
-              <span className="text-[10px] uppercase tracking-wider text-gray-400 mt-1.5">Son Başvuru</span>
+              <span className="text-[10px] uppercase tracking-wider font-extrabold text-[#565e74] mt-2.5">Son Başvuru</span>
             </div>
           )}
         </div>
@@ -296,22 +296,22 @@ export default function TaskDetailsPage() {
             {/* Reward */}
             {task.reward_type && (
               <div
-                className="rounded-xl overflow-hidden border border-[#004d40]/30"
-                style={{ background: "linear-gradient(160deg, #004d40 0%, #00695c 60%, #00897b 100%)" }}
+                className="rounded-2xl overflow-hidden border border-[#004d40]/30 shadow-xs hover:shadow-md transition-all duration-300 hover:scale-[1.01] hover:rounded-none"
+                style={{ background: "linear-gradient(135deg, #004d40 0%, #00342b 100%)" }}
               >
                 {/* Card header */}
                 <div className="flex items-center gap-3 px-5 py-4">
                   <div
                     className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
-                    style={{ background: "rgba(251,176,73,0.18)", border: "1.5px solid #fbb049" }}
+                    style={{ background: "rgba(255, 213, 79, 0.18)", border: "1.5px solid #ffd54f" }}
                   >
-                    <FiAward style={{ color: "#fbb049" }} size={16} />
+                    <FiAward style={{ color: "#ffd54f" }} size={16} />
                   </div>
                   <h3 className="text-sm font-semibold text-white tracking-wide">Ödül / Kazanım</h3>
                 </div>
 
                 {/* Divider */}
-                <div className="mx-5" style={{ height: "1px", background: "rgba(255,255,255,0.12)" }} />
+                <div className="mx-5" style={{ height: "1px", background: "rgba(255,255,255,0.08)" }} />
 
                 {/* Card body — rows with white text */}
                 <div className="px-5 py-4 space-y-0">
@@ -345,7 +345,7 @@ export default function TaskDetailsPage() {
         </div>
 
         {/* ── Footer ── */}
-        <div className="mt-6 pt-4 border-t border-gray-100 flex items-center justify-between text-xs text-gray-400">
+        <div className="mt-8 pt-4 border-t border-[#dfded6] flex items-center justify-between text-xs text-[#565e74] font-semibold">
           <span>Görev #{task.id}</span>
           {task.created_at && (
             <span>Son güncelleme: {new Date(task.created_at).toLocaleDateString("tr-TR")}</span>
