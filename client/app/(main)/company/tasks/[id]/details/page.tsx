@@ -47,7 +47,7 @@ function SectionCard({
   children: React.ReactNode;
 }) {
   return (
-    <div className="rounded-2xl border border-[#dfded6] bg-transparent overflow-hidden transition-all duration-300 hover:scale-[1.01] hover:bg-white hover:border-[#004d40]/50 hover:shadow-md hover:rounded-none group/card">
+    <div className="rounded-2xl border border-[#dfded6] bg-transparent overflow-hidden transition-all duration-300 hover:scale-[1.01] hover:bg-white hover:bg-gradient-to-br hover:from-[#004d40]/[0.03] hover:to-[#ffd54f]/[0.05] hover:border-[#004d40]/50 hover:shadow-md hover:rounded-none group/card">
       <div className="flex items-center gap-2.5 px-5 py-3.5 border-b border-[#dfded6] bg-[#004d40]/5 group-hover/card:bg-[#004d40]/10 transition-colors">
         <div className="w-8 h-8 rounded-xl flex items-center justify-center bg-white border border-[#dfded6] text-[#004d40]">
           <Icon size={16} className="text-[#004d40]" />
@@ -91,7 +91,7 @@ function RewardRow({
 
 function StatBadge({ value, label }: { value: string | number; label: string }) {
   return (
-    <div className="flex flex-col items-center justify-center rounded-2xl border border-[#dfded6] bg-transparent px-6 py-4 min-w-[120px] transition-all duration-300 hover:scale-[1.05] hover:bg-white hover:border-[#004d40]/50 hover:shadow-md hover:rounded-none cursor-pointer">
+    <div className="flex flex-col items-center justify-center rounded-2xl border border-[#dfded6] bg-transparent px-6 py-4 min-w-[120px] transition-all duration-300 hover:scale-[1.05] hover:bg-white hover:bg-gradient-to-br hover:from-[#004d40]/[0.03] hover:to-[#ffd54f]/[0.05] hover:border-[#004d40]/50 hover:shadow-md hover:rounded-none cursor-pointer">
       <span className="text-3xl font-semibold text-[#0b1c30] leading-none">{value}</span>
       <span className="text-[10px] uppercase tracking-wider font-extrabold text-[#565e74] mt-2.5">{label}</span>
     </div>
@@ -216,7 +216,7 @@ export default function TaskDetailsPage() {
             <StatBadge value={task.positions} label="Pozisyon" />
           )}
           {task.deadline && (
-            <div className="flex flex-col items-center justify-center rounded-2xl border border-[#dfded6] bg-transparent px-6 py-4 min-w-[120px] transition-all duration-300 hover:scale-[1.05] hover:bg-white hover:border-[#004d40]/50 hover:shadow-md hover:rounded-none cursor-pointer">
+            <div className="flex flex-col items-center justify-center rounded-2xl border border-[#dfded6] bg-transparent px-6 py-4 min-w-[120px] transition-all duration-300 hover:scale-[1.05] hover:bg-white hover:bg-gradient-to-br hover:from-[#004d40]/[0.03] hover:to-[#ffd54f]/[0.05] hover:border-[#004d40]/50 hover:shadow-md hover:rounded-none cursor-pointer">
               <span className="text-[16px] font-semibold text-[#0b1c30] leading-none">
                 {new Date(task.deadline).toLocaleDateString("tr-TR")}
               </span>
