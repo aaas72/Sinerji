@@ -26,7 +26,7 @@ export default function ActiveTaskCard({
 
   return (
     <Link href={`/company/tasks/${id}/details`} className="block group">
-      <div className="p-6 transition-all duration-300 ease-out cursor-pointer hover:z-10 hover:bg-white hover:scale-[1.02] bg-transparent relative border border-transparent hover:border-[#004d40] hover:rounded-2xl">
+      <div className="p-6 transition-all duration-300 ease-out cursor-pointer hover:z-10 hover:bg-white hover:scale-[1.02] bg-transparent relative border border-transparent hover:border-[#004d40] hover:rounded-none">
         <h3 className="text-[20px] font-semibold leading-[28px] text-[#0b1c30] mb-2 group-hover:text-[#004d40] transition-colors line-clamp-1">
           {title}
         </h3>
