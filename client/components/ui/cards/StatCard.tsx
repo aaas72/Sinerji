@@ -28,7 +28,7 @@ export default function StatCard({
           ? "bg-transparent hover:bg-white hover:scale-[1.05] hover:rounded-2xl"
           : cn(
               "rounded-xl border hover:scale-[1.03] hover:shadow-md",
-              variant === "pending" ? "border-[#e28743]" : "border-[#f1f0ea]"
+              variant === "pending" ? "border-[#e28743]" : "border-[#dfded6]"
             ),
         className
       )}
