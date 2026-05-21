@@ -172,9 +172,9 @@ export default function CompanyDashboardPage() {
             </Link>
           </div>
 
-          <div className="flex flex-col gap-4">
+          <div className="border border-[#dfded6] rounded-2xl divide-y divide-[#dfded6] relative">
             {stats.recentApplications.length === 0 ? (
-              <div className="bg-white p-8 rounded-xl border border-[#f1f0ea] text-center text-[#565e74]">
+              <div className="p-8 text-center text-[#565e74] bg-transparent">
                 <FiUsers className="w-12 h-12 text-[#004d40]/10 mx-auto mb-3 animate-pulse" />
                 <p className="text-sm font-medium">Henüz başvuru yok</p>
               </div>
@@ -188,10 +188,10 @@ export default function CompanyDashboardPage() {
                   .slice(0, 2);
 
                 return (
-                  <div key={app.id} className="bg-white p-4 rounded-xl border border-[#f1f0ea] flex items-center justify-between group hover:border-[#004d40] transition-all hover:scale-[1.01]">
+                  <div key={app.id} className="p-4 flex items-center justify-between group transition-all duration-300 ease-out cursor-pointer hover:z-10 hover:bg-white hover:scale-[1.02] bg-transparent">
                     <div className="flex items-center gap-4 min-w-0">
                       {/* Avatar with fallback initials */}
-                      <div className="w-12 h-12 rounded-full bg-[#004d40]/5 border border-[#f1f0ea] flex items-center justify-center text-[#004d40] font-bold text-sm shrink-0">
+                      <div className="w-12 h-12 rounded-full bg-[#004d40]/5 border border-[#dfded6] flex items-center justify-center text-[#004d40] font-bold text-sm shrink-0">
                         {initials}
                       </div>
                       <div className="min-w-0">
