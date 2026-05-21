@@ -25,7 +25,7 @@ export default function StatCard({
       className={cn(
         "p-6 flex flex-col justify-between transition-all duration-300 ease-out w-full h-full cursor-pointer hover:z-10",
         borderless
-          ? "bg-transparent border border-transparent hover:bg-white hover:bg-gradient-to-br hover:from-[#004d40]/10 hover:to-[#ffd54f]/15 hover:scale-[1.05] hover:border-[#004d40]/50 hover:rounded-none hover:shadow-md"
+          ? "bg-transparent border border-transparent hover:bg-white hover:bg-gradient-to-br hover:from-[#004d40]/[0.06] hover:to-[#ffd54f]/10 hover:scale-[1.05] hover:border-[#004d40]/50 hover:rounded-none hover:shadow-md"
           : cn(
             "rounded-xl border hover:scale-[1.03] hover:border-[#004d40]/50 hover:shadow-md",
             variant === "pending" ? "border-[#e28743]" : "border-[#dfded6]"

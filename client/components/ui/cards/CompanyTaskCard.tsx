@@ -53,7 +53,7 @@ export default function CompanyTaskCard({
   const currentStatus = statusConfig[status] || statusConfig.Open;
 
   return (
-    <div className="bg-transparent border border-[#dfded6] rounded-2xl p-6 transition-all duration-300 ease-out relative hover:scale-[1.02] hover:bg-white hover:bg-gradient-to-br hover:from-[#004d40]/10 hover:to-[#ffd54f]/15 hover:border-[#004d40]/50 hover:rounded-none hover:shadow-md hover:z-10 group">
+    <div className="bg-transparent border border-[#dfded6] rounded-2xl p-6 transition-all duration-300 ease-out relative hover:scale-[1.02] hover:bg-white hover:bg-gradient-to-br hover:from-[#004d40]/[0.06] hover:to-[#ffd54f]/10 hover:border-[#004d40]/50 hover:rounded-none hover:shadow-md hover:z-10 group">
       <div className="flex justify-between items-start mb-4">
         <div>
            <div className="flex items-center gap-3 mb-2">
