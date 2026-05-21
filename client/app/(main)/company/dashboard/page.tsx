@@ -18,6 +18,7 @@ import {
 import { companyService } from "@/services/company.service";
 import { CompanyProfile } from "@/types/company";
 import Button from "@/components/ui/Button";
+import StatCard from "@/components/ui/cards/StatCard";
 
 interface DashboardStats {
   activeTasks: number;
@@ -141,53 +142,37 @@ export default function CompanyDashboardPage() {
 
       {/* ── KPI Bar ── */}
       <section className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-16">
-        {/* Aktif Görev */}
-        <div className="bg-white p-6 rounded-xl border border-[#f1f0ea] shadow-xs hover:shadow-md transition-all flex flex-col justify-between">
-          <div>
-            <FiBriefcase className="text-[#00342b] w-6 h-6 mb-4" />
-            <p className="text-[12px] tracking-[0.05em] font-semibold leading-[16px] text-[#565e74]">Aktif Görev</p>
-          </div>
-          <div className="flex items-baseline gap-2 mt-2">
-            <span className="text-[32px] tracking-[-0.01em] font-semibold leading-[40px] text-[#0b1c30]">{stats.activeTasks}</span>
-            <span className="text-[12px] tracking-[0.05em] font-semibold leading-[16px] text-[#00342b]">{stats.totalTasks} toplam</span>
-          </div>
-        </div>
+        <StatCard
+          icon={<FiBriefcase className="text-[#00342b] w-6 h-6" />}
+          label="Aktif Görev"
+          value={stats.activeTasks}
+          subtext={`${stats.totalTasks} toplam`}
+        />
 
-        {/* Toplam Başvuru */}
-        <div className="bg-white p-6 rounded-xl border border-[#f1f0ea] shadow-xs hover:shadow-md transition-all flex flex-col justify-between">
-          <div>
-            <FiUsers className="text-[#00342b] w-6 h-6 mb-4" />
-            <p className="text-[12px] tracking-[0.05em] font-semibold leading-[16px] text-[#565e74]">Toplam Başvuru</p>
-          </div>
-          <span className="text-[32px] tracking-[-0.01em] font-semibold leading-[40px] text-[#0b1c30] mt-2">{stats.totalApplications.toLocaleString("tr-TR")}</span>
-        </div>
+        <StatCard
+          icon={<FiUsers className="text-[#00342b] w-6 h-6" />}
+          label="Toplam Başvuru"
+          value={stats.totalApplications.toLocaleString("tr-TR")}
+        />
 
-        {/* Bekleyen Başvuru */}
-        <div className="bg-[#e28743]/5 p-6 rounded-xl border border-[#e28743]/20 shadow-xs animate-pulse flex flex-col justify-between">
-          <div>
-            <FiClock className="text-[#e28743] w-6 h-6 mb-4" />
-            <p className="text-[12px] tracking-[0.05em] font-semibold leading-[16px] text-[#e28743]">Bekleyen Başvuru</p>
-          </div>
-          <span className="text-[32px] tracking-[-0.01em] font-semibold leading-[40px] text-[#0b1c30] mt-2">{stats.pendingApplications}</span>
-        </div>
+        <StatCard
+          icon={<FiClock className="text-[#e28743] w-6 h-6" />}
+          label="Bekleyen Başvuru"
+          value={stats.pendingApplications}
+          variant="pending"
+        />
 
-        {/* İşe Alınan */}
-        <div className="bg-white p-6 rounded-xl border border-[#f1f0ea] shadow-xs hover:shadow-md transition-all flex flex-col justify-between">
-          <div>
-            <FiCheckCircle className="text-[#065043] w-6 h-6 mb-4" />
-            <p className="text-[12px] tracking-[0.05em] font-semibold leading-[16px] text-[#565e74]">İşe Alınan</p>
-          </div>
-          <span className="text-[32px] tracking-[-0.01em] font-semibold leading-[40px] text-[#0b1c30] mt-2">{stats.hiredStudents}</span>
-        </div>
+        <StatCard
+          icon={<FiCheckCircle className="text-[#065043] w-6 h-6" />}
+          label="İşe Alınan"
+          value={stats.hiredStudents}
+        />
 
-        {/* Başarı Oranı */}
-        <div className="bg-white p-6 rounded-xl border border-[#f1f0ea] shadow-xs hover:shadow-md transition-all flex flex-col justify-between">
-          <div>
-            <FiTrendingUp className="text-[#00342b] w-6 h-6 mb-4" />
-            <p className="text-[12px] tracking-[0.05em] font-semibold leading-[16px] text-[#565e74]">Başarı Oranı</p>
-          </div>
-          <span className="text-[32px] tracking-[-0.01em] font-semibold leading-[40px] text-[#0b1c30] mt-2">{completionRate}%</span>
-        </div>
+        <StatCard
+          icon={<FiTrendingUp className="text-[#00342b] w-6 h-6" />}
+          label="Başarı Oranı"
+          value={`${completionRate}%`}
+        />
       </section>
 
       {/* ── Main Dashboard Layout ── */}
