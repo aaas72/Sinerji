@@ -26,11 +26,11 @@ import {
   FiLayers,
 } from "react-icons/fi";
 
-// ── helpers ────────────────────────────────────────────────────────────────────
+// ── Helpers ──────────────────────────────────────────────────────────────────
 
 const STATUS_MAP: Record<string, { label: string; color: string; dot: string }> = {
   open:        { label: "Açık",         color: "bg-[#065043]/10 text-[#065043] border border-[#065043]/20",   dot: "bg-[#065043]" },
-  review:      { label: "İnceleniyor",  color: "bg-[#e28743]/10 text-[#e28743] border border-[#e28743]/20",   dot: "bg-[#e28743] animate-pulse" },
+  review:      { label: "İnceleniyor",  color: "bg-[#e28743]/10 text-[#e28743] border border-[#e28743]/20",   dot: "bg-[#e28743]" },
   in_progress: { label: "Devam Ediyor", color: "bg-[#004d40]/10 text-[#004d40] border border-[#004d40]/20",   dot: "bg-[#004d40]" },
   closed:      { label: "Kapandı",      color: "bg-[#3f4945]/15 text-[#3f4945] border border-[#3f4945]/20",    dot: "bg-[#3f4945]" },
 };
@@ -47,24 +47,28 @@ function SectionCard({
   children: React.ReactNode;
 }) {
   return (
-    <div className="rounded-2xl border border-[#dfded6] bg-transparent overflow-hidden transition-all duration-300 hover:scale-[1.01] hover:bg-white hover:bg-gradient-to-br hover:from-[#004d40]/[0.045] hover:to-[#ffd54f]/[0.075] hover:border-[#004d40]/50 hover:shadow-md hover:rounded-none group/card">
-      <div className="flex items-center gap-2.5 px-5 py-3.5 border-b border-[#dfded6] bg-[#004d40]/5 group-hover/card:bg-[#004d40]/10 transition-colors">
-        <div className="w-8 h-8 rounded-xl flex items-center justify-center bg-white border border-[#dfded6] text-[#004d40]">
+    <div className="rounded-2xl border border-[#dfded6] bg-transparent p-6 transition-all duration-300 hover:scale-[1.01] hover:bg-white hover:bg-gradient-to-br hover:from-[#004d40]/[0.045] hover:to-[#ffd54f]/[0.075] hover:border-[#004d40]/50 hover:shadow-md hover:rounded-none group/card">
+      <div className="flex items-center gap-3 mb-4">
+        <div className="w-8 h-8 rounded-xl flex items-center justify-center bg-[#004d40]/5 border border-[#dfded6] text-[#004d40] group-hover/card:bg-[#004d40]/10 transition-colors">
           <Icon size={16} className="text-[#004d40]" />
         </div>
-        <h3 className="text-[14px] font-semibold text-[#0b1c30] tracking-wide break-words flex-1">{title}</h3>
+        <h3 className="text-base font-bold text-[#00342b] tracking-wide break-words">{title}</h3>
       </div>
-      <div className="px-5 py-5 bg-transparent">{children}</div>
+      <div className="bg-transparent text-sm text-gray-600 leading-relaxed space-y-3">{children}</div>
     </div>
   );
 }
 
 function InfoRow({ icon: Icon, label, value }: { icon: React.ElementType; label: string; value: string }) {
   return (
-    <div className="flex items-center gap-3 py-3 border-b border-[#dfded6]/50 last:border-0">
-      <Icon className="text-[#004d40]/60 shrink-0" size={16} />
-      <span className="text-[12px] font-semibold text-[#565e74] w-32 md:w-40 shrink-0 break-words">{label}</span>
-      <span className="text-[14px] font-medium text-[#0b1c30] break-words whitespace-pre-wrap flex-1 min-w-0">{value}</span>
+    <div className="flex items-center gap-3.5 py-2.5 border-b border-[#dfded6]/50 last:border-0">
+      <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-[#004d40]/5 border border-[#dfded6]/50 text-[#004d40]">
+        <Icon className="text-[#004d40]" size={16} />
+      </div>
+      <div>
+        <p className="text-[10px] uppercase tracking-wider font-extrabold text-[#565e74]">{label}</p>
+        <p className="text-sm font-bold text-[#0b1c30] mt-0.5">{value}</p>
+      </div>
     </div>
   );
 }
@@ -89,11 +93,14 @@ function RewardRow({
   );
 }
 
-function StatBadge({ value, label }: { value: string | number; label: string }) {
+function StatBadge({ value, label, subtext }: { value: string | number; label: string; subtext: string }) {
   return (
-    <div className="flex flex-col items-center justify-center rounded-2xl border border-[#dfded6] bg-transparent px-6 py-4 min-w-[120px] transition-all duration-300 hover:scale-[1.05] hover:bg-white hover:bg-gradient-to-br hover:from-[#004d40]/[0.045] hover:to-[#ffd54f]/[0.075] hover:border-[#004d40]/50 hover:shadow-md hover:rounded-none cursor-pointer">
-      <span className="text-3xl font-semibold text-[#0b1c30] leading-none">{value}</span>
-      <span className="text-[10px] uppercase tracking-wider font-extrabold text-[#565e74] mt-2.5">{label}</span>
+    <div className="flex flex-col justify-between rounded-2xl border border-[#dfded6] bg-transparent p-5 min-w-[160px] flex-1 transition-all duration-300 hover:scale-[1.05] hover:bg-white hover:bg-gradient-to-br hover:from-[#004d40]/[0.045] hover:to-[#ffd54f]/[0.075] hover:border-[#004d40]/50 hover:shadow-md hover:rounded-none cursor-pointer">
+      <span className="text-[10px] uppercase tracking-wider font-extrabold text-[#565e74]">{label}</span>
+      <div className="flex items-baseline gap-2 mt-1">
+        <span className="text-[32px] font-bold text-[#00342b] leading-none">{value}</span>
+        <span className="text-xs font-semibold text-[#565e74]">{subtext}</span>
+      </div>
     </div>
   );
 }
@@ -140,64 +147,59 @@ export default function TaskDetailsPage() {
   return (
     <div className="min-h-screen p-0 mx-auto">
       <Breadcrumb items={[
-        { label: "Panel",       href: "/company/dashboard" },
-        { label: "Görevlerim", href: "/company/tasks" },
+        { label: "Dashboard",   href: "/company/dashboard" },
+        { label: "Tasks",       href: "/company/tasks" },
         { label: task.title,   active: true },
       ]} />
 
       <MainSection hideHeader variant="transparent" bordered={false} padding="none">
 
-        {/* ── Top bar ── */}
-        <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 mb-8">
-          <div className="flex-1 min-w-0">
-            {/* Title + badges */}
-            <div className="flex flex-wrap items-center gap-3 mb-2">
+        {/* ── Header Section ── */}
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8">
+          <div className="space-y-2">
+            <div className="flex flex-wrap items-center gap-3">
               {statusInfo && (
-                <span className={`inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold ${statusInfo.color}`}>
-                  <span className={`w-1.5 h-1.5 rounded-full ${statusInfo.dot}`} />
-                  {statusInfo.label}
+                <span className="relative pl-4 text-xs uppercase tracking-wider font-extrabold text-[#004d40] inline-flex items-center select-none shrink-0">
+                  <span className={`w-2.5 h-2.5 rounded-full absolute left-0 ${statusInfo.dot}`} />
+                  {(task.status === "review" || task.status === "open" || !task.status) && (
+                    <span className={`w-2.5 h-2.5 rounded-full absolute left-0 ${statusInfo.dot} animate-ping opacity-75`} />
+                  )}
+                  <span className="ml-1.5">{statusInfo.label}</span>
                 </span>
               )}
               {task.category && (
-                <span className="px-3 py-1 rounded-full text-xs font-semibold bg-[#004d40]/10 text-[#004d40] border border-[#004d40]/20 break-words max-w-full">
+                <span className="bg-[#dce9ff] px-3.5 py-1 rounded-full text-xs font-semibold text-[#0b1c30] border border-[#dfded6] break-words max-w-full">
                   {task.category}{task.subcategory ? ` › ${task.subcategory}` : ""}
                 </span>
               )}
             </div>
-
-            <h1 className="text-[28px] md:text-[36px] font-extrabold leading-tight text-[#00342b] font-heading break-words">{task.title}</h1>
-
+            <h1 className="text-[28px] md:text-[36px] font-extrabold leading-tight text-[#00342b] font-heading break-words">
+              {task.title}
+            </h1>
             {task.created_at && (
-              <p className="text-xs text-[#565e74] font-medium flex items-center gap-1 mt-1">
-                <FiCalendar size={13} className="text-[#004d40]/60" />
-                Oluşturulma: {new Date(task.created_at).toLocaleDateString("tr-TR")}
+              <p className="text-xs text-[#565e74] font-semibold">
+                Oluşturulma Tarihi: {new Date(task.created_at).toLocaleDateString("tr-TR", { day: "numeric", month: "long", year: "numeric" })}
               </p>
             )}
           </div>
 
           {/* Action buttons */}
-          <div className="flex items-center gap-2 shrink-0 self-start md:self-center">
-            <Button
-              variant="outline"
-              icon={FiArrowLeft}
-              className="rounded-full px-5 py-2 border-[#dfded6] hover:bg-white text-gray-700 transition-all duration-300 font-semibold text-sm cursor-pointer"
+          <div className="flex flex-wrap items-center gap-2 shrink-0">
+            <button
               onClick={() => router.push("/company/tasks")}
+              className="px-6 py-2 border border-[#00342b] text-[#00342b] rounded-full text-xs font-bold hover:bg-[#00342b] hover:text-white transition-all cursor-pointer bg-transparent"
             >
               Görevlerim
-            </Button>
-            <Button
-              variant="outline"
-              icon={FiUsers}
-              className="rounded-full px-5 py-2 border-[#dfded6] hover:bg-white text-gray-700 transition-all duration-300 font-semibold text-sm cursor-pointer"
+            </button>
+            <button
               onClick={() => router.push(`/company/tasks/${task.id}/applicants`)}
+              className="px-6 py-2 border border-[#00342b] text-[#00342b] rounded-full text-xs font-bold flex items-center gap-2 hover:bg-[#00342b] hover:text-white transition-all cursor-pointer bg-transparent"
             >
               Başvurular
-              {task._count?.submissions !== undefined && task._count.submissions > 0 && (
-                <span className="ml-1.5 px-2 py-0.5 rounded-full bg-[#004d40] text-white text-[10px] font-bold leading-none">
-                  {task._count.submissions}
-                </span>
-              )}
-            </Button>
+              <span className="bg-[#00342b] text-white text-[10px] px-2 py-0.5 rounded-full font-bold group-hover:bg-white group-hover:text-[#00342b] transition-all">
+                {task._count?.submissions ?? 0}
+              </span>
+            </button>
             <PrimaryButton
               icon={FiEdit2}
               onClick={() => router.push(`/company/tasks/${task.id}/edit`)}
@@ -207,33 +209,46 @@ export default function TaskDetailsPage() {
           </div>
         </div>
 
-        {/* ── Stats row ── */}
-        <div className="flex flex-wrap gap-4 mb-8">
-          {task._count?.submissions !== undefined && (
-            <StatBadge value={task._count.submissions} label="Başvuru" />
-          )}
-          {task.positions && (
-            <StatBadge value={task.positions} label="Pozisyon" />
-          )}
-          {task.deadline && (
-            <div className="flex flex-col items-center justify-center rounded-2xl border border-[#dfded6] bg-transparent px-6 py-4 min-w-[120px] transition-all duration-300 hover:scale-[1.05] hover:bg-white hover:bg-gradient-to-br hover:from-[#004d40]/[0.045] hover:to-[#ffd54f]/[0.075] hover:border-[#004d40]/50 hover:shadow-md hover:rounded-none cursor-pointer">
-              <span className="text-[16px] font-semibold text-[#0b1c30] leading-none">
-                {new Date(task.deadline).toLocaleDateString("tr-TR")}
+        {/* ── KPI Bar ── */}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
+          <StatBadge 
+            value={task._count?.submissions ?? 0} 
+            label="Submissions" 
+            subtext="Başvuru" 
+          />
+          <StatBadge 
+            value={task.positions ?? 1} 
+            label="Positions" 
+            subtext="Pozisyon" 
+          />
+          <div className="flex flex-col justify-between rounded-2xl border border-[#dfded6] bg-transparent p-5 min-w-[160px] flex-1 transition-all duration-300 hover:scale-[1.05] hover:bg-white hover:bg-gradient-to-br hover:from-[#004d40]/[0.045] hover:to-[#ffd54f]/[0.075] hover:border-[#004d40]/50 hover:shadow-md hover:rounded-none cursor-pointer">
+            <span className="text-[10px] uppercase tracking-wider font-extrabold text-[#565e74]">Deadline</span>
+            <div className="flex items-baseline gap-2 mt-1">
+              <span className="text-[24px] md:text-[26px] font-bold text-[#00342b] leading-none shrink-0">
+                {task.deadline 
+                  ? new Date(task.deadline).toLocaleDateString("tr-TR", { day: "numeric", month: "long", year: "numeric" })
+                  : "Süresiz"}
               </span>
-              <span className="text-[10px] uppercase tracking-wider font-extrabold text-[#565e74] mt-2.5">Son Başvuru</span>
+              <span className="text-xs font-semibold text-[#565e74] shrink-0">Son Başvuru</span>
             </div>
-          )}
+          </div>
         </div>
 
-        {/* ── Content grid ── */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+        {/* ── Content Grid ── */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 relative">
+          
+          {/* Decorative Synapse Line (SVG) */}
+          <svg className="absolute -z-10 w-full h-full pointer-events-none opacity-40" viewBox="0 0 1000 800">
+            <path className="stroke-[#dfded6] stroke-[0.5] fill-none" d="M200,100 C350,150 400,50 600,200 S800,400 900,100" />
+            <path className="stroke-[#dfded6] stroke-[0.5] fill-none" d="M100,500 C250,450 300,550 500,400 S700,200 850,500" />
+          </svg>
 
-          {/* Left column — 2/3 */}
-          <div className="lg:col-span-2 space-y-5 min-w-0">
+          {/* Main Content (2/3) */}
+          <div className="lg:col-span-2 space-y-6 min-w-0">
 
             {/* Description */}
             {task.description && (
-              <SectionCard icon={FiFileText} title="Açıklama">
+              <SectionCard icon={FiFileText} title="Role Overview">
                 <div
                   className="prose prose-sm prose-slate max-w-none text-sm text-gray-600 leading-relaxed break-words whitespace-pre-wrap"
                   dangerouslySetInnerHTML={{ __html: task.description }}
@@ -255,88 +270,99 @@ export default function TaskDetailsPage() {
 
             {/* Required Skills */}
             {task.requiredSkills && task.requiredSkills.length > 0 && (
-              <SectionCard icon={FiCheckCircle} title="Gerekli Beceriler">
+              <div className="bg-white border border-[#dfded6] rounded-2xl p-6 transition-all duration-300 hover:scale-[1.01] hover:bg-gradient-to-br hover:from-[#004d40]/[0.045] hover:to-[#ffd54f]/[0.075] hover:border-[#004d40]/50 hover:shadow-md hover:rounded-none group">
+                <h3 className="text-base font-bold text-[#00342b] mb-4">Required Skills</h3>
                 <div className="flex flex-wrap gap-2">
                   {task.requiredSkills.map((ts) => (
                     <span
                       key={ts.skill_id}
-                      className="px-3 py-1 rounded-full text-xs font-medium bg-gray-100 text-gray-700 border border-gray-200 hover:border-primary/40 hover:bg-primary/5 hover:text-primary transition-colors"
+                      className="bg-[#eff4ff] px-4 py-2 rounded-full text-xs font-semibold text-[#565e74] border border-[#dfded6] hover:border-[#004d40]/40 hover:bg-[#004d40]/5 hover:text-[#004d40] transition-colors cursor-pointer"
                     >
                       {ts.skill.name}
                     </span>
                   ))}
                 </div>
-              </SectionCard>
+              </div>
             )}
           </div>
 
-          {/* Right column — 1/3 */}
-          <div className="space-y-5 min-w-0">
+          {/* Sidebar (1/3) */}
+          <div className="space-y-6 min-w-0">
 
-            {/* Task info */}
+            {/* Task Details Info */}
             {(task.work_type || task.experience_level || task.positions || task.preferred_major || task.location || task.deadline) && (
-              <SectionCard icon={FiInfo} title="Görev Bilgileri">
-                {task.work_type        && <InfoRow icon={FiBriefcase} label="Çalışma Tipi"         value={task.work_type} />}
-                {task.experience_level && <InfoRow icon={FiBook}      label="Deneyim Seviyesi"     value={task.experience_level} />}
-                {task.positions        && <InfoRow icon={FiUsers}     label="Pozisyon Sayısı"      value={String(task.positions)} />}
-                {task.preferred_major  && <InfoRow icon={FiTag}       label="Tercih Edilen Bölüm"  value={task.preferred_major} />}
-                {task.location         && <InfoRow icon={FiMapPin}    label="Konum"                value={task.location} />}
-                {task.deadline         && <InfoRow icon={FiClock}     label="Son Başvuru"          value={new Date(task.deadline).toLocaleDateString("tr-TR")} />}
+              <SectionCard icon={FiInfo} title="Task Details">
+                {task.work_type        && <InfoRow icon={FiBriefcase} label="Work Type"          value={task.work_type} />}
+                {task.experience_level && <InfoRow icon={FiBook}      label="Experience"         value={task.experience_level} />}
+                {task.positions        && <InfoRow icon={FiUsers}     label="Positions"          value={String(task.positions)} />}
+                {task.preferred_major  && <InfoRow icon={FiTag}       label="Majors"             value={task.preferred_major} />}
+                {task.location         && <InfoRow icon={FiMapPin}    label="Location"           value={task.location} />}
               </SectionCard>
             )}
 
             {/* Category */}
             {(task.category || task.subcategory) && (
-              <SectionCard icon={FiLayers} title="Kategori">
-                {task.category   && <InfoRow icon={FiLayers} label="Kategori"      value={task.category} />}
-                {task.subcategory && <InfoRow icon={FiTag}   label="Alt Kategori"  value={task.subcategory} />}
+              <SectionCard icon={FiLayers} title="Category Information">
+                <div className="flex items-center gap-3">
+                  <div className="w-12 h-12 bg-[#004d40] rounded-xl flex items-center justify-center text-white shrink-0">
+                    <FiLayers size={22} className="text-white" />
+                  </div>
+                  <div>
+                    <p className="text-[10px] uppercase tracking-wider font-extrabold text-[#565e74]">Parent Category</p>
+                    <p className="text-sm font-bold text-[#0b1c30] mt-0.5">{task.category || "Belirtilmemiş"}</p>
+                  </div>
+                </div>
+                {task.subcategory && (
+                  <div className="mt-4 pt-3 border-t border-[#dfded6]/50">
+                    <p className="text-[10px] uppercase tracking-wider font-extrabold text-[#565e74]">Sub-category</p>
+                    <p className="text-sm font-bold text-[#0b1c30] mt-0.5">{task.subcategory}</p>
+                  </div>
+                )}
               </SectionCard>
             )}
 
-            {/* Reward */}
+            {/* Reward Card */}
             {task.reward_type && (
               <div
-                className="rounded-2xl overflow-hidden border border-[#004d40]/30 shadow-xs hover:shadow-md transition-all duration-300 hover:scale-[1.01] hover:rounded-none"
+                className="rounded-2xl p-6 shadow-lg relative overflow-hidden group transition-all duration-300 hover:scale-[1.01] hover:rounded-none border border-[#004d40]/30"
                 style={{ background: "linear-gradient(135deg, #004d40 0%, #00342b 100%)" }}
               >
-                {/* Card header */}
-                <div className="flex items-center gap-3 px-5 py-4">
-                  <div
-                    className="w-8 h-8 rounded-lg flex items-center justify-center shrink-0"
-                    style={{ background: "rgba(255, 213, 79, 0.18)", border: "1.5px solid #ffd54f" }}
-                  >
-                    <FiAward style={{ color: "#ffd54f" }} size={16} />
+                {/* Background Glow */}
+                <div className="absolute -right-10 -bottom-10 w-40 h-40 bg-[#e28743]/10 opacity-20 blur-3xl group-hover:opacity-40 transition-opacity duration-500 pointer-events-none" />
+                
+                <div className="relative z-10 space-y-3">
+                  <div className="flex items-center gap-2 text-[#e28743]">
+                    <FiAward size={18} className="text-[#e28743]" />
+                    <span className="text-[10px] uppercase tracking-wider font-extrabold">Incentive Reward</span>
                   </div>
-                  <h3 className="text-sm font-semibold text-white tracking-wide">Ödül / Kazanım</h3>
-                </div>
-
-                {/* Divider */}
-                <div className="mx-5" style={{ height: "1px", background: "rgba(255,255,255,0.08)" }} />
-
-                {/* Card body — rows with white text */}
-                <div className="px-5 py-4 space-y-0">
-                  <RewardRow icon={FiAward}    label="Ödül Türü" value={task.reward_type} highlight />
-                  {(() => {
-                    const rt = task.reward_type;
-                    if (rt === "Nakit" || rt === "cash") {
-                      const amount = task.budget || task.reward_amount;
-                      return amount ? <RewardRow icon={FiHash} label="Tutar" value={`${amount} ${task.currency || ""}`.trim()} /> : null;
-                    }
-                    if (rt === "Staj" || rt === "internship") return (
-                      <>
-                        {task.internship_duration   && <RewardRow icon={FiClock}     label="Staj Süresi" value={task.internship_duration} />}
-                        {task.internship_department && <RewardRow icon={FiBriefcase} label="Departman"   value={task.internship_department} />}
-                        {task.internship_is_paid    && <RewardRow icon={FiHash}      label="Ücretli mi?" value={task.internship_is_paid === "true" ? "Evet" : "Hayır"} />}
-                      </>
-                    );
-                    if (rt === "Sertifika" || rt === "certificate") return (
-                      <>
-                        {task.certificate_name   && <RewardRow icon={FiAward} label="Sertifika Adı" value={task.certificate_name} />}
-                        {task.certificate_issuer && <RewardRow icon={FiHash}  label="Veren Kurum"   value={task.certificate_issuer} />}
-                      </>
-                    );
-                    return null;
-                  })()}
+                  <div>
+                    <p className="text-xs text-[#94d3c1] font-semibold">
+                      {task.reward_type === "Nakit" ? "Cash Reward Completion" : `Reward: ${task.reward_type}`}
+                    </p>
+                    {task.reward_type === "Nakit" && (task.budget || task.reward_amount) ? (
+                      <h2 className="text-[36px] font-extrabold text-[#e28743] tracking-tight mt-1">
+                        ₺{(task.budget || task.reward_amount)?.toLocaleString("tr-TR")}
+                      </h2>
+                    ) : task.reward_type === "Staj" ? (
+                      <div className="mt-2 text-white space-y-1">
+                        <p className="text-sm font-bold">{task.internship_department || "Departman Belirtilmemiş"}</p>
+                        <p className="text-xs text-[#94d3c1]">{task.internship_duration || "Süre Belirtilmemiş"}</p>
+                      </div>
+                    ) : (
+                      <div className="mt-2 text-white space-y-1">
+                        <p className="text-sm font-bold">{task.certificate_name || "Sertifika"}</p>
+                        <p className="text-xs text-[#94d3c1]">{task.certificate_issuer || "Sinerji Network"}</p>
+                      </div>
+                    )}
+                  </div>
+                  
+                  {/* Action button inside card */}
+                  <button 
+                    onClick={() => router.push(`/company/tasks/${task.id}/applicants`)}
+                    className="w-full mt-4 py-3 bg-[#e28743] hover:bg-[#d47632] text-[#00342b] rounded-xl font-bold hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 text-sm cursor-pointer shadow-md"
+                  >
+                    Başvuruları İncele ({task._count?.submissions || 0})
+                  </button>
                 </div>
               </div>
             )}
@@ -345,11 +371,17 @@ export default function TaskDetailsPage() {
         </div>
 
         {/* ── Footer ── */}
-        <div className="mt-8 pt-4 border-t border-[#dfded6] flex items-center justify-between text-xs text-[#565e74] font-semibold">
-          <span>Görev #{task.id}</span>
-          {task.created_at && (
-            <span>Son güncelleme: {new Date(task.created_at).toLocaleDateString("tr-TR")}</span>
-          )}
+        <div className="mt-12 pt-6 border-t border-[#dfded6] flex flex-col md:flex-row justify-between items-center text-xs text-[#565e74] font-semibold gap-3">
+          <div className="flex items-center gap-3">
+            <span>Task ID: <span className="text-[#004d40] font-bold">T-{task.id}</span></span>
+            <div className="w-1.5 h-1.5 bg-[#dfded6] rounded-full hidden md:block" />
+            {task.created_at && (
+              <span>Last Updated: {new Date(task.created_at).toLocaleDateString("tr-TR", { day: "numeric", month: "long", year: "numeric" })}</span>
+            )}
+          </div>
+          <div className="flex items-center gap-1.5">
+            <span className="text-xs">🔒 Encrypted & Secured by Sinerji Network</span>
+          </div>
         </div>
 
       </MainSection>
