@@ -7,6 +7,7 @@ type StatCardProps = {
   icon: React.ReactNode;
   subtext?: string;
   variant?: "default" | "pending";
+  borderless?: boolean;
   className?: string;
 };
 
@@ -16,15 +17,21 @@ export default function StatCard({
   icon,
   subtext,
   variant = "default",
+  borderless = false,
   className,
 }: StatCardProps) {
   return (
     <div
       className={cn(
-        "p-6 rounded-xl border flex flex-col justify-between transition-all duration-300",
-        variant === "pending"
-          ? "bg-[#e28743]/5 border-[#e28743]/20 animate-pulse"
-          : "bg-white border-[#f1f0ea] hover:shadow-md",
+        "p-6 flex flex-col justify-between transition-all duration-300 w-full h-full",
+        borderless
+          ? variant === "pending"
+            ? "bg-[#e28743]/5"
+            : "bg-transparent"
+          : cn(
+              "rounded-xl border",
+              variant === "pending" ? "border-[#e28743]" : "border-[#f1f0ea]"
+            ),
         className
       )}
     >
@@ -54,4 +61,5 @@ export default function StatCard({
     </div>
   );
 }
+
 

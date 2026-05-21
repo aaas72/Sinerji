@@ -141,18 +141,20 @@ export default function CompanyDashboardPage() {
       </section>
 
       {/* ── KPI Bar ── */}
-      <section className="grid grid-cols-1 md:grid-cols-5 gap-6 mb-16">
+      <section className="bg-white border border-[#f1f0ea] rounded-2xl shadow-xs overflow-hidden grid grid-cols-1 md:grid-cols-5 divide-y md:divide-y-0 md:divide-x divide-[#f1f0ea] mb-16">
         <StatCard
           icon={<FiBriefcase className="text-[#00342b] w-6 h-6" />}
           label="Aktif Görev"
           value={stats.activeTasks}
           subtext={`${stats.totalTasks} toplam`}
+          borderless
         />
 
         <StatCard
           icon={<FiUsers className="text-[#00342b] w-6 h-6" />}
           label="Toplam Başvuru"
           value={stats.totalApplications.toLocaleString("tr-TR")}
+          borderless
         />
 
         <StatCard
@@ -160,18 +162,21 @@ export default function CompanyDashboardPage() {
           label="Bekleyen Başvuru"
           value={stats.pendingApplications}
           variant="pending"
+          borderless
         />
 
         <StatCard
           icon={<FiCheckCircle className="text-[#065043] w-6 h-6" />}
           label="İşe Alınan"
           value={stats.hiredStudents}
+          borderless
         />
 
         <StatCard
           icon={<FiTrendingUp className="text-[#00342b] w-6 h-6" />}
           label="Başarı Oranı"
           value={`${completionRate}%`}
+          borderless
         />
       </section>
 
