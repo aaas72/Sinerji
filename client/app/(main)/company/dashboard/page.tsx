@@ -229,9 +229,10 @@ export default function CompanyDashboardPage() {
         {/* Right: Recent Tasks */}
         <section className="lg:col-span-4">
           <h2 className="text-[20px] font-semibold leading-[28px] text-[#0b1c30] mb-6">Active Tasks</h2>
-          <div className="flex flex-col gap-6">
+          
+          <div className="border border-[#dfded6] rounded-2xl divide-y divide-[#dfded6] relative mb-6">
             {stats.recentTasks.length === 0 ? (
-              <div className="bg-white p-8 rounded-xl border border-[#f1f0ea] text-center text-[#565e74]">
+              <div className="p-8 text-center text-[#565e74] bg-transparent">
                 <FiBriefcase className="w-12 h-12 text-[#004d40]/10 mx-auto mb-3" />
                 <p className="text-sm font-medium">Henüz aktif görev yok</p>
                 <Link href="/company/tasks/new" className="text-xs text-[#004d40] hover:underline mt-2 inline-block font-semibold">
@@ -249,7 +250,7 @@ export default function CompanyDashboardPage() {
 
                 return (
                   <Link key={task.id} href={`/company/tasks/${task.id}/details`} className="block group">
-                    <div className="bg-white p-6 rounded-xl border border-[#f1f0ea] shadow-xs relative overflow-hidden hover:border-[#004d40] transition-all hover:scale-[1.01]">
+                    <div className="p-6 transition-all duration-300 ease-out cursor-pointer hover:z-10 hover:bg-white hover:scale-[1.02] bg-transparent relative">
                       <span className={`px-2 py-0.5 rounded-lg text-[12px] font-semibold tracking-[0.05em] leading-[16px] inline-block mb-4 ${statusCls}`}>
                         {statusText}
                       </span>
@@ -272,29 +273,29 @@ export default function CompanyDashboardPage() {
                 );
               })
             )}
+          </div>
 
-            {/* AI Match Indicator Preview (Smart Matching) */}
-            <div className="mt-2 p-6 bg-[#e5eeff] rounded-xl border border-[#004d40]/20 flex flex-col items-center justify-center text-center gap-4">
-              <div className="flex -space-x-3">
-                <div className="w-12 h-12 rounded-full border-2 border-[#00342b] bg-[#00342b]/10 flex items-center justify-center shrink-0">
-                  <FiLayers className="text-[#00342b] w-6 h-6" />
-                </div>
-                <div className="w-12 h-12 rounded-full border-2 border-[#e28743] bg-[#e28743]/10 flex items-center justify-center shrink-0">
-                  <FiCpu className="text-[#e28743] w-6 h-6" />
-                </div>
+          {/* AI Match Indicator Preview (Smart Matching) */}
+          <div className="p-6 bg-[#e5eeff] rounded-xl border border-[#004d40]/20 flex flex-col items-center justify-center text-center gap-4">
+            <div className="flex -space-x-3">
+              <div className="w-12 h-12 rounded-full border-2 border-[#00342b] bg-[#00342b]/10 flex items-center justify-center shrink-0">
+                <FiLayers className="text-[#00342b] w-6 h-6" />
               </div>
-              <div>
-                <h4 className="text-[14px] tracking-[0.01em] font-medium leading-[20px] text-[#0b1c30]">Smart Matching</h4>
-                <p className="text-[12px] tracking-[0.05em] font-semibold leading-[16px] text-[#565e74]">
-                  Adaylarımızın nitelikleri ve geçmiş başarıları sizin belirlediğiniz kriterlerle eşleştiriliyor.
-                </p>
+              <div className="w-12 h-12 rounded-full border-2 border-[#e28743] bg-[#e28743]/10 flex items-center justify-center shrink-0">
+                <FiCpu className="text-[#e28743] w-6 h-6" />
               </div>
-              <Link href="/company/tasks">
-                <button className="text-[#00342b] font-bold text-[12px] tracking-[0.05em] leading-[16px] hover:underline cursor-pointer">
-                  Adayları İncele →
-                </button>
-              </Link>
             </div>
+            <div>
+              <h4 className="text-[14px] tracking-[0.01em] font-medium leading-[20px] text-[#0b1c30]">Smart Matching</h4>
+              <p className="text-[12px] tracking-[0.05em] font-semibold leading-[16px] text-[#565e74]">
+                Adaylarımızın nitelikleri ve geçmiş başarıları sizin belirlediğiniz kriterlerle eşleştiriliyor.
+              </p>
+            </div>
+            <Link href="/company/tasks">
+              <button className="text-[#00342b] font-bold text-[12px] tracking-[0.05em] leading-[16px] hover:underline cursor-pointer">
+                Adayları İncele →
+              </button>
+            </Link>
           </div>
         </section>
 
