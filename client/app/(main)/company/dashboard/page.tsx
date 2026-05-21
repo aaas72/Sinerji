@@ -44,17 +44,20 @@ interface DashboardStats {
 }
 
 function StatusBadge({ status }: { status: string }) {
-  const map: Record<string, { label: string; cls: string }> = {
-    open:     { label: "Aktif",      cls: "bg-[#065043]/10 text-[#065043]" },
+  const map: Record<string, { label: string; cls: string; hasDot?: boolean; dotCls?: string }> = {
+    open:     { label: "Aktif",      cls: "bg-[#065043]/10 text-[#065043]", hasDot: true, dotCls: "bg-[#065043]" },
     closed:   { label: "Kapalı",    cls: "bg-[#3f4945]/15 text-[#3f4945]" },
-    pending:  { label: "Bekliyor",  cls: "bg-[#dce9ff] text-[#3f4945]" },
-    accepted: { label: "Kabul Edildi", cls: "bg-[#065043]/10 text-[#065043]" },
+    pending:  { label: "Bekliyor",  cls: "bg-[#e28743]/10 text-[#e28743]", hasDot: true, dotCls: "bg-[#e28743] animate-pulse" },
+    accepted: { label: "Kabul Edildi", cls: "bg-[#065043]/10 text-[#065043]", hasDot: true, dotCls: "bg-[#065043]" },
     rejected: { label: "Reddedildi",   cls: "bg-[#ffdad6] text-[#93000a]" },
-    hired:    { label: "İşe Alındı", cls: "bg-[#065043]/10 text-[#065043]" },
+    hired:    { label: "İşe Alındı", cls: "bg-[#065043]/10 text-[#065043]", hasDot: true, dotCls: "bg-[#065043]" },
   };
   const cfg = map[status?.toLowerCase()] ?? { label: status, cls: "bg-[#dce9ff] text-[#3f4945]" };
   return (
-    <span className={`px-4 py-1 rounded-full text-[12px] font-semibold tracking-[0.05em] leading-[16px] shrink-0 ${cfg.cls}`}>
+    <span className={`px-4 py-1.5 rounded-full text-[12px] font-semibold tracking-[0.05em] leading-[16px] shrink-0 inline-flex items-center gap-1.5 ${cfg.cls}`}>
+      {cfg.hasDot && (
+        <span className={`w-1.5 h-1.5 rounded-full ${cfg.dotCls}`} />
+      )}
       {cfg.label}
     </span>
   );
