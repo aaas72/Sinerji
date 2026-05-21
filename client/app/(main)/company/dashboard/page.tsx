@@ -12,8 +12,6 @@ import {
   FiCalendar,
   FiAlertCircle,
   FiTrendingUp,
-  FiLayers,
-  FiCpu,
 } from "react-icons/fi";
 import { companyService } from "@/services/company.service";
 import { CompanyProfile } from "@/types/company";
@@ -275,28 +273,7 @@ export default function CompanyDashboardPage() {
             )}
           </div>
 
-          {/* AI Match Indicator Preview (Smart Matching) */}
-          <div className="p-6 bg-[#e5eeff] rounded-xl border border-[#004d40]/20 flex flex-col items-center justify-center text-center gap-4">
-            <div className="flex -space-x-3">
-              <div className="w-12 h-12 rounded-full border-2 border-[#00342b] bg-[#00342b]/10 flex items-center justify-center shrink-0">
-                <FiLayers className="text-[#00342b] w-6 h-6" />
-              </div>
-              <div className="w-12 h-12 rounded-full border-2 border-[#e28743] bg-[#e28743]/10 flex items-center justify-center shrink-0">
-                <FiCpu className="text-[#e28743] w-6 h-6" />
-              </div>
-            </div>
-            <div>
-              <h4 className="text-[14px] tracking-[0.01em] font-medium leading-[20px] text-[#0b1c30]">Smart Matching</h4>
-              <p className="text-[12px] tracking-[0.05em] font-semibold leading-[16px] text-[#565e74]">
-                Adaylarımızın nitelikleri ve geçmiş başarıları sizin belirlediğiniz kriterlerle eşleştiriliyor.
-              </p>
-            </div>
-            <Link href="/company/tasks">
-              <button className="text-[#00342b] font-bold text-[12px] tracking-[0.05em] leading-[16px] hover:underline cursor-pointer">
-                Adayları İncele →
-              </button>
-            </Link>
-          </div>
+
         </section>
 
       </div>
