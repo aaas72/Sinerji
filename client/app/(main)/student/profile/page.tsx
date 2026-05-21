@@ -166,41 +166,55 @@ export default function ProfilePage() {
         <header className="flex flex-col md:flex-row gap-6 items-start md:items-center justify-between pb-6 border border-[#f1f0ea] relative overflow-hidden rounded-xl p-6 bg-[#ffffff]">
           <div className="absolute inset-0 bg-gradient-to-br from-[#eff4ff] to-transparent opacity-50 pointer-events-none"></div>
           
-          <div className="relative z-10">
-            <h1 className="text-[32px] md:text-[48px] leading-tight font-extrabold text-[#00342b] mb-1">{profile.full_name}</h1>
-            <p className="text-[20px] font-semibold text-[#565e74]">{profile.major || "UX/UI Designer & Systems Thinker"}</p>
-            
-            <div className="flex items-center flex-wrap gap-4 mt-4">
-              <div className="flex gap-2">
-                <span className="px-4 py-1 rounded-full bg-[#e28743]/10 text-[#e28743] text-sm font-semibold border border-[#e28743]/20">Sinerji Yeteneği</span>
-                {profile.availability_status === 'available' ? (
-                  <span className="px-4 py-1 rounded-full bg-[#00342b]/10 text-[#00342b] text-sm font-semibold border border-[#00342b]/20">Yeni Rollere Açık</span>
-                ) : (
-                  <span className="px-4 py-1 rounded-full bg-gray-100 text-gray-600 text-sm font-semibold border border-gray-200">Şu An Çalışıyor</span>
-                )}
-              </div>
+          <div className="relative z-10 flex items-center gap-5">
+            {/* ── Avatar ── */}
+            <div className="shrink-0 w-16 h-16 md:w-20 md:h-20 rounded-full bg-[#004d40] flex items-center justify-center shadow-md select-none">
+              <span className="text-white font-extrabold text-xl md:text-2xl tracking-wide leading-none">
+                {profile.full_name
+                  .split(" ")
+                  .slice(0, 2)
+                  .map((n) => n[0]?.toUpperCase())
+                  .join("")}
+              </span>
+            </div>
+
+            {/* ── Name + Info ── */}
+            <div>
+              <h1 className="text-[22px] md:text-[32px] leading-tight font-extrabold text-[#00342b] mb-1">{profile.full_name}</h1>
+              <p className="text-[16px] font-semibold text-[#565e74]">{profile.major || "UX/UI Designer & Systems Thinker"}</p>
               
-              <div className="flex items-center gap-3 text-[#565e74] ml-2">
-                {profile.github_url && (
-                  <a href={profile.github_url} target="_blank" rel="noopener noreferrer" className="hover:text-[#333] transition-colors" title="GitHub">
-                    <FiGithub size={18} />
-                  </a>
-                )}
-                {profile.linkedin_url && (
-                  <a href={profile.linkedin_url} target="_blank" rel="noopener noreferrer" className="hover:text-[#0077b5] transition-colors" title="LinkedIn">
-                    <FiLinkedin size={18} />
-                  </a>
-                )}
-                {profile.twitter_url && (
-                  <a href={profile.twitter_url} target="_blank" rel="noopener noreferrer" className="hover:text-[#1DA1F2] transition-colors" title="Twitter">
-                    <FiTwitter size={18} />
-                  </a>
-                )}
-                {profile.website_url && (
-                  <a href={profile.website_url} target="_blank" rel="noopener noreferrer" className="hover:text-[#004d40] transition-colors" title="Website">
-                    <FiGlobe size={18} />
-                  </a>
-                )}
+              <div className="flex items-center flex-wrap gap-4 mt-4">
+                <div className="flex gap-2">
+                  <span className="px-4 py-1 rounded-full bg-[#e28743]/10 text-[#e28743] text-sm font-semibold border border-[#e28743]/20">Sinerji Yeteneği</span>
+                  {profile.availability_status === 'available' ? (
+                    <span className="px-4 py-1 rounded-full bg-[#00342b]/10 text-[#00342b] text-sm font-semibold border border-[#00342b]/20">Yeni Rollere Açık</span>
+                  ) : (
+                    <span className="px-4 py-1 rounded-full bg-gray-100 text-gray-600 text-sm font-semibold border border-gray-200">Şu An Çalışıyor</span>
+                  )}
+                </div>
+                
+                <div className="flex items-center gap-3 text-[#565e74] ml-2">
+                  {profile.github_url && (
+                    <a href={profile.github_url} target="_blank" rel="noopener noreferrer" className="hover:text-[#333] transition-colors" title="GitHub">
+                      <FiGithub size={18} />
+                    </a>
+                  )}
+                  {profile.linkedin_url && (
+                    <a href={profile.linkedin_url} target="_blank" rel="noopener noreferrer" className="hover:text-[#0077b5] transition-colors" title="LinkedIn">
+                      <FiLinkedin size={18} />
+                    </a>
+                  )}
+                  {profile.twitter_url && (
+                    <a href={profile.twitter_url} target="_blank" rel="noopener noreferrer" className="hover:text-[#1DA1F2] transition-colors" title="Twitter">
+                      <FiTwitter size={18} />
+                    </a>
+                  )}
+                  {profile.website_url && (
+                    <a href={profile.website_url} target="_blank" rel="noopener noreferrer" className="hover:text-[#004d40] transition-colors" title="Website">
+                      <FiGlobe size={18} />
+                    </a>
+                  )}
+                </div>
               </div>
             </div>
           </div>

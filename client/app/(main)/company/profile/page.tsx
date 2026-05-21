@@ -4,8 +4,6 @@ import { useEffect, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
-import Breadcrumb from "@/components/ui/Breadcrumb";
-import MainSection from "@/components/ui/layouts/MainSection";
 import Button from "@/components/ui/Button";
 import { companyService } from "@/services/company.service";
 import { CompanyProfile } from "@/types/company";
@@ -30,8 +28,8 @@ import {
 } from "react-icons/fi";
 
 // ─── shared input style ────────────────────────────────────────────────────────
-const inputCls = "w-full px-3 py-2 rounded-lg border border-[#004d40]/30 bg-[#004d40]/5 text-[#004d40] placeholder-[#004d40]/40 text-sm focus:outline-none focus:ring-2 focus:ring-[#004d40]/30";
-const bodyInputCls = "w-full px-3 py-2 rounded-lg border border-gray-200 bg-white text-gray-800 placeholder-gray-400 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20";
+const inputCls = "w-full px-4 py-2 border border-[#004d40]/25 rounded-xl bg-white/95 focus:ring-2 focus:ring-[#004d40]/15 focus:border-[#004d40] outline-none transition-all text-[#004d40] font-semibold text-sm placeholder:text-[#004d40]/35 placeholder:font-normal";
+const bodyInputCls = "w-full px-4 py-2.5 border border-gray-200 rounded-xl bg-white focus:ring-2 focus:ring-[#004d40]/15 focus:border-[#004d40] outline-none transition-all hover:border-gray-300 text-[#004d40] font-medium placeholder:text-gray-400 placeholder:font-normal text-sm";
 
 interface DashboardStats {
   activeTasks: number;
@@ -58,16 +56,16 @@ interface DashboardStats {
 // ─── helpers ───────────────────────────────────────────────────────────────────
 
 const STATUS_MAP: Record<string, { label: string; cls: string }> = {
-  open:        { label: "Açık",         cls: "bg-green-50 text-green-700 border border-green-200" },
-  review:      { label: "İnceleniyor",  cls: "bg-blue-50 text-blue-700 border border-blue-200" },
-  in_progress: { label: "Devam Ediyor", cls: "bg-amber-50 text-amber-700 border border-amber-200" },
-  closed:      { label: "Kapandı",      cls: "bg-gray-100 text-gray-500 border border-gray-200" },
+  open:        { label: "Açık",         cls: "bg-green-50 text-green-700 border border-green-150 font-semibold" },
+  review:      { label: "İnceleniyor",  cls: "bg-blue-50 text-blue-700 border border-blue-150 font-semibold" },
+  in_progress: { label: "Devam Ediyor", cls: "bg-amber-50 text-amber-700 border border-amber-150 font-semibold" },
+  closed:      { label: "Kapandı",      cls: "bg-gray-50 text-gray-500 border border-gray-150 font-semibold" },
 };
 
 const APP_STATUS_MAP: Record<string, { label: string; cls: string }> = {
-  pending:  { label: "Bekliyor",    cls: "bg-yellow-50 text-yellow-700 border border-yellow-200" },
-  approved: { label: "Onaylandı",   cls: "bg-green-50 text-green-700 border border-green-200" },
-  rejected: { label: "Reddedildi",  cls: "bg-red-50 text-red-700 border border-red-200" },
+  pending:  { label: "Bekliyor",    cls: "bg-yellow-50 text-yellow-700 border border-yellow-150 font-semibold" },
+  approved: { label: "Onaylandı",   cls: "bg-green-50 text-green-700 border border-green-150 font-semibold" },
+  rejected: { label: "Reddedildi",  cls: "bg-red-50 text-red-700 border border-red-150 font-semibold" },
 };
 
 function SectionCard({
@@ -82,14 +80,14 @@ function SectionCard({
   children: React.ReactNode;
 }) {
   return (
-    <div className={`rounded-xl border ${accent ? "border-primary/20 bg-primary/[0.03]" : "border-gray-200 bg-white"} overflow-hidden`}>
-      <div className={`flex items-center gap-2.5 px-5 py-3.5 border-b ${accent ? "border-primary/15 bg-primary/5" : "border-gray-100 bg-gray-50/80"}`}>
-        <div className={`w-7 h-7 rounded-lg flex items-center justify-center ${accent ? "bg-primary/15" : "bg-white border border-gray-200"}`}>
-          <Icon className={accent ? "text-primary" : "text-gray-500"} size={14} />
+    <div className={`rounded-2xl border ${accent ? "border-[#004d40]/15 bg-[#004d40]/[0.01]" : "border-[#f1f0ea] bg-white"} overflow-hidden shadow-3xs`}>
+      <div className={`flex items-center gap-2.5 px-5 py-3.5 border-b ${accent ? "border-[#004d40]/10 bg-[#004d40]/5" : "border-[#f1f0ea] bg-gray-50/50"}`}>
+        <div className={`w-8 h-8 rounded-lg flex items-center justify-center shrink-0 ${accent ? "bg-[#004d40]/10 text-[#004d40]" : "bg-white border border-[#f1f0ea] text-gray-500"}`}>
+          <Icon className="w-4 h-4" />
         </div>
-        <h3 className="text-sm font-semibold text-gray-800">{title}</h3>
+        <h3 className="text-sm font-bold text-gray-900 font-heading">{title}</h3>
       </div>
-      <div className="px-5 py-4">{children}</div>
+      <div className="px-5 py-5">{children}</div>
     </div>
   );
 }
@@ -106,16 +104,16 @@ function InfoRow({
   href?: string;
 }) {
   return (
-    <div className="flex items-center gap-3 py-2.5 border-b border-gray-50 last:border-0">
-      <Icon className="text-gray-400 shrink-0" size={14} />
-      <span className="text-xs text-gray-500 w-28 shrink-0">{label}</span>
+    <div className="flex items-center gap-3 py-3 border-b border-[#f1f0ea]/50 last:border-0">
+      <Icon className="text-gray-400 shrink-0" size={16} />
+      <span className="text-xs text-gray-500 w-24 shrink-0 font-medium">{label}</span>
       {href ? (
-        <a href={href} target="_blank" rel="noopener noreferrer" className="text-sm font-medium text-primary hover:underline flex items-center gap-1 truncate">
+        <a href={href} target="_blank" rel="noopener noreferrer" className="text-sm font-bold text-[#004d40] hover:underline flex items-center gap-1 truncate">
           {value}
-          <FiExternalLink size={11} />
+          <FiExternalLink size={12} />
         </a>
       ) : (
-        <span className="text-sm font-medium text-gray-800 truncate">{value}</span>
+        <span className="text-sm font-semibold text-gray-800 truncate">{value}</span>
       )}
     </div>
   );
@@ -123,10 +121,10 @@ function InfoRow({
 
 function StatBubble({ value, label, icon: Icon }: { value: number | string; label: string; icon: React.ElementType }) {
   return (
-    <div className="flex flex-col items-center gap-1 bg-[#004d40]/10 rounded-xl px-5 py-3 backdrop-blur-sm border border-[#004d40]/20 text-[#004d40] text-center min-w-[90px]">
-      <Icon size={16} className="text-[#004d40]/60 mb-0.5" />
-      <span className="text-xl font-bold">{value}</span>
-      <span className="text-xs text-[#004d40]/70 leading-tight">{label}</span>
+    <div className="flex flex-col items-center gap-1 bg-[#004d40]/10 rounded-2xl px-5 py-3 backdrop-blur-xs border border-[#004d40]/15 text-[#004d40] text-center min-w-[95px] shadow-3xs select-none">
+      <Icon size={16} className="text-[#004d40]/70 mb-0.5" />
+      <span className="text-xl font-black font-heading">{value}</span>
+      <span className="text-[10px] font-bold text-[#004d40]/80 leading-tight uppercase tracking-wider">{label}</span>
     </div>
   );
 }
@@ -224,16 +222,17 @@ export default function CompanyProfilePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen p-0 mx-auto flex justify-center items-center text-gray-500">
-        Yükleniyor...
+      <div className="flex justify-center items-center min-h-[40vh]">
+        <div className="w-8 h-8 border-4 border-[#004d40]/30 border-t-[#004d40] rounded-full animate-spin" />
       </div>
     );
   }
 
   if (!profile) {
     return (
-      <div className="min-h-screen p-0 mx-auto flex justify-center items-center text-gray-500">
-        Profil yüklenemedi.
+      <div className="flex flex-col items-center gap-3 min-h-[40vh] justify-center text-gray-500">
+        <FiBriefcase className="w-8 h-8 text-red-400" />
+        <p>Profil verileri yüklenemedi. Lütfen sayfayı yenileyin.</p>
       </div>
     );
   }
@@ -250,17 +249,11 @@ export default function CompanyProfilePage() {
     : null;
 
   return (
-    <div className="min-h-screen p-0 mx-auto">
-      <Breadcrumb
-        items={[
-          { label: "Panel", href: "/company/dashboard" },
-          { label: "Profilim", active: true },
-        ]}
-      />
+    <div className="w-full max-w-[1280px] mx-auto px-6 md:px-16 py-16 flex flex-col gap-0">
 
       {/* ── Hero Card ─────────────────────────────────────────────────────── */}
       <div
-        className="overflow-hidden rounded-t-xl"
+        className="overflow-hidden rounded-t-2xl shadow-3xs"
         style={{ background: "linear-gradient(135deg, #f59e0b 0%, #fbb049 55%, #fcd97a 100%)" }}
       >
         {/* Top bar */}
@@ -268,17 +261,17 @@ export default function CompanyProfilePage() {
           {isEditing ? (
             <>
               <Button variant="outline" icon={FiX} onClick={cancelEdit}
-                className="text-xs border-[#004d40]/30 text-[#004d40] hover:bg-[#004d40]/10 bg-[#004d40]/5">
+                className="text-xs border-[#004d40]/30 text-[#004d40] hover:bg-[#004d40]/10 bg-[#004d40]/5 rounded-lg py-1 px-3">
                 İptal
               </Button>
               <Button variant="outline" icon={FiSave} onClick={handleSave} isLoading={isSaving}
-                className="text-xs border-[#004d40]/60 text-[#004d40] hover:bg-[#004d40]/15 bg-[#004d40]/10 font-semibold">
+                className="text-xs border-[#004d40]/60 text-[#004d40] hover:bg-[#004d40]/15 bg-[#004d40]/10 font-semibold rounded-lg py-1 px-3">
                 Kaydet
               </Button>
             </>
           ) : (
             <Button variant="outline" icon={FiEdit2} onClick={startEdit}
-              className="text-xs border-transparent text-[#004d40] hover:!bg-[#004d40]/20 bg-[#004d40]/5">
+              className="text-xs border-transparent text-[#004d40] hover:bg-[#004d40]/10 bg-[#004d40]/5 rounded-lg py-1 px-3">
               Profili Düzenle
             </Button>
           )}
@@ -288,7 +281,7 @@ export default function CompanyProfilePage() {
         <div className="px-6 pb-6 pt-2 flex flex-col md:flex-row gap-6 items-start md:items-end">
           {/* Logo */}
           <div className="shrink-0 space-y-2">
-            <div className="w-24 h-24 rounded-2xl border-2 border-[#004d40]/25 bg-[#004d40]/10 flex items-center justify-center text-3xl font-bold text-[#004d40] shadow-lg overflow-hidden">
+            <div className="w-24 h-24 rounded-2xl border-2 border-[#004d40]/25 bg-[#004d40]/10 flex items-center justify-center text-3xl font-extrabold text-[#004d40] shadow-lg overflow-hidden">
               {displayLogo ? (
                 <Image src={displayLogo} alt={displayName} width={96} height={96} className="w-full h-full object-cover" />
               ) : (
@@ -296,49 +289,49 @@ export default function CompanyProfilePage() {
               )}
             </div>
             {isEditing && (
-              <div className="flex items-center gap-1.5">
+              <div className="flex items-center gap-1.5 max-w-[96px]">
                 <FiImage size={11} className="text-[#004d40]/50 shrink-0" />
-                <input {...field("logo_url")} placeholder="Logo URL" className={`${inputCls} text-xs py-1`} />
+                <input {...field("logo_url")} placeholder="Logo URL" className={`${inputCls} text-[10px] py-0.5 px-1.5 rounded-md`} />
               </div>
             )}
           </div>
 
           {/* Name & meta */}
-          <div className="grow space-y-2">
+          <div className="grow space-y-3">
             {isEditing ? (
               <input {...field("company_name")} placeholder="Şirket Adı" className={`${inputCls} text-xl font-bold`} />
             ) : (
-              <h1 className="text-2xl md:text-3xl font-bold text-[#004d40] leading-tight">
+              <h1 className="text-2xl md:text-3xl font-black text-[#004d40] leading-tight font-heading">
                 {displayName}
               </h1>
             )}
 
             <div className="flex flex-wrap items-center gap-2">
               {isEditing ? (
-                <>
+                <div className="flex flex-col sm:flex-row gap-2 mt-1">
                   <div className="flex items-center gap-1.5">
-                    <FiLayers size={11} className="text-[#004d40]/50 shrink-0" />
-                    <input {...field("industry")} placeholder="Sektör" className={`${inputCls} py-1`} />
+                    <FiLayers size={13} className="text-[#004d40]/50 shrink-0" />
+                    <input {...field("industry")} placeholder="Sektör" className={`${inputCls} py-1 px-2.5 rounded-lg text-xs`} />
                   </div>
                   <div className="flex items-center gap-1.5">
-                    <FiMapPin size={11} className="text-[#004d40]/50 shrink-0" />
-                    <input {...field("location")} placeholder="Konum" className={`${inputCls} py-1`} />
+                    <FiMapPin size={13} className="text-[#004d40]/50 shrink-0" />
+                    <input {...field("location")} placeholder="Konum" className={`${inputCls} py-1 px-2.5 rounded-lg text-xs`} />
                   </div>
-                </>
+                </div>
               ) : (
                 <>
                   {displayIndustry && (
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-[#004d40]/10 text-[#004d40] border border-[#004d40]/20">
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[#004d40]/10 text-[#004d40] border border-[#004d40]/20 select-none">
                       <FiLayers size={11} /> {displayIndustry}
                     </span>
                   )}
                   {displayLocation && (
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-[#004d40]/10 text-[#004d40] border border-[#004d40]/20">
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[#004d40]/10 text-[#004d40] border border-[#004d40]/20 select-none">
                       <FiMapPin size={11} /> {displayLocation}
                     </span>
                   )}
                   {joinedYear && (
-                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-[#004d40]/10 text-[#004d40] border border-[#004d40]/20">
+                    <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold bg-[#004d40]/10 text-[#004d40] border border-[#004d40]/20 select-none">
                       <FiCalendar size={11} /> {joinedYear}&apos;den beri
                     </span>
                   )}
@@ -349,21 +342,23 @@ export default function CompanyProfilePage() {
 
           {/* Stats bubbles */}
           {stats && (
-            <div className="flex gap-3 flex-wrap md:flex-nowrap shrink-0">
-              <StatBubble icon={FiBriefcase} value={stats.activeTasks}       label="Açık Görev" />
+            <div className="flex gap-3 flex-wrap md:flex-nowrap shrink-0 w-full md:w-auto mt-4 md:mt-0 justify-start md:justify-end">
+              <StatBubble icon={FiBriefcase} value={stats.activeTasks}       label="Açık İlan" />
               <StatBubble icon={FiUsers}     value={stats.totalApplications} label="Başvuru" />
-              <StatBubble icon={FiAward}     value={stats.hiredStudents}     label="İşe Alınan" />
+              <StatBubble icon={FiAward}     value={stats.hiredStudents}     label="İşe Alım" />
             </div>
           )}
         </div>
       </div>
 
-      <MainSection hideHeader className="rounded-t-none">
-        {/* ── Body ──────────────────────────────────────────────────────────── */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-5">
+      {/* ── Content Card ── */}
+      <div className="bg-white rounded-b-2xl border-x border-b border-[#f1f0ea] p-6 md:p-8 shadow-2xs">
+        
+        {/* ── Body Grid ── */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
 
           {/* ── Left column (2/3) ──────────────────────── */}
-          <div className="lg:col-span-2 space-y-5">
+          <div className="lg:col-span-2 space-y-6">
 
             {/* About */}
             <SectionCard icon={FiBriefcase} title="Şirket Hakkında" accent>
@@ -371,15 +366,15 @@ export default function CompanyProfilePage() {
                 <textarea
                   {...field("description")}
                   rows={6}
-                  placeholder="Şirketiniz hakkında kısa bir açıklama yazın..."
+                  placeholder="Şirketiniz hakkında tanıtıcı bir açıklama yazın..."
                   className={`${bodyInputCls} resize-none`}
                 />
               ) : displayDesc ? (
-                <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">{displayDesc}</p>
+                <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap font-medium">{displayDesc}</p>
               ) : (
-                <div className="text-center py-6">
-                  <p className="text-sm text-gray-400 italic">Henüz açıklama eklenmemiş.</p>
-                  <button onClick={startEdit} className="text-xs text-primary underline underline-offset-2 mt-1 inline-block">
+                <div className="text-center py-8">
+                  <p className="text-sm text-gray-400 italic">Henüz şirket açıklaması eklenmemiş.</p>
+                  <button onClick={startEdit} className="text-xs text-[#004d40] font-bold underline underline-offset-4 mt-2 inline-block">
                     Açıklama ekle
                   </button>
                 </div>
@@ -389,37 +384,37 @@ export default function CompanyProfilePage() {
             {/* Recent Tasks */}
             <SectionCard icon={FiTrendingUp} title="Son Görevler">
               {stats && stats.recentTasks.length > 0 ? (
-                <div className="space-y-2">
+                <div className="space-y-3">
                   {stats.recentTasks.map((task) => {
                     const s = STATUS_MAP[task.status] ?? { label: task.status, cls: "bg-gray-100 text-gray-500 border border-gray-200" };
                     return (
                       <Link key={task.id} href={`/company/tasks/${task.id}/details`}
-                        className="flex items-center justify-between p-3 rounded-lg border border-gray-100 hover:border-primary/20 hover:bg-primary/[0.02] transition-all group">
-                        <div className="flex items-center gap-3 min-w-0">
-                          <div className="w-8 h-8 rounded-lg bg-primary/8 flex items-center justify-center shrink-0">
-                            <FiBriefcase className="text-primary" size={14} />
+                        className="flex items-center justify-between p-4 rounded-xl border border-[#f1f0ea] hover:border-[#004d40]/20 hover:bg-[#004d40]/5 transition-all group">
+                        <div className="flex items-center gap-3.5 min-w-0">
+                          <div className="w-9 h-9 rounded-xl bg-[#004d40]/5 flex items-center justify-center shrink-0 text-[#004d40]">
+                            <FiBriefcase size={16} />
                           </div>
                           <div className="min-w-0">
-                            <p className="text-sm font-medium text-gray-800 truncate group-hover:text-primary transition-colors">{task.title}</p>
-                            <p className="text-xs text-gray-400">
+                            <p className="text-sm font-bold text-gray-800 truncate group-hover:text-[#004d40] transition-colors">{task.title}</p>
+                            <p className="text-xs text-gray-400 font-medium mt-0.5">
                               {new Date(task.created_at).toLocaleDateString("tr-TR")} &bull; {task._count.submissions} başvuru
                             </p>
                           </div>
                         </div>
-                        <span className={`text-xs font-medium px-2.5 py-1 rounded-full shrink-0 ml-3 ${s.cls}`}>{s.label}</span>
+                        <span className={`text-xs font-semibold px-2.5 py-1 rounded-full shrink-0 ml-3 ${s.cls}`}>{s.label}</span>
                       </Link>
                     );
                   })}
-                  <div className="pt-1">
-                    <Link href="/company/tasks" className="text-xs text-primary underline underline-offset-2">
+                  <div className="pt-2">
+                    <Link href="/company/tasks" className="text-xs text-[#004d40] hover:text-[#00342b] font-bold underline underline-offset-4">
                       Tüm görevleri gör →
                     </Link>
                   </div>
                 </div>
               ) : (
-                <div className="text-center py-6">
+                <div className="text-center py-8">
                   <p className="text-sm text-gray-400 italic">Henüz görev oluşturulmamış.</p>
-                  <Link href="/company/tasks/new" className="text-xs text-primary underline underline-offset-2 mt-1 inline-block">
+                  <Link href="/company/tasks/new" className="text-xs text-[#004d40] hover:text-[#00342b] font-bold underline underline-offset-4 mt-2 inline-block">
                     İlk görevi oluştur
                   </Link>
                 </div>
@@ -429,21 +424,21 @@ export default function CompanyProfilePage() {
             {/* Recent Applications */}
             {stats && stats.recentApplications.length > 0 && (
               <SectionCard icon={FiUsers} title="Son Başvurular">
-                <div className="space-y-2">
+                <div className="space-y-3">
                   {stats.recentApplications.map((app) => {
                     const a = APP_STATUS_MAP[app.status] ?? { label: app.status, cls: "bg-gray-100 text-gray-500 border border-gray-200" };
                     return (
-                      <div key={app.id} className="flex items-center justify-between p-3 rounded-lg border border-gray-100">
-                        <div className="flex items-center gap-3 min-w-0">
-                          <div className="w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-primary text-sm font-bold shrink-0">
+                      <div key={app.id} className="flex items-center justify-between p-4 rounded-xl border border-[#f1f0ea] hover:shadow-3xs transition-shadow">
+                        <div className="flex items-center gap-3.5 min-w-0">
+                          <div className="w-9 h-9 rounded-full bg-[#004d40]/5 flex items-center justify-center text-[#004d40] text-sm font-bold shrink-0">
                             {app.student.full_name.charAt(0)}
                           </div>
                           <div className="min-w-0">
-                            <p className="text-sm font-medium text-gray-800 truncate">{app.student.full_name}</p>
-                            <p className="text-xs text-gray-400 truncate">{app.task.title}</p>
+                            <p className="text-sm font-bold text-gray-800 truncate">{app.student.full_name}</p>
+                            <p className="text-xs text-gray-400 font-medium truncate mt-0.5">{app.task.title}</p>
                           </div>
                         </div>
-                        <span className={`text-xs font-medium px-2.5 py-1 rounded-full shrink-0 ml-3 ${a.cls}`}>{a.label}</span>
+                        <span className={`text-xs font-semibold px-2.5 py-1 rounded-full shrink-0 ml-3 ${a.cls}`}>{a.label}</span>
                       </div>
                     );
                   })}
@@ -453,15 +448,17 @@ export default function CompanyProfilePage() {
           </div>
 
           {/* ── Right column (1/3) ──────────────────────── */}
-          <div className="space-y-5">
+          <div className="space-y-6">
 
             {/* Contact Info */}
             <SectionCard icon={FiMail} title="İletişim Bilgileri">
               <InfoRow icon={FiMail} label="E-posta" value={profile.user.email} />
               {isEditing ? (
-                <div className="flex items-center gap-3 py-2.5 border-b border-gray-50">
-                  <FiGlobe className="text-gray-400 shrink-0" size={14} />
-                  <span className="text-xs text-gray-500 w-28 shrink-0">Website</span>
+                <div className="flex flex-col gap-2 py-3 border-b border-[#f1f0ea]/50">
+                  <div className="flex items-center gap-2">
+                    <FiGlobe className="text-gray-400 shrink-0" size={16} />
+                    <span className="text-xs text-gray-500 w-24 shrink-0 font-medium">Website</span>
+                  </div>
                   <input {...field("website_url")} placeholder="https://..." className={bodyInputCls} />
                 </div>
               ) : displayWebsite ? (
@@ -476,20 +473,20 @@ export default function CompanyProfilePage() {
 
             {/* Stats Detail */}
             {stats && (
-              <SectionCard icon={FiTrendingUp} title="İstatistikler">
-                <div className="space-y-3">
+              <SectionCard icon={FiTrendingUp} title="Performans Verileri">
+                <div className="space-y-3.5">
                   {[
                     { icon: FiBriefcase,  label: "Toplam Görev",      value: stats.totalTasks },
-                    { icon: FiCheckCircle,label: "Aktif Görev",       value: stats.activeTasks },
+                    { icon: FiCheckCircle,label: "Aktif Görevler",     value: stats.activeTasks },
                     { icon: FiUsers,      label: "Toplam Başvuru",    value: stats.totalApplications },
                     { icon: FiClock,      label: "Bekleyen Başvuru",  value: stats.pendingApplications },
-                    { icon: FiAward,      label: "İşe Alınan",        value: stats.hiredStudents },
+                    { icon: FiAward,      label: "İşe Alınanlar",     value: stats.hiredStudents },
                   ].map(({ icon: Icon, label, value }) => (
-                    <div key={label} className="flex items-center justify-between py-1.5 border-b border-gray-50 last:border-0">
-                      <div className="flex items-center gap-2 text-sm text-gray-600">
-                        <Icon size={13} className="text-gray-400" /> {label}
+                    <div key={label} className="flex items-center justify-between py-2 border-b border-[#f1f0ea]/50 last:border-0">
+                      <div className="flex items-center gap-2.5 text-xs font-semibold text-[#565e74]">
+                        <Icon size={14} className="text-gray-400" /> {label}
                       </div>
-                      <span className="text-sm font-bold text-primary">{value}</span>
+                      <span className="text-sm font-bold text-[#004d40] font-heading">{value}</span>
                     </div>
                   ))}
                 </div>
@@ -497,30 +494,30 @@ export default function CompanyProfilePage() {
             )}
 
             {/* Quick Actions */}
-            <SectionCard icon={FiBriefcase} title="Hızlı Erişim">
+            <SectionCard icon={FiBriefcase} title="Hızlı İşlemler">
               <div className="space-y-2">
                 {isEditing ? (
                   <>
-                    <Button variant="primary" className="w-full text-sm justify-start gap-2" icon={FiSave}
+                    <Button variant="primary" className="w-full text-xs py-2.5 justify-start gap-2 bg-[#004d40] hover:bg-[#00342b] text-white rounded-xl font-semibold shadow-xs" icon={FiSave}
                       onClick={handleSave} isLoading={isSaving}>
                       Kaydet
                     </Button>
-                    <Button variant="outline" className="w-full text-sm justify-start gap-2" icon={FiX}
+                    <Button variant="outline" className="w-full text-xs py-2.5 justify-start gap-2 border border-gray-200 text-gray-700 hover:bg-gray-50 rounded-xl font-semibold" icon={FiX}
                       onClick={cancelEdit}>
                       İptal
                     </Button>
                   </>
                 ) : (
                   <>
-                    <Button variant="primary" className="w-full text-sm justify-start gap-2" icon={FiEdit2}
+                    <Button variant="primary" className="w-full text-xs py-2.5 justify-start gap-2 bg-[#004d40] hover:bg-[#00342b] text-white rounded-xl font-semibold shadow-xs animate-pulse" icon={FiEdit2}
                       onClick={startEdit}>
                       Profili Düzenle
                     </Button>
-                    <Button variant="outline" className="w-full text-sm justify-start gap-2" icon={FiBriefcase}
+                    <Button variant="outline" className="w-full text-xs py-2.5 justify-start gap-2 border border-gray-200 text-gray-700 hover:bg-gray-50 rounded-xl font-semibold" icon={FiBriefcase}
                       onClick={() => router.push("/company/tasks")}>
                       Görevlerim
                     </Button>
-                    <Button variant="outline" className="w-full text-sm justify-start gap-2" icon={FiUsers}
+                    <Button variant="outline" className="w-full text-xs py-2.5 justify-start gap-2 border border-gray-200 text-gray-700 hover:bg-gray-50 rounded-xl font-semibold" icon={FiUsers}
                       onClick={() => router.push("/company/tasks")}>
                       Başvurular
                     </Button>
@@ -530,7 +527,9 @@ export default function CompanyProfilePage() {
             </SectionCard>
           </div>
         </div>
-      </MainSection>
+
+      </div>
+
     </div>
   );
 }

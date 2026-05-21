@@ -1,11 +1,10 @@
 "use client";
+
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import MainSection from "@/components/ui/layouts/MainSection";
-import Breadcrumb from "@/components/ui/Breadcrumb";
 import CompanyTaskCard from "@/components/ui/cards/CompanyTaskCard";
 import Link from "next/link";
-import { FiPlus } from "react-icons/fi";
+import { FiPlus, FiBriefcase } from "react-icons/fi";
 import Tabs from "@/components/ui/Tabs";
 import Button from "@/components/ui/Button";
 import { taskService } from "@/services/task.service";
@@ -22,7 +21,7 @@ export default function MyTasksPage() {
     Açık: "open",
     İnceleniyor: "review",
     "Devam Eden": "in_progress",
-    Tamamlanan: "closed", // Mapping 'Completed' to 'closed' for now, or add 'completed' status to backend enum
+    Tamamlanan: "closed",
   };
 
   const fetchTasks = async () => {
@@ -59,30 +58,47 @@ export default function MyTasksPage() {
       : tasks.filter((t) => t.status === filterMap[activeTab]);
 
   return (
-    <div className="min-h-screen p-0 mx-auto">
-      <Breadcrumb items={[
-        { label: "Panel", href: "/company/dashboard" },
-        { label: "Görevlerim", active: true }
-      ]} />
-      <MainSection hideHeader>
-        {/* Tabs */}
-        <div className="flex justify-between items-center " >
-          <Tabs tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
-          <Link href="/company/tasks/new">
+    <div className="w-full max-w-[1280px] mx-auto px-6 md:px-16 py-16 flex flex-col gap-8">
+      
+      {/* ── Page Header ── */}
+      <header className="relative overflow-hidden rounded-xl border border-[#f1f0ea] bg-white p-6 md:p-8">
+        <div className="absolute inset-0 bg-gradient-to-br from-[#eff4ff] to-transparent opacity-50 pointer-events-none" />
+        <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <div className="w-12 h-12 bg-[#004d40]/5 rounded-xl flex items-center justify-center text-[#004d40] shrink-0">
+              <FiBriefcase className="w-6 h-6" />
+            </div>
+            <div>
+              <h1 className="text-[28px] md:text-[36px] font-extrabold leading-tight text-[#00342b] font-heading">
+                Görevlerim
+              </h1>
+              <p className="text-sm text-[#565e74] font-medium mt-0.5">
+                Şirketiniz tarafından oluşturulan tüm aktif ve geçmiş görevleri yönetin
+              </p>
+            </div>
+          </div>
+          <Link href="/company/tasks/new" className="shrink-0 self-start sm:self-center">
             <Button
               variant="primary"
-              className="flex items-center gap-2 text-sm font-medium"
+              className="flex items-center gap-2 px-5 py-3 rounded-xl bg-[#004d40] hover:bg-[#00342b] text-white text-sm font-semibold transition-all shadow-xs"
             >
               <FiPlus />
               Yeni Görev
             </Button>
           </Link>
         </div>
+      </header>
 
-        {/* Grid */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-8">
+      {/* ── Tabs & Grid Content ── */}
+      <div className="flex flex-col gap-6">
+        <div className="overflow-x-auto pb-2 -mx-6 px-6 sm:mx-0 sm:px-0 scrollbar-none">
+          <Tabs tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {isLoading ? (
-            <div className="col-span-full text-center py-12 text-gray-500">
+            <div className="col-span-full bg-white rounded-2xl border border-[#f1f0ea] shadow-2xs p-12 text-center text-gray-500">
+              <div className="w-8 h-8 border-2 border-[#004d40] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
               Yükleniyor...
             </div>
           ) : filteredTasks.length > 0 ? (
@@ -91,7 +107,7 @@ export default function MyTasksPage() {
                 key={task.id}
                 title={task.title}
                 description={task.description || ""}
-                date={new Date(task.deadline || task.id).toLocaleDateString()} // Use deadline or fallback
+                date={new Date(task.deadline || task.id).toLocaleDateString()}
                 status={
                   task.status === "open"
                     ? "Open"
@@ -115,12 +131,17 @@ export default function MyTasksPage() {
               />
             ))
           ) : (
-            <div className="col-span-full text-center py-12 text-gray-500">
-              Bu kategoride görev bulunmamaktadır.
+            <div className="col-span-full bg-white rounded-2xl border border-[#f1f0ea] shadow-2xs p-12 text-center text-gray-500 flex flex-col items-center justify-center min-h-[250px]">
+              <FiBriefcase className="w-12 h-12 text-[#004d40]/10 mb-3" />
+              <h3 className="font-bold text-gray-900 mb-1">Görev Bulunmuyor</h3>
+              <p className="text-xs text-[#565e74] font-medium max-w-xs">
+                Seçtiğiniz kategoride şirketiniz tarafından eklenmiş bir görev bulunmamaktadır.
+              </p>
             </div>
           )}
         </div>
-      </MainSection>
+      </div>
+
     </div>
   );
 }
