@@ -47,9 +47,9 @@ function SectionCard({
   children: React.ReactNode;
 }) {
   return (
-    <div className="rounded-2xl border border-[#dfded6] bg-transparent p-6 transition-all duration-300 hover:scale-[1.01] hover:bg-white hover:bg-gradient-to-br hover:from-[#004d40]/[0.045] hover:to-[#ffd54f]/[0.075] hover:border-[#004d40]/50 hover:shadow-md hover:rounded-none group/card">
+    <div className="rounded-2xl border border-[#dfded6] bg-white/60 backdrop-blur-xs p-6 transition-all duration-300">
       <div className="flex items-center gap-3 mb-4">
-        <div className="w-8 h-8 rounded-xl flex items-center justify-center bg-[#004d40]/5 border border-[#dfded6] text-[#004d40] group-hover/card:bg-[#004d40]/10 transition-colors">
+        <div className="w-8 h-8 rounded-xl flex items-center justify-center bg-[#004d40]/5 border border-[#dfded6] text-[#004d40]">
           <Icon size={16} className="text-[#004d40]" />
         </div>
         <h3 className="text-base font-bold text-[#00342b] tracking-wide break-words">{title}</h3>
@@ -95,7 +95,7 @@ function RewardRow({
 
 function StatBadge({ value, label, subtext }: { value: string | number; label: string; subtext: string }) {
   return (
-    <div className="flex flex-col justify-between rounded-2xl border border-[#dfded6] bg-transparent p-5 min-w-[160px] flex-1 transition-all duration-300 hover:scale-[1.05] hover:bg-white hover:bg-gradient-to-br hover:from-[#004d40]/[0.045] hover:to-[#ffd54f]/[0.075] hover:border-[#004d40]/50 hover:shadow-md hover:rounded-none cursor-pointer">
+    <div className="flex flex-col justify-between rounded-2xl border border-[#dfded6] bg-white/60 backdrop-blur-xs p-5 min-w-[160px] flex-1 transition-all duration-300">
       <span className="text-[10px] uppercase tracking-wider font-extrabold text-[#565e74]">{label}</span>
       <div className="flex items-baseline gap-2 mt-1">
         <span className="text-[32px] font-bold text-[#00342b] leading-none">{value}</span>
@@ -221,7 +221,7 @@ export default function TaskDetailsPage() {
             label="Positions" 
             subtext="Pozisyon" 
           />
-          <div className="flex flex-col justify-between rounded-2xl border border-[#dfded6] bg-transparent p-5 min-w-[160px] flex-1 transition-all duration-300 hover:scale-[1.05] hover:bg-white hover:bg-gradient-to-br hover:from-[#004d40]/[0.045] hover:to-[#ffd54f]/[0.075] hover:border-[#004d40]/50 hover:shadow-md hover:rounded-none cursor-pointer">
+          <div className="flex flex-col justify-between rounded-2xl border border-[#dfded6] bg-white/60 backdrop-blur-xs p-5 min-w-[160px] flex-1 transition-all duration-300">
             <span className="text-[10px] uppercase tracking-wider font-extrabold text-[#565e74]">Deadline</span>
             <div className="flex items-baseline gap-2 mt-1">
               <span className="text-[24px] md:text-[26px] font-bold text-[#00342b] leading-none shrink-0">
@@ -270,7 +270,7 @@ export default function TaskDetailsPage() {
 
             {/* Required Skills */}
             {task.requiredSkills && task.requiredSkills.length > 0 && (
-              <div className="bg-white border border-[#dfded6] rounded-2xl p-6 transition-all duration-300 hover:scale-[1.01] hover:bg-gradient-to-br hover:from-[#004d40]/[0.045] hover:to-[#ffd54f]/[0.075] hover:border-[#004d40]/50 hover:shadow-md hover:rounded-none group">
+              <div className="bg-white/60 backdrop-blur-xs border border-[#dfded6] rounded-2xl p-6 transition-all duration-300">
                 <h3 className="text-base font-bold text-[#00342b] mb-4">Required Skills</h3>
                 <div className="flex flex-wrap gap-2">
                   {task.requiredSkills.map((ts) => (
@@ -324,7 +324,7 @@ export default function TaskDetailsPage() {
             {/* Reward Card */}
             {task.reward_type && (
               <div
-                className="rounded-2xl p-6 shadow-lg relative overflow-hidden group transition-all duration-300 hover:scale-[1.01] hover:rounded-none border border-[#004d40]/30"
+                className="rounded-2xl p-6 shadow-md relative overflow-hidden group transition-all duration-300 border border-[#004d40]/30"
                 style={{ background: "linear-gradient(135deg, #004d40 0%, #00342b 100%)" }}
               >
                 {/* Background Glow */}
