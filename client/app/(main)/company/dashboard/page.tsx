@@ -17,6 +17,7 @@ import { companyService } from "@/services/company.service";
 import { CompanyProfile } from "@/types/company";
 import Button from "@/components/ui/Button";
 import StatCard from "@/components/ui/cards/StatCard";
+import ActiveTaskCard from "@/components/ui/cards/ActiveTaskCard";
 import CompanyWelcomeHero from "@/components/ui/sections/CompanyWelcomeHero";
 
 interface DashboardStats {
@@ -238,30 +239,15 @@ export default function CompanyDashboardPage() {
                 </Link>
               </div>
             ) : (
-              stats.recentTasks.map((task) => {
-                const progressWidth = Math.min(100, Math.max(15, (task._count.submissions / 10) * 100));
-
-                return (
-                  <Link key={task.id} href={`/company/tasks/${task.id}/details`} className="block group">
-                    <div className="p-6 transition-all duration-300 ease-out cursor-pointer hover:z-10 hover:bg-white hover:scale-[1.02] bg-transparent relative border border-transparent hover:border-[#004d40] hover:rounded-2xl">
-                      <h3 className="text-[20px] font-semibold leading-[28px] text-[#0b1c30] mb-2 group-hover:text-[#004d40] transition-colors line-clamp-1">{task.title}</h3>
-                      <div className="flex items-center gap-6 text-[#565e74] mb-4">
-                        <div className="flex items-center gap-1 text-[12px] tracking-[0.05em] font-semibold leading-[16px]">
-                          <FiUsers className="w-[18px] h-[18px]" />
-                          <span>{task._count.submissions} başvuru</span>
-                        </div>
-                        <div className="flex items-center gap-1 text-[12px] tracking-[0.05em] font-semibold leading-[16px]">
-                          <FiClock className="w-[18px] h-[18px]" />
-                          <span>{formatDate(task.created_at)}</span>
-                        </div>
-                      </div>
-                      <div className="w-full bg-[#dce9ff] h-1.5 rounded-full overflow-hidden">
-                        <div className="bg-[#00342b] h-full transition-all duration-500" style={{ width: `${progressWidth}%` }}></div>
-                      </div>
-                    </div>
-                  </Link>
-                );
-              })
+              stats.recentTasks.map((task) => (
+                <ActiveTaskCard
+                  key={task.id}
+                  id={task.id}
+                  title={task.title}
+                  submissionsCount={task._count.submissions}
+                  createdAt={task.created_at}
+                />
+              ))
             )}
           </div>
 
