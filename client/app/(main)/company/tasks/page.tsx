@@ -6,7 +6,7 @@ import CompanyTaskCard from "@/components/ui/cards/CompanyTaskCard";
 import Link from "next/link";
 import { FiPlus, FiBriefcase } from "react-icons/fi";
 import Tabs from "@/components/ui/Tabs";
-import Button from "@/components/ui/Button";
+import PrimaryButton from "@/components/ui/PrimaryButton";
 import { taskService } from "@/services/task.service";
 import { Task } from "@/types/task";
 
@@ -67,15 +67,11 @@ export default function MyTasksPage() {
           activeTab={activeTab}
           onTabChange={setActiveTab}
           rightAction={
-            <Link href="/company/tasks/new" className="shrink-0 pb-3 block">
-              <Button
-                variant="primary"
-                className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#004d40] hover:bg-[#00342b] text-white text-sm font-semibold transition-all shadow-xs"
-              >
-                <FiPlus />
+            <div className="shrink-0 pb-3">
+              <PrimaryButton href="/company/tasks/new" icon={FiPlus}>
                 Yeni Görev
-              </Button>
-            </Link>
+              </PrimaryButton>
+            </div>
           }
         />
 
