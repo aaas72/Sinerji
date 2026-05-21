@@ -141,7 +141,7 @@ export default function CompanyDashboardPage() {
       </section>
 
       {/* ── KPI Bar ── */}
-      <section className="border border-[#f1f0ea] rounded-2xl overflow-hidden grid grid-cols-1 md:grid-cols-5 divide-y md:divide-y-0 md:divide-x divide-[#f1f0ea] mb-16">
+      <section className="border border-[#f1f0ea] rounded-2xl grid grid-cols-1 md:grid-cols-5 divide-y md:divide-y-0 md:divide-x divide-[#f1f0ea] mb-16 relative">
         <StatCard
           icon={<FiBriefcase className="text-[#00342b] w-6 h-6" />}
           label="Aktif Görev"
