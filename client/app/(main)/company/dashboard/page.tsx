@@ -240,18 +240,10 @@ export default function CompanyDashboardPage() {
             ) : (
               stats.recentTasks.map((task) => {
                 const progressWidth = Math.min(100, Math.max(15, (task._count.submissions / 10) * 100));
-                const isClosed = task.status?.toLowerCase() === "closed";
-                const statusCls = isClosed 
-                  ? "bg-[#dae2fd] text-[#5c647a]"
-                  : "bg-[#004d40] text-[#7ebdac]";
-                const statusText = isClosed ? "Reviewing" : "Active";
 
                 return (
                   <Link key={task.id} href={`/company/tasks/${task.id}/details`} className="block group">
                     <div className="p-6 transition-all duration-300 ease-out cursor-pointer hover:z-10 hover:bg-white hover:scale-[1.02] bg-transparent relative border border-transparent hover:border-[#004d40] hover:rounded-2xl">
-                      <span className={`px-2 py-0.5 rounded-lg text-[12px] font-semibold tracking-[0.05em] leading-[16px] inline-block mb-4 ${statusCls}`}>
-                        {statusText}
-                      </span>
                       <h3 className="text-[20px] font-semibold leading-[28px] text-[#0b1c30] mb-2 group-hover:text-[#004d40] transition-colors line-clamp-1">{task.title}</h3>
                       <div className="flex items-center gap-6 text-[#565e74] mb-4">
                         <div className="flex items-center gap-1 text-[12px] tracking-[0.05em] font-semibold leading-[16px]">
