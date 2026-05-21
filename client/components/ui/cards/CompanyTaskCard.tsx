@@ -43,52 +43,50 @@ export default function CompanyTaskCard({
     };
   }, []);
 
-  const statusColors = {
-    Open: "bg-green-100 text-green-700",
-    "In Progress": "bg-blue-100 text-blue-700",
-    Completed: "bg-gray-100 text-gray-700",
-    Review: "bg-yellow-100 text-yellow-700",
+  const statusConfig: Record<string, { label: string; cls: string; hasDot?: boolean; dotCls?: string }> = {
+    Open: { label: "Açık", cls: "bg-[#065043]/10 text-[#065043]", hasDot: true, dotCls: "bg-[#065043]" },
+    "In Progress": { label: "Devam ediyor", cls: "bg-[#004d40]/10 text-[#004d40]", hasDot: true, dotCls: "bg-[#004d40]" },
+    Completed: { label: "Tamamlandı", cls: "bg-[#3f4945]/15 text-[#3f4945]" },
+    Review: { label: "İnceleniyor", cls: "bg-[#e28743]/10 text-[#e28743]", hasDot: true, dotCls: "bg-[#e28743] animate-pulse" },
   };
 
-  const statusLabels = {
-    Open: "Açık",
-    "In Progress": "Devam Ediyor",
-    Completed: "Tamamlandı",
-    Review: "İnceleniyor",
-  };
+  const currentStatus = statusConfig[status] || statusConfig.Open;
 
   return (
-    <div className="bg-gray-100 border border-gray-200 rounded-lg p-6 transition-shadow relative">
+    <div className="bg-transparent border border-[#dfded6] rounded-2xl p-6 transition-all duration-300 ease-out relative hover:scale-[1.02] hover:bg-white hover:border-[#004d40]/50 hover:rounded-2xl hover:shadow-md hover:z-10 group">
       <div className="flex justify-between items-start mb-4">
         <div>
            <div className="flex items-center gap-3 mb-2">
-                <span className={cn("text-xs font-medium px-2.5 py-0.5 rounded-full", statusColors[status])}>
-                    {statusLabels[status]}
+                <span className={cn("px-4 py-1.5 rounded-full text-[12px] font-semibold tracking-[0.05em] leading-[16px] shrink-0 inline-flex items-center gap-1.5", currentStatus.cls)}>
+                  {currentStatus.hasDot && (
+                    <span className={cn("w-1.5 h-1.5 rounded-full", currentStatus.dotCls)} />
+                  )}
+                  {currentStatus.label}
                 </span>
-                <span className="text-gray-400 text-xs">{date}</span>
+                <span className="text-gray-400 text-xs font-semibold">{date}</span>
            </div>
-           <h3 className="font-bold text-md text-primary">{title}</h3>
+           <h3 className="text-[20px] font-semibold leading-[28px] text-[#0b1c30] mb-2 group-hover:text-[#004d40] transition-colors line-clamp-1">{title}</h3>
         </div>
         
         <div className="relative" ref={menuRef}>
           <button 
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="p-1 hover:bg-gray-100 rounded-full text-gray-500 transition-colors"
+            className="p-1 hover:bg-gray-100 rounded-full text-gray-500 transition-colors cursor-pointer"
           >
             <FiMoreVertical size={20} className="text-[#004d40]" />
           </button>
           
           {isMenuOpen && (
-            <div className="absolute right-0 top-8 w-48 bg-white rounded-md shadow-lg border border-gray-200 z-10 py-1">
+            <div className="absolute right-0 top-8 w-48 bg-white rounded-xl shadow-md border border-[#dfded6] z-15 py-1">
               <button 
-                className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2"
+                className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2 cursor-pointer"
                 onClick={() => { setIsMenuOpen(false); onEdit?.(); }}
               >
                 <FiEdit size={16} className="text-[#004d40]" />
                 <span>Düzenle</span>
               </button>
                <button 
-                className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2"
+                className="w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 flex items-center gap-2 cursor-pointer"
                 onClick={() => { setIsMenuOpen(false); onViewApplicants?.(); }}
               >
                 <FiUsers size={16} className="text-[#004d40]" />
@@ -96,10 +94,10 @@ export default function CompanyTaskCard({
               </button>
               <div className="border-t border-gray-100 my-1"></div>
               <button 
-                className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2"
+                className="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50 flex items-center gap-2 cursor-pointer"
                 onClick={() => { setIsMenuOpen(false); onDelete?.(); }}
               >
-                <FiTrash2 size={16} className="text-[#004d40]" />
+                <FiTrash2 size={16} className="text-red-600" />
                 <span>Sil</span>
               </button>
             </div>
@@ -107,20 +105,20 @@ export default function CompanyTaskCard({
         </div>
       </div>
 
-      <p className="text-gray-600 text-sm line-clamp-2 mb-4">
+      <p className="text-[#565e74] text-[14px] leading-[20px] font-medium line-clamp-2 mb-4">
         {description ? description.replace(/<[^>]*>?/gm, '').replace(/&nbsp;/g, ' ') : "Açıklama bulunmuyor."}
       </p>
 
-      <div className="flex items-center justify-between pt-4 border-t border-gray-100">
-        <div className="flex items-center gap-2 text-sm text-gray-600">
-            <FiUsers className="text-[#004d40]" />
+      <div className="flex items-center justify-between pt-4 border-t border-[#dfded6]">
+        <div className="flex items-center gap-2 text-[12px] tracking-[0.05em] font-semibold leading-[16px] text-[#565e74]">
+            <FiUsers className="w-[18px] h-[18px] text-[#004d40]/60" />
             <span>{applicantCount} Başvuru</span>
         </div>
         <button 
           onClick={onViewDetails}
-          className="text-[#004d40] text-sm font-medium hover:underline flex items-center gap-1"
+          className="text-[#00342b] text-[14px] font-semibold tracking-[0.01em] hover:underline flex items-center gap-1.5 cursor-pointer transition-colors"
         >
-          <FiEye className="text-[#004d40]" /> Detaylar
+          <FiEye className="w-[18px] h-[18px] text-[#004d40]/80" /> Detaylar
         </button>
       </div>
     </div>

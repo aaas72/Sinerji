@@ -61,7 +61,7 @@ export default function MyTasksPage() {
     <div className="w-full max-w-[1280px] mx-auto px-6 md:px-16 py-16 flex flex-col gap-8">
       
       {/* ── Page Header ── */}
-      <header className="relative overflow-hidden rounded-xl border border-[#f1f0ea] bg-white p-6 md:p-8">
+      <header className="relative overflow-hidden rounded-2xl border border-[#dfded6] bg-white p-6 md:p-8">
         <div className="absolute inset-0 bg-gradient-to-br from-[#eff4ff] to-transparent opacity-50 pointer-events-none" />
         <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
           <div className="flex items-center gap-4">
@@ -97,7 +97,7 @@ export default function MyTasksPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {isLoading ? (
-            <div className="col-span-full bg-white rounded-2xl border border-[#f1f0ea] shadow-2xs p-12 text-center text-gray-500">
+            <div className="col-span-full bg-white rounded-2xl border border-[#dfded6] shadow-2xs p-12 text-center text-gray-500">
               <div className="w-8 h-8 border-2 border-[#004d40] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
               Yükleniyor...
             </div>
@@ -131,7 +131,7 @@ export default function MyTasksPage() {
               />
             ))
           ) : (
-            <div className="col-span-full bg-white rounded-2xl border border-[#f1f0ea] shadow-2xs p-12 text-center text-gray-500 flex flex-col items-center justify-center min-h-[250px]">
+            <div className="col-span-full bg-white rounded-2xl border border-[#dfded6] shadow-2xs p-12 text-center text-gray-500 flex flex-col items-center justify-center min-h-[250px]">
               <FiBriefcase className="w-12 h-12 text-[#004d40]/10 mb-3" />
               <h3 className="font-bold text-gray-900 mb-1">Görev Bulunmuyor</h3>
               <p className="text-xs text-[#565e74] font-medium max-w-xs">
