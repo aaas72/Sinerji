@@ -60,40 +60,24 @@ export default function MyTasksPage() {
   return (
     <div className="w-full max-w-[1280px] mx-auto px-6 md:px-16 py-16 flex flex-col gap-8">
       
-      {/* ── Page Header ── */}
-      <header className="relative overflow-hidden rounded-2xl border border-[#dfded6] bg-white p-6 md:p-8">
-        <div className="absolute inset-0 bg-gradient-to-br from-[#eff4ff] to-transparent opacity-50 pointer-events-none" />
-        <div className="relative z-10 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-          <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-[#004d40]/5 rounded-xl flex items-center justify-center text-[#004d40] shrink-0">
-              <FiBriefcase className="w-6 h-6" />
-            </div>
-            <div>
-              <h1 className="text-[28px] md:text-[36px] font-extrabold leading-tight text-[#00342b] font-heading">
-                Görevlerim
-              </h1>
-              <p className="text-sm text-[#565e74] font-medium mt-0.5">
-                Şirketiniz tarafından oluşturulan tüm aktif ve geçmiş görevleri yönetin
-              </p>
-            </div>
-          </div>
-          <Link href="/company/tasks/new" className="shrink-0 self-start sm:self-center">
-            <Button
-              variant="primary"
-              className="flex items-center gap-2 px-5 py-3 rounded-xl bg-[#004d40] hover:bg-[#00342b] text-white text-sm font-semibold transition-all shadow-xs"
-            >
-              <FiPlus />
-              Yeni Görev
-            </Button>
-          </Link>
-        </div>
-      </header>
-
       {/* ── Tabs & Grid Content ── */}
       <div className="flex flex-col gap-6">
-        <div className="overflow-x-auto pb-2 -mx-6 px-6 sm:mx-0 sm:px-0 scrollbar-none">
-          <Tabs tabs={tabs} activeTab={activeTab} onTabChange={setActiveTab} />
-        </div>
+        <Tabs
+          tabs={tabs}
+          activeTab={activeTab}
+          onTabChange={setActiveTab}
+          rightAction={
+            <Link href="/company/tasks/new" className="shrink-0 pb-3 block">
+              <Button
+                variant="primary"
+                className="flex items-center gap-2 px-5 py-2.5 rounded-xl bg-[#004d40] hover:bg-[#00342b] text-white text-sm font-semibold transition-all shadow-xs"
+              >
+                <FiPlus />
+                Yeni Görev
+              </Button>
+            </Link>
+          }
+        />
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {isLoading ? (

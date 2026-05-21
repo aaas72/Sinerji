@@ -20,7 +20,7 @@ export default function Tabs({
   return (
     <div
       className={cn(
-        "flex items-center justify-between border-b border-gray-200 ",
+        "flex items-center justify-between border-b border-[#dfded6] ",
         className
       )}
     >
