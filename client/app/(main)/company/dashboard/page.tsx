@@ -44,12 +44,12 @@ interface DashboardStats {
 
 function StatusBadge({ status }: { status: string }) {
   const map: Record<string, { label: string; cls: string; hasDot?: boolean; dotCls?: string }> = {
-    open:     { label: "Aktif",      cls: "bg-[#065043]/10 text-[#065043]", hasDot: true, dotCls: "bg-[#065043]" },
-    closed:   { label: "Kapalı",    cls: "bg-[#3f4945]/15 text-[#3f4945]" },
-    pending:  { label: "Bekliyor",  cls: "bg-[#e28743]/10 text-[#e28743]", hasDot: true, dotCls: "bg-[#e28743] animate-pulse" },
+    open: { label: "Aktif", cls: "bg-[#065043]/10 text-[#065043]", hasDot: true, dotCls: "bg-[#065043]" },
+    closed: { label: "Kapalı", cls: "bg-[#3f4945]/15 text-[#3f4945]" },
+    pending: { label: "Bekliyor", cls: "bg-[#e28743]/10 text-[#e28743]", hasDot: true, dotCls: "bg-[#e28743] animate-pulse" },
     accepted: { label: "Kabul Edildi", cls: "bg-[#065043]/10 text-[#065043]", hasDot: true, dotCls: "bg-[#065043]" },
-    rejected: { label: "Reddedildi",   cls: "bg-[#ffdad6] text-[#93000a]" },
-    hired:    { label: "İşe Alındı", cls: "bg-[#065043]/10 text-[#065043]", hasDot: true, dotCls: "bg-[#065043]" },
+    rejected: { label: "Reddedildi", cls: "bg-[#ffdad6] text-[#93000a]" },
+    hired: { label: "İşe Alındı", cls: "bg-[#065043]/10 text-[#065043]", hasDot: true, dotCls: "bg-[#065043]" },
   };
   const cfg = map[status?.toLowerCase()] ?? { label: status, cls: "bg-[#dce9ff] text-[#3f4945]" };
   return (
@@ -117,7 +117,7 @@ export default function CompanyDashboardPage() {
 
   return (
     <div className="w-full max-w-[1280px] mx-auto px-6 md:px-16 py-16 flex flex-col gap-8">
-      
+
       {/* ── Hero Welcome Section ── */}
       <CompanyWelcomeHero companyName={profile.company_name} />
 
@@ -163,13 +163,13 @@ export default function CompanyDashboardPage() {
 
       {/* ── Main Dashboard Layout ── */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
-        
+
         {/* Left: Recent Applications */}
         <section className="lg:col-span-8">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-[20px] font-semibold leading-[28px] text-[#0b1c30]">Recent Applications</h2>
             <Link href="/company/tasks" className="text-[14px] tracking-[0.01em] font-medium leading-[20px] text-[#00342b] flex items-center gap-1 hover:underline cursor-pointer">
-              Tümünü Gör 
+              Tümünü Gör
               <FiArrowRight className="w-[18px] h-[18px]" />
             </Link>
           </div>
@@ -190,7 +190,7 @@ export default function CompanyDashboardPage() {
                   .slice(0, 2);
 
                 return (
-                  <div key={app.id} className="p-4 flex items-center justify-between group transition-all duration-300 ease-out cursor-pointer hover:z-10 hover:bg-white hover:scale-[1.02] bg-transparent border border-transparent hover:border-[#004d40] hover:rounded-none">
+                  <div key={app.id} className="p-4 flex items-center justify-between group transition-all duration-300 ease-out cursor-pointer hover:z-10 hover:bg-white hover:scale-[1.02] bg-transparent border border-transparent hover:border-[#004d40] hover:rounded-2xl hover:shadow-md">
                     <div className="flex items-center gap-4 min-w-0">
                       {/* Avatar with fallback initials */}
                       <div className="w-12 h-12 rounded-full bg-[#004d40]/5 border border-[#dfded6] flex items-center justify-center text-[#004d40] font-bold text-sm shrink-0">
@@ -228,7 +228,7 @@ export default function CompanyDashboardPage() {
         {/* Right: Recent Tasks */}
         <section className="lg:col-span-4">
           <h2 className="text-[20px] font-semibold leading-[28px] text-[#0b1c30] mb-6">Active Tasks</h2>
-          
+
           <div className="border border-[#dfded6] rounded-2xl divide-y divide-[#dfded6] relative mb-6">
             {stats.recentTasks.length === 0 ? (
               <div className="p-8 text-center text-[#565e74] bg-transparent">
