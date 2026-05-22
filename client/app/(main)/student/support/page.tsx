@@ -11,6 +11,7 @@ import {
 } from "react-icons/fi";
 import { useToast } from "@/context/ToastContext";
 import { supportService, SupportTicket } from "@/services/support.service";
+import Input from "@/components/ui/Input";
 
 export default function StudentSupportPage() {
   const { showToast } = useToast();
@@ -60,7 +61,7 @@ export default function StudentSupportPage() {
   };
 
   const inputClass =
-    "w-full px-4 py-3 border border-gray-200 rounded-xl bg-white focus:ring-2 focus:ring-[#004d40]/15 focus:border-[#004d40] outline-none transition-all hover:border-gray-300 text-[#004d40] font-medium placeholder:text-gray-400 placeholder:font-normal text-sm";
+    "px-4 py-3 text-[#004d40] font-medium placeholder:text-gray-400 placeholder:font-normal text-sm";
 
   return (
     <div className="w-full max-w-[1280px] mx-auto px-6 md:px-16 py-16 flex flex-col gap-8">
@@ -121,7 +122,7 @@ export default function StudentSupportPage() {
                   <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2 ml-1">
                     Konu Başlığı
                   </label>
-                  <input
+                  <Input
                     type="text"
                     value={subject}
                     onChange={(e) => setSubject(e.target.value)}

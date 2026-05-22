@@ -2,10 +2,12 @@
 import React from "react";
 import { cn } from "@/utils/cn";
 
+type TabItem = { id: string; label: string };
+
 type TabsProps = {
-  tabs: string[];
+  tabs: string[] | TabItem[];
   activeTab: string;
-  onTabChange: (tab: string) => void;
+  onTabChange: (tabId: string) => void;
   className?: string;
   rightAction?: React.ReactNode;
 };
@@ -20,30 +22,33 @@ export default function Tabs({
   return (
     <div
       className={cn(
-        "flex items-center justify-between border-b border-[#dfded6] ",
+        "flex flex-col md:flex-row md:items-center justify-between gap-4 w-full",
         className
       )}
     >
-      <div className="flex items-center gap-6 overflow-x-auto scrollbar-hide">
-        {tabs.map((tab) => (
-          <button
-            key={tab}
-            onClick={() => onTabChange(tab)}
-            className={cn(
-              "pb-4 px-2 text-sm font-medium transition-colors relative whitespace-nowrap",
-              activeTab === tab
-                ? "text-primary"
-                : "text-gray-500 hover:text-gray-700"
-            )}
-          >
-            {tab}
-            {activeTab === tab && (
-              <span className="absolute bottom-0 left-0 w-full h-0.5 bg-primary rounded-t-full" />
-            )}
-          </button>
-        ))}
+      <div className="flex bg-[#F1F0EA] p-1 rounded-full border border-[#DFDED6] overflow-x-auto scrollbar-hide self-start">
+        {tabs.map((tab) => {
+          const isString = typeof tab === "string";
+          const id = isString ? tab : tab.id;
+          const label = isString ? tab : tab.label;
+
+          return (
+            <button
+              key={id}
+              onClick={() => onTabChange(id)}
+              className={cn(
+                "px-4 py-1.5 text-xs font-semibold transition-all rounded-full whitespace-nowrap",
+                activeTab === id
+                  ? "bg-primary text-white shadow-sm"
+                  : "text-slate-500 hover:text-slate-800"
+              )}
+            >
+              {label}
+            </button>
+          );
+        })}
       </div>
-      {rightAction && <div className="ml-auto pl-4">{rightAction}</div>}
+      {rightAction && <div className="ml-auto md:ml-0 md:pl-4">{rightAction}</div>}
     </div>
   );
 }

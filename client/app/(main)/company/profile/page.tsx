@@ -26,10 +26,11 @@ import {
   FiSave,
   FiImage,
 } from "react-icons/fi";
+import Input from "@/components/ui/Input";
 
 // ─── shared input style ────────────────────────────────────────────────────────
-const inputCls = "w-full px-4 py-2 border border-[#004d40]/25 rounded-xl bg-white/95 focus:ring-2 focus:ring-[#004d40]/15 focus:border-[#004d40] outline-none transition-all text-[#004d40] font-semibold text-sm placeholder:text-[#004d40]/35 placeholder:font-normal";
-const bodyInputCls = "w-full px-4 py-2.5 border border-gray-200 rounded-xl bg-white focus:ring-2 focus:ring-[#004d40]/15 focus:border-[#004d40] outline-none transition-all hover:border-gray-300 text-[#004d40] font-medium placeholder:text-gray-400 placeholder:font-normal text-sm";
+const inputCls = "px-4 py-2 bg-white/95 text-[#004d40] font-semibold text-sm placeholder:text-[#004d40]/35 placeholder:font-normal";
+const bodyInputCls = "px-4 py-2.5 text-[#004d40] font-medium placeholder:text-gray-400 placeholder:font-normal text-sm";
 
 interface DashboardStats {
   activeTasks: number;
@@ -291,7 +292,7 @@ export default function CompanyProfilePage() {
             {isEditing && (
               <div className="flex items-center gap-1.5 max-w-[96px]">
                 <FiImage size={11} className="text-[#004d40]/50 shrink-0" />
-                <input {...field("logo_url")} placeholder="Logo URL" className={`${inputCls} text-[10px] py-0.5 px-1.5 rounded-md`} />
+                <Input {...field("logo_url")} placeholder="Logo URL" className={`${inputCls} text-[10px] py-0.5 px-1.5 rounded-md`} />
               </div>
             )}
           </div>
@@ -299,7 +300,7 @@ export default function CompanyProfilePage() {
           {/* Name & meta */}
           <div className="grow space-y-3">
             {isEditing ? (
-              <input {...field("company_name")} placeholder="Şirket Adı" className={`${inputCls} text-xl font-bold`} />
+              <Input {...field("company_name")} placeholder="Şirket Adı" className={`${inputCls} text-xl font-bold`} />
             ) : (
               <h1 className="text-2xl md:text-3xl font-black text-[#004d40] leading-tight font-heading">
                 {displayName}
@@ -311,11 +312,11 @@ export default function CompanyProfilePage() {
                 <div className="flex flex-col sm:flex-row gap-2 mt-1">
                   <div className="flex items-center gap-1.5">
                     <FiLayers size={13} className="text-[#004d40]/50 shrink-0" />
-                    <input {...field("industry")} placeholder="Sektör" className={`${inputCls} py-1 px-2.5 rounded-lg text-xs`} />
+                    <Input {...field("industry")} placeholder="Sektör" className={`${inputCls} py-1 px-2.5 rounded-lg text-xs`} />
                   </div>
                   <div className="flex items-center gap-1.5">
                     <FiMapPin size={13} className="text-[#004d40]/50 shrink-0" />
-                    <input {...field("location")} placeholder="Konum" className={`${inputCls} py-1 px-2.5 rounded-lg text-xs`} />
+                    <Input {...field("location")} placeholder="Konum" className={`${inputCls} py-1 px-2.5 rounded-lg text-xs`} />
                   </div>
                 </div>
               ) : (
@@ -459,7 +460,7 @@ export default function CompanyProfilePage() {
                     <FiGlobe className="text-gray-400 shrink-0" size={16} />
                     <span className="text-xs text-gray-500 w-24 shrink-0 font-medium">Website</span>
                   </div>
-                  <input {...field("website_url")} placeholder="https://..." className={bodyInputCls} />
+                  <Input {...field("website_url")} placeholder="https://..." className={bodyInputCls} />
                 </div>
               ) : displayWebsite ? (
                 <InfoRow icon={FiGlobe} label="Website" value={displayWebsite} href={displayWebsite} />

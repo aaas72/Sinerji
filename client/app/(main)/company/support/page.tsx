@@ -5,6 +5,7 @@ import Button from "@/components/ui/Button";
 import { FiSend, FiMessageSquare, FiClock, FiHelpCircle, FiLifeBuoy } from "react-icons/fi";
 import { useToast } from "@/context/ToastContext";
 import { supportService, SupportTicket } from "@/services/support.service";
+import Input from "@/components/ui/Input";
 
 export default function SupportPage() {
   const { showToast } = useToast();
@@ -62,13 +63,13 @@ export default function SupportPage() {
   };
 
   const inputClass =
-    "w-full px-4 py-3 border border-gray-200 rounded-xl bg-white focus:ring-2 focus:ring-[#004d40]/15 focus:border-[#004d40] outline-none transition-all hover:border-gray-300 text-[#004d40] font-medium placeholder:text-gray-400 placeholder:font-normal text-sm";
+    "px-4 py-3 text-[#004d40] font-medium placeholder:text-gray-400 placeholder:font-normal text-sm";
 
   return (
     <div className="w-full max-w-[1280px] mx-auto px-6 md:px-16 py-16 flex flex-col gap-8">
 
       {/* ── Page Header ── */}
-      <header className="relative overflow-hidden rounded-xl border border-[#f1f0ea] bg-white p-6 md:p-8">
+      <header className="relative overflow-hidden rounded-3xl border border-[#DFDED6] bg-white p-6 md:p-8">
         <div className="absolute inset-0 bg-gradient-to-br from-[#eff4ff] to-transparent opacity-50 pointer-events-none" />
         <div className="relative z-10 flex items-center gap-4">
           <div className="w-12 h-12 bg-[#004d40]/5 rounded-xl flex items-center justify-center text-[#004d40] shrink-0">
@@ -90,9 +91,9 @@ export default function SupportPage() {
         
         {/* Contact Form */}
         <div className="lg:col-span-2">
-          <div className="bg-white rounded-2xl border border-[#f1f0ea] shadow-2xs overflow-hidden">
+          <div className="bg-white rounded-3xl border border-[#DFDED6] overflow-hidden">
             {/* Card Header */}
-            <div className="flex items-center gap-4 px-8 py-5 border-b border-[#f1f0ea]">
+            <div className="flex items-center gap-4 px-8 py-5 border-b border-[#DFDED6]">
               <div className="w-9 h-9 bg-[#004d40]/5 rounded-xl flex items-center justify-center text-[#004d40]">
                 <FiSend className="w-4 h-4" />
               </div>
@@ -105,7 +106,7 @@ export default function SupportPage() {
             <form onSubmit={handleSubmit} className="p-8 space-y-6">
               <div>
                 <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-2">Konu</label>
-                <input
+                <Input
                   type="text"
                   value={subject}
                   onChange={(e) => setSubject(e.target.value)}
@@ -144,9 +145,9 @@ export default function SupportPage() {
         <div className="space-y-6">
           
           {/* Previous Tickets Card */}
-          <div className="bg-white rounded-2xl border border-[#f1f0ea] shadow-2xs overflow-hidden">
+          <div className="bg-white rounded-3xl border border-[#DFDED6] overflow-hidden">
             {/* Card Header */}
-            <div className="flex items-center gap-4 px-6 py-4 border-b border-[#f1f0ea]">
+            <div className="flex items-center gap-4 px-6 py-4 border-b border-[#DFDED6]">
               <div className="w-9 h-9 bg-[#004d40]/5 rounded-xl flex items-center justify-center text-[#004d40]">
                 <FiMessageSquare className="w-4 h-4" />
               </div>
@@ -187,7 +188,7 @@ export default function SupportPage() {
           </div>
 
           {/* Quick FAQ Promo Card */}
-          <div className="bg-gradient-to-br from-[#004d40] to-[#00342b] rounded-2xl p-6 text-white shadow-lg relative overflow-hidden">
+          <div className="bg-gradient-to-br from-[#004d40] to-[#00342b] rounded-3xl p-6 text-white relative overflow-hidden">
             <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,rgba(255,255,255,0.1),transparent)] pointer-events-none" />
             <div className="relative z-10">
               <div className="flex items-center gap-3 mb-4">

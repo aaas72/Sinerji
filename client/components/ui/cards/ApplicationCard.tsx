@@ -2,6 +2,7 @@ import React from "react";
 import { BsCurrencyDollar } from "react-icons/bs";
 import { FiAward, FiBriefcase, FiStar, FiZap, FiPackage } from "react-icons/fi";
 import SkillBadge from "../SkillBadge";
+import StatusBadge from "@/components/ui/badges/StatusBadge";
 
 export type ApplicationStatus =
   | "Bekliyor"
@@ -107,7 +108,7 @@ export default function ApplicationCard({
         </div>
 
         <div className="flex items-center justify-center w-full md:w-auto mb-2 md:mb-0">
-          <span className="text-xs font-extrabold tracking-widest text-gray-450">{getStatusText(status)}</span>
+          <StatusBadge status={status} />
         </div>
 
         <div className="w-full md:w-auto text-right">

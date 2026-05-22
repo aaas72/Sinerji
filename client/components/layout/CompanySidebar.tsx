@@ -5,15 +5,14 @@ import { FiHome, FiList, FiSettings } from "react-icons/fi";
 import { FiLogOut } from "react-icons/fi";
 import { useAuthStore } from "@/hooks/useAuth";
 
-import { FiBell, FiUser, FiHelpCircle } from "react-icons/fi";
+import { FiBell, FiUser, FiHelpCircle, FiFileText, FiMessageSquare, FiCompass } from "react-icons/fi";
 
 const sidebarLinks = [
   { href: "/company/dashboard", label: "Kontrol Paneli", icon: <FiHome /> },
   { href: "/company/tasks", label: "Görevler", icon: <FiList /> },
-  { href: "/company/notifications", label: "Bildirimler", icon: <FiBell /> },
-  { href: "/company/profile", label: "Profilim", icon: <FiUser /> },
-  { href: "/company/support", label: "Destek", icon: <FiHelpCircle /> },
-  { href: "/company/settings", label: "Ayarlar", icon: <FiSettings /> },
+  { href: "/company/applications", label: "Başvurular", icon: <FiFileText /> },
+  { href: "/company/messages", label: "Mesajlar", icon: <FiMessageSquare /> },
+  { href: "/company/explore", label: "Keşfet", icon: <FiCompass /> },
 ];
 
 const CompanySidebar = () => {

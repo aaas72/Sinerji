@@ -15,6 +15,7 @@ import { useToast } from "@/context/ToastContext";
 import { useAuthStore } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
 import { authService } from "@/services/auth.service";
+import Input from "@/components/ui/Input";
 
 /* ─── küçük yardımcı bileşenler ─── */
 
@@ -32,7 +33,7 @@ function SettingCard({
   children: React.ReactNode;
 }) {
   return (
-    <div className={`bg-white rounded-2xl border p-6 md:p-8 shadow-2xs hover:shadow-xs transition-all ${accent ? "border-red-200 bg-red-50/10" : "border-[#f1f0ea]"}`}>
+    <div className={`bg-white rounded-3xl border p-6 md:p-8 transition-all ${accent ? "border-red-200 bg-red-50/10" : "border-[#DFDED6]"}`}>
       <div className="flex flex-col md:flex-row gap-6">
         <div
           className={`shrink-0 w-12 h-12 rounded-xl flex items-center justify-center ${
@@ -97,7 +98,7 @@ function Toggle({
 /* ─── ana sayfa ─── */
 
 const inputCls =
-  "w-full px-4 py-3 border border-gray-200 rounded-xl bg-white focus:ring-2 focus:ring-[#004d40]/15 focus:border-[#004d40] outline-none transition-all hover:border-gray-300 text-[#004d40] font-medium placeholder:text-gray-400 placeholder:font-normal text-sm";
+  "px-4 py-3 text-[#004d40] font-medium placeholder:text-gray-400 placeholder:font-normal text-sm";
 
 export default function CompanySettingsPage() {
   const { showToast } = useToast();
@@ -156,7 +157,7 @@ export default function CompanySettingsPage() {
     <div className="w-full max-w-[1280px] mx-auto px-6 md:px-16 py-16 flex flex-col gap-8">
       
       {/* ── Page Header ── */}
-      <header className="relative overflow-hidden rounded-xl border border-[#f1f0ea] bg-white p-6 md:p-8">
+      <header className="relative overflow-hidden rounded-3xl border border-[#DFDED6] bg-white p-6 md:p-8">
         <div className="absolute inset-0 bg-gradient-to-br from-[#eff4ff] to-transparent opacity-50 pointer-events-none" />
         <div className="relative z-10 flex items-center gap-4">
           <div className="w-12 h-12 bg-[#004d40]/5 rounded-xl flex items-center justify-center text-[#004d40] shrink-0">
@@ -182,7 +183,7 @@ export default function CompanySettingsPage() {
           title="Hesap Bilgileri"
           description="Hesabınıza ait temel profil bilgileri."
         >
-          <div className="bg-gray-50 rounded-2xl p-6 space-y-4 max-w-xl border border-[#f1f0ea]">
+          <div className="bg-gray-50 rounded-3xl p-6 space-y-4 max-w-xl border border-[#DFDED6]">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
               <span className="text-sm text-[#565e74] font-medium">E-posta Adresi</span>
               <span className="text-sm font-bold text-gray-800">
@@ -217,7 +218,7 @@ export default function CompanySettingsPage() {
                 Mevcut Şifre
               </label>
               <div className="relative">
-                <input
+                <Input
                   type={showCurrent ? "text" : "password"}
                   {...pwField("current")}
                   className={`${inputCls} pr-12`}
@@ -240,7 +241,7 @@ export default function CompanySettingsPage() {
                 Yeni Şifre
               </label>
               <div className="relative">
-                <input
+                <Input
                   type={showNew ? "text" : "password"}
                   {...pwField("next")}
                   className={`${inputCls} pr-12`}
@@ -262,7 +263,7 @@ export default function CompanySettingsPage() {
               <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-2">
                 Yeni Şifre (Tekrar)
               </label>
-              <input
+              <Input
                 type="password"
                 {...pwField("confirm")}
                 className={inputCls}
@@ -276,7 +277,7 @@ export default function CompanySettingsPage() {
                 type="submit"
                 variant="primary"
                 disabled={pwLoading}
-                className="px-6 py-2.5 rounded-xl bg-[#004d40] hover:bg-[#00342b] text-white text-sm font-semibold transition-all shadow-xs"
+                className="px-6 py-2.5 rounded-[50px] bg-[#004d40] hover:bg-[#00342b] text-white text-sm font-semibold transition-all"
               >
                 {pwLoading ? "Kaydediliyor..." : "Şifreyi Güncelle"}
               </Button>
@@ -290,7 +291,7 @@ export default function CompanySettingsPage() {
           title="Bildirim Tercihleri"
           description="E-posta ve sistem üzerinden hangi güncellemeleri almak istediğinizi özelleştirin."
         >
-          <div className="max-w-xl border border-[#f1f0ea] rounded-2xl overflow-hidden p-4 bg-gray-50/20">
+          <div className="max-w-xl border border-[#DFDED6] rounded-3xl overflow-hidden p-4 bg-gray-50/20">
             <Toggle
               checked={notifs.newApplication}
               onChange={() => toggle("newApplication")}
@@ -324,7 +325,7 @@ export default function CompanySettingsPage() {
             variant="outline"
             icon={FiLogOut}
             onClick={handleLogout}
-            className="px-6 py-2.5 rounded-xl border border-gray-200 text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-all font-semibold"
+            className="px-6 py-2.5 rounded-[50px] border border-gray-200 text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-all font-semibold"
           >
             Çıkış Yap
           </Button>
@@ -339,7 +340,7 @@ export default function CompanySettingsPage() {
         >
           <Button
             variant="outline"
-            className="px-6 py-2.5 rounded-xl border border-red-200 text-red-600 hover:bg-red-50/50 hover:text-red-700 transition-all font-semibold"
+            className="px-6 py-2.5 rounded-[50px] border border-red-200 text-red-600 hover:bg-red-50/50 hover:text-red-700 transition-all font-semibold"
             onClick={() =>
               showToast("Hesap silme özelliği yakında kullanılabilir olacaktır.", "error")
             }

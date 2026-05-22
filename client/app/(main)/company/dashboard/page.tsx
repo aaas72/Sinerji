@@ -12,6 +12,10 @@ import {
   FiCalendar,
   FiAlertCircle,
   FiTrendingUp,
+  FiXCircle,
+  FiPlayCircle,
+  FiStopCircle,
+  FiUserCheck,
 } from "react-icons/fi";
 import { companyService } from "@/services/company.service";
 import { CompanyProfile } from "@/types/company";
@@ -19,6 +23,7 @@ import Button from "@/components/ui/Button";
 import StatCard from "@/components/ui/cards/StatCard";
 import ActiveTaskCard from "@/components/ui/cards/ActiveTaskCard";
 import CompanyWelcomeHero from "@/components/ui/sections/CompanyWelcomeHero";
+import StatusBadge from "@/components/ui/badges/StatusBadge";
 
 interface DashboardStats {
   activeTasks: number;
@@ -42,25 +47,6 @@ interface DashboardStats {
   }[];
 }
 
-function StatusBadge({ status }: { status: string }) {
-  const map: Record<string, { label: string; cls: string; hasDot?: boolean; dotCls?: string }> = {
-    open: { label: "Aktif", cls: "bg-[#00342b]/10 text-[#00342b]", hasDot: true, dotCls: "bg-[#00342b]" },
-    closed: { label: "Kapalı", cls: "bg-[#3f4945]/15 text-[#3f4945]" },
-    pending: { label: "Bekliyor", cls: "bg-[#e28743]/10 text-[#e28743]", hasDot: true, dotCls: "bg-[#e28743] animate-pulse" },
-    accepted: { label: "Kabul Edildi", cls: "bg-[#00342b]/10 text-[#00342b]", hasDot: true, dotCls: "bg-[#00342b]" },
-    rejected: { label: "Reddedildi", cls: "bg-[#ffdad6] text-[#93000a]" },
-    hired: { label: "İşe Alındı", cls: "bg-[#00342b]/10 text-[#00342b]", hasDot: true, dotCls: "bg-[#00342b]" },
-  };
-  const cfg = map[status?.toLowerCase()] ?? { label: status, cls: "bg-[#dce9ff] text-[#3f4945]" };
-  return (
-    <span className={`px-4 py-1.5 rounded-full text-[12px] font-semibold tracking-[0.05em] leading-[16px] shrink-0 inline-flex items-center gap-1.5 ${cfg.cls}`}>
-      {cfg.hasDot && (
-        <span className={`w-1.5 h-1.5 rounded-full ${cfg.dotCls}`} />
-      )}
-      {cfg.label}
-    </span>
-  );
-}
 
 function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString("tr-TR", {
@@ -119,47 +105,51 @@ export default function CompanyDashboardPage() {
     <div className="w-full max-w-[1280px] mx-auto px-6 md:px-16 py-16 flex flex-col gap-8">
 
       {/* ── Hero Welcome Section ── */}
-      <CompanyWelcomeHero companyName={profile.company_name} />
+      <CompanyWelcomeHero companyName={profile.company_name}>
+        {/* ── KPI Bar ── */}
+        <section className="bg-transparent grid grid-cols-1 md:grid-cols-5 relative">
+          <StatCard
+            icon={<FiBriefcase className="text-white/80 w-6 h-6" />}
+            label="Aktif Görev"
+            value={stats.activeTasks}
+            subtext={`${stats.totalTasks} toplam`}
+            borderless
+            theme="glass"
+          />
 
-      {/* ── KPI Bar ── */}
-      <section className="border border-[#dfded6] rounded-2xl grid grid-cols-1 md:grid-cols-5 divide-y md:divide-y-0 md:divide-x divide-[#dfded6] mb-16 relative">
-        <StatCard
-          icon={<FiBriefcase className="text-[#00342b] w-6 h-6" />}
-          label="Aktif Görev"
-          value={stats.activeTasks}
-          subtext={`${stats.totalTasks} toplam`}
-          borderless
-        />
+          <StatCard
+            icon={<FiUsers className="text-white/80 w-6 h-6" />}
+            label="Toplam Başvuru"
+            value={stats.totalApplications.toLocaleString("tr-TR")}
+            borderless
+            theme="glass"
+          />
 
-        <StatCard
-          icon={<FiUsers className="text-[#00342b] w-6 h-6" />}
-          label="Toplam Başvuru"
-          value={stats.totalApplications.toLocaleString("tr-TR")}
-          borderless
-        />
+          <StatCard
+            icon={<FiClock className="text-white/80 w-6 h-6" />}
+            label="Bekleyen Başvuru"
+            value={stats.pendingApplications}
+            borderless
+            theme="glass"
+          />
 
-        <StatCard
-          icon={<FiClock className="text-[#e28743] w-6 h-6" />}
-          label="Bekleyen Başvuru"
-          value={stats.pendingApplications}
-          variant="pending"
-          borderless
-        />
+          <StatCard
+            icon={<FiCheckCircle className="text-white/80 w-6 h-6" />}
+            label="İşe Alınan"
+            value={stats.hiredStudents}
+            borderless
+            theme="glass"
+          />
 
-        <StatCard
-          icon={<FiCheckCircle className="text-[#00342b] w-6 h-6" />}
-          label="İşe Alınan"
-          value={stats.hiredStudents}
-          borderless
-        />
-
-        <StatCard
-          icon={<FiTrendingUp className="text-[#00342b] w-6 h-6" />}
-          label="Başarı Oranı"
-          value={`${completionRate}%`}
-          borderless
-        />
-      </section>
+          <StatCard
+            icon={<FiTrendingUp className="text-white/80 w-6 h-6" />}
+            label="Başarı Oranı"
+            value={`${completionRate}%`}
+            borderless
+            theme="glass"
+          />
+        </section>
+      </CompanyWelcomeHero>
 
       {/* ── Main Dashboard Layout ── */}
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-16">
@@ -190,8 +180,8 @@ export default function CompanyDashboardPage() {
                   .slice(0, 2);
 
                 return (
-                  <div key={app.id} className="p-4 flex items-center justify-between group transition-all duration-300 ease-out cursor-pointer hover:z-10 hover:scale-[1.02] bg-transparent border border-transparent hover:border-[#00342b]/50 hover:rounded-none hover:shadow-md hover:bg-white hover:bg-gradient-to-br hover:from-[#00342b]/[0.045] hover:to-[#ffd54f]/[0.075]">
-                    <div className="flex items-center gap-4 min-w-0">
+                  <div key={app.id} className="p-4 flex items-center group transition-all duration-300 ease-out cursor-pointer hover:z-10 hover:scale-[1.02] bg-transparent border border-transparent hover:border-[#00342b]/50 hover:rounded-none hover:shadow-md hover:bg-white hover:bg-gradient-to-br hover:from-[#00342b]/[0.045] hover:to-[#ffd54f]/[0.075]">
+                    <div className="flex items-center gap-4 min-w-0 flex-1">
                       {/* Avatar with fallback initials */}
                       <div className="w-12 h-12 rounded-full bg-[#00342b]/5 border border-[#dfded6] flex items-center justify-center text-[#00342b] font-bold text-sm shrink-0">
                         {initials}
@@ -201,13 +191,13 @@ export default function CompanyDashboardPage() {
                         <p className="text-[12px] tracking-[0.05em] font-semibold leading-[16px] text-[#565e74] truncate">{app.task.title}</p>
                       </div>
                     </div>
-                    <div className="hidden md:block shrink-0">
+                    <div className="hidden md:flex flex-1 justify-center shrink-0">
                       <div className="flex items-center gap-1 text-[#565e74] text-[12px] tracking-[0.05em] font-semibold leading-[16px]">
                         <FiCalendar className="w-4 h-4 text-[#00342b]/60" />
                         <span>{formatDate(app.submitted_at)}</span>
                       </div>
                     </div>
-                    <div>
+                    <div className="flex flex-1 justify-end shrink-0">
                       <StatusBadge status={app.status} />
                     </div>
                   </div>
@@ -246,6 +236,7 @@ export default function CompanyDashboardPage() {
                   title={task.title}
                   submissionsCount={task._count.submissions}
                   createdAt={task.created_at}
+                  status={task.status}
                 />
               ))
             )}

@@ -5,11 +5,13 @@ import { FiClock, FiPlus } from "react-icons/fi";
 interface CompanyWelcomeHeroProps {
   companyName: string;
   lastUpdatedText?: string;
+  children?: React.ReactNode;
 }
 
 export default function CompanyWelcomeHero({
   companyName,
   lastUpdatedText = "Son güncelleme: 21 Mayıs 2026",
+  children,
 }: CompanyWelcomeHeroProps) {
   return (
     <section className="mb-16 p-8 rounded-[24px] relative overflow-hidden bg-gradient-to-br from-[#004d40] to-[#0f172a] text-white">
@@ -34,6 +36,11 @@ export default function CompanyWelcomeHero({
           </button>
         </Link>
       </div>
+      {children && (
+        <div className="relative z-10 mt-10">
+          {children}
+        </div>
+      )}
     </section>
   );
 }

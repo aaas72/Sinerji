@@ -23,6 +23,7 @@ import {
   FiInfo,
   FiLayers,
 } from "react-icons/fi";
+import StatusBadge from "@/components/ui/badges/StatusBadge";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -139,7 +140,7 @@ export default function TaskDetailsPage() {
     : null;
 
   return (
-    <div className="min-h-screen p-0 mx-auto">
+    <div className="w-full max-w-[1280px] mx-auto px-6 md:px-16 py-16 flex flex-col gap-8">
       <Breadcrumb items={[
         { label: "Dashboard",   href: "/company/dashboard" },
         { label: "Tasks",       href: "/company/tasks" },
@@ -152,14 +153,8 @@ export default function TaskDetailsPage() {
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8">
           <div className="space-y-3">
             <div className="flex flex-wrap items-center gap-2.5">
-              {statusInfo && (
-                <span className="text-[11px] uppercase tracking-wider font-extrabold text-[#004d40] inline-flex items-center gap-2 select-none shrink-0">
-                  <span className="relative flex h-2 w-2 shrink-0">
-                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#e28743] opacity-75" />
-                    <span className="relative inline-flex rounded-full h-2 w-2 bg-[#e28743]" />
-                  </span>
-                  <span>{statusInfo.label}</span>
-                </span>
+              {task.status && (
+                <StatusBadge status={task.status} />
               )}
               {task.category && (
                 <span className="bg-[#dce9ff] px-3.5 py-1.5 rounded-full text-xs font-semibold text-[#0b1c30] select-none shrink-0">
@@ -167,7 +162,7 @@ export default function TaskDetailsPage() {
                 </span>
               )}
             </div>
-            <h1 className="text-[28px] md:text-[36px] font-bold leading-tight text-[#00342b] font-sans break-words tracking-tight">
+            <h1 className="text-[22px] md:text-[28px] font-bold leading-tight text-[#00342b] font-sans break-words tracking-tight">
               {task.title}
             </h1>
             {task.created_at && (
@@ -181,13 +176,13 @@ export default function TaskDetailsPage() {
           <div className="flex flex-wrap items-center gap-3 shrink-0">
             <button
               onClick={() => router.push("/company/tasks")}
-              className="px-6 py-2.5 border border-[#dfded6] hover:border-[#00342b] text-[#00342b] rounded-full text-sm font-semibold transition-all duration-300 cursor-pointer bg-white/60 hover:bg-[#004d40]/5 hover:scale-[1.02] active:scale-[0.98]"
+              className="px-4 py-2 border border-[#dfded6] hover:border-[#00342b] text-[#00342b] rounded-full text-xs font-semibold transition-all duration-300 cursor-pointer bg-white/60 hover:bg-[#004d40]/5 hover:scale-[1.02] active:scale-[0.98]"
             >
               Görevlerim
             </button>
             <button
               onClick={() => router.push(`/company/tasks/${task.id}/applicants`)}
-              className="px-6 py-2.5 border border-[#dfded6] hover:border-[#00342b] text-[#00342b] rounded-full text-sm font-semibold flex items-center gap-2.5 transition-all duration-300 cursor-pointer bg-white/60 hover:bg-[#004d40]/5 hover:scale-[1.02] active:scale-[0.98]"
+              className="px-4 py-2 border border-[#dfded6] hover:border-[#00342b] text-[#00342b] rounded-full text-xs font-semibold flex items-center gap-2 transition-all duration-300 cursor-pointer bg-white/60 hover:bg-[#004d40]/5 hover:scale-[1.02] active:scale-[0.98]"
             >
               <span>Başvurular</span>
               <span className="bg-[#00342b] text-white text-xs w-5 h-5 flex items-center justify-center rounded-full font-bold select-none shrink-0">
@@ -196,7 +191,7 @@ export default function TaskDetailsPage() {
             </button>
             <button
               onClick={() => router.push(`/company/tasks/${task.id}/edit`)}
-              className="px-6 py-2.5 bg-[#004d40] hover:bg-[#00342b] text-white rounded-full text-sm font-semibold transition-all duration-300 cursor-pointer shadow-sm hover:shadow-md hover:scale-[1.02] active:scale-[0.98]"
+              className="px-4 py-2 bg-[#004d40] hover:bg-[#00342b] text-white rounded-full text-xs font-semibold transition-all duration-300 cursor-pointer shadow-sm hover:shadow-md hover:scale-[1.02] active:scale-[0.98]"
             >
               Düzenle
             </button>

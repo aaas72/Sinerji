@@ -24,6 +24,8 @@ import {
 import { useToast } from "@/context/ToastContext";
 import { StudentProfile, StudentSkill } from "@/types/student";
 import { authService } from "@/services/auth.service";
+import Input from "@/components/ui/Input";
+import Select from "@/components/ui/Select";
 
 
 
@@ -226,7 +228,7 @@ export default function StudentSettingsPage() {
   ];
 
   const inputClass =
-    "w-full px-4 py-3 border border-gray-200 rounded-xl bg-white focus:ring-2 focus:ring-[#004d40]/15 focus:border-[#004d40] outline-none transition-all hover:border-gray-300 text-[#004d40] font-medium placeholder:text-gray-400 placeholder:font-normal";
+    "px-4 py-3 text-[#004d40] font-medium placeholder:text-gray-400 placeholder:font-normal";
 
   return (
     <div className="w-full max-w-[1280px] mx-auto px-6 md:px-16 py-16 flex flex-col gap-8">
@@ -288,7 +290,7 @@ export default function StudentSettingsPage() {
                   <FiUser className="w-4 h-4" />
                   Ad Soyad
                 </label>
-                <input
+                <Input
                   type="text"
                   {...register("full_name")}
                   className={inputClass}
@@ -306,7 +308,7 @@ export default function StudentSettingsPage() {
                   <FiBook className="w-4 h-4" />
                   Üniversite / Okul
                 </label>
-                <input
+                <Input
                   type="text"
                   {...register("university")}
                   className={inputClass}
@@ -320,7 +322,7 @@ export default function StudentSettingsPage() {
                     <FiBook className="w-4 h-4" />
                     Bölüm / Uzmanlık
                   </label>
-                  <input
+                  <Input
                     type="text"
                     {...register("major")}
                     className={inputClass}
@@ -332,7 +334,7 @@ export default function StudentSettingsPage() {
                     <FiBook className="w-4 h-4" />
                     Mezuniyet Yılı
                   </label>
-                  <input
+                  <Input
                     type="number"
                     {...register("graduation_year")}
                     className={inputClass}
@@ -347,7 +349,7 @@ export default function StudentSettingsPage() {
                     <FiBriefcase className="w-4 h-4" />
                     İlgi Alanları
                   </label>
-                  <input
+                  <Input
                     type="text"
                     {...register("categories_of_interest")}
                     className={inputClass}
@@ -359,13 +361,13 @@ export default function StudentSettingsPage() {
                     <FiUser className="w-4 h-4" />
                     Müsaitlik Durumu
                   </label>
-                  <select
+                  <Select
                     {...register("availability_status")}
                     className={`${inputClass} bg-white`}
                   >
                     <option value="available">Müsaitim (İş/Görev arıyorum)</option>
                     <option value="busy">Meşgulüm</option>
-                  </select>
+                  </Select>
                 </div>
               </div>
 
@@ -392,7 +394,7 @@ export default function StudentSettingsPage() {
                   <FiPhone className="w-4 h-4" />
                   Telefon Numarası
                 </label>
-                <input
+                <Input
                   type="text"
                   {...register("phone")}
                   className={inputClass}
@@ -410,7 +412,7 @@ export default function StudentSettingsPage() {
                       <FiLinkedin className="w-4 h-4" />
                       LinkedIn
                     </label>
-                    <input
+                    <Input
                       type="text"
                       {...register("linkedin_url")}
                       className={inputClass}
@@ -428,7 +430,7 @@ export default function StudentSettingsPage() {
                       <FiGithub className="w-4 h-4" />
                       GitHub
                     </label>
-                    <input
+                    <Input
                       type="text"
                       {...register("github_url")}
                       className={inputClass}
@@ -446,7 +448,7 @@ export default function StudentSettingsPage() {
                       <FiTwitter className="w-4 h-4" />
                       Twitter (X)
                     </label>
-                    <input
+                    <Input
                       type="text"
                       {...register("twitter_url")}
                       className={inputClass}
@@ -464,7 +466,7 @@ export default function StudentSettingsPage() {
                       <FiGlobe className="w-4 h-4" />
                       Web Sitesi
                     </label>
-                    <input
+                    <Input
                       type="text"
                       {...register("website_url")}
                       className={inputClass}
@@ -511,7 +513,7 @@ export default function StudentSettingsPage() {
                       <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2 ml-1">
                         Yetenek Adı
                       </label>
-                      <input
+                      <Input
                         type="text"
                         {...registerSkill("skillName")}
                         className={inputClass}
@@ -528,7 +530,7 @@ export default function StudentSettingsPage() {
                       <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2 ml-1">
                         Kategori
                       </label>
-                      <select
+                      <Select
                         {...registerSkill("category")}
                         className={`${inputClass} bg-white`}
                       >
@@ -537,7 +539,7 @@ export default function StudentSettingsPage() {
                         <option value="Pazarlama">Pazarlama</option>
                         <option value="Dil">Dil</option>
                         <option value="Diğer">Diğer</option>
-                      </select>
+                      </Select>
                       {skillErrors.category && (
                         <p className="text-red-500 text-xs mt-1">
                           {skillErrors.category.message}
@@ -736,7 +738,7 @@ export default function StudentSettingsPage() {
                   <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2 ml-1">
                     Mevcut Şifre
                   </label>
-                  <input
+                  <Input
                     type="password"
                     value={pw.current}
                     onChange={(e) => setPw({ ...pw, current: e.target.value })}
@@ -749,7 +751,7 @@ export default function StudentSettingsPage() {
                   <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2 ml-1">
                     Yeni Şifre
                   </label>
-                  <input
+                  <Input
                     type="password"
                     value={pw.next}
                     onChange={(e) => setPw({ ...pw, next: e.target.value })}
@@ -762,7 +764,7 @@ export default function StudentSettingsPage() {
                   <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2 ml-1">
                     Yeni Şifre (Tekrar)
                   </label>
-                  <input
+                  <Input
                     type="password"
                     value={pw.confirm}
                     onChange={(e) => setPw({ ...pw, confirm: e.target.value })}

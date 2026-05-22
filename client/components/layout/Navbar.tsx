@@ -149,7 +149,7 @@ export default function Navbar({ authenticated, userName, role }: NavbarProps) {
         "w-full z-50 transition-all duration-300",
         isLanding
           ? "absolute top-0 left-0 right-0 bg-transparent"
-          : "bg-white/95 backdrop-blur-md border-b border-[#f1f0ea] sticky top-0"
+          : "bg-white/80 backdrop-blur-md border-b border-[#dfded6]/30 shadow-sm shadow-[#00342b]/5 sticky top-0"
       )}
     >
       <nav className="mx-auto max-w-6xl px-6 py-3.5 flex items-center justify-between">

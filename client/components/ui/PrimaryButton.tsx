@@ -28,7 +28,7 @@ export default function PrimaryButton({
   if (href) {
     return (
       <Link href={href} className={styles}>
-        {Icon ? <Icon className="mr-2 h-4 w-4 text-white" /> : null}
+        {Icon ? <Icon className="mr-2 h-4 w-4 text-current" /> : null}
         {children}
       </Link>
     );
@@ -41,9 +41,9 @@ export default function PrimaryButton({
       {...props}
     >
       {isLoading ? (
-        <FiLoader className="mr-2 h-4 w-4 animate-spin text-white" />
+        <FiLoader className="mr-2 h-4 w-4 animate-spin text-current" />
       ) : Icon ? (
-        <Icon className="mr-2 h-4 w-4 text-white" />
+        <Icon className="mr-2 h-4 w-4 text-current" />
       ) : null}
       {children}
     </button>

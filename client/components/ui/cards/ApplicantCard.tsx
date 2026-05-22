@@ -2,6 +2,7 @@
 
 import { Submission } from "@/types/submission";
 import { FiCalendar, FiChevronRight, FiAward } from "react-icons/fi";
+import StatusBadge from "@/components/ui/badges/StatusBadge";
 
 interface ApplicantCardProps {
   submission: Submission;
@@ -115,21 +116,7 @@ export default function ApplicantCard({ submission, onClick }: ApplicantCardProp
               <FiCalendar size={12} />
               {new Date(submission.submitted_at || Date.now()).toLocaleDateString("tr-TR")}
             </span>
-            <span
-              className={`px-2 py-0.5 rounded-full text-[9px] font-bold ${
-                submission.status === "approved"
-                  ? "bg-green-100 text-green-700"
-                  : submission.status === "rejected"
-                  ? "bg-red-100 text-red-700"
-                  : "bg-yellow-100 text-yellow-700"
-              }`}
-            >
-              {submission.status === "approved"
-                ? "Onaylandı"
-                : submission.status === "rejected"
-                ? "Reddedildi"
-                : "Bekliyor"}
-            </span>
+            <StatusBadge status={submission.status} />
           </div>
           <button className="text-[#00342b] font-bold text-xs flex items-center gap-1 group-hover:translate-x-1 transition-transform cursor-pointer bg-transparent border-0 outline-none">
             İncele <FiChevronRight className="w-3.5 h-3.5" />

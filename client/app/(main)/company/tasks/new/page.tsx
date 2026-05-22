@@ -1,4 +1,4 @@
-﻿"use client";
+"use client";
 
 import { useState, useMemo } from "react";
 import { useRouter } from "next/navigation";
@@ -21,6 +21,11 @@ import { taskService } from "@/services/task.service";
 import { TASK_CATEGORIES } from "@/constants/categories";
 import RichTextEditor from "@/components/ui/form/RichTextEditor";
 import Breadcrumb from "@/components/ui/Breadcrumb";
+import ToggleSwitch from "@/components/ui/ToggleSwitch";
+import Input from "@/components/ui/Input";
+import Select from "@/components/ui/Select";
+import Button from "@/components/ui/Button";
+import PrimaryButton from "@/components/ui/PrimaryButton";
 import { cn } from "@/utils/cn";
 
 // Form Schema
@@ -144,17 +149,17 @@ export default function NewTaskPage() {
       const payload = {
         ...data,
         hardSkills: hardSkills.map(s => ({
-            name: s.skill,
-            level: s.level,
-            isRequired: s.isRequired,
-            yearsOfExperience: s.yearsOfExperience
+          name: s.skill,
+          level: s.level,
+          isRequired: s.isRequired,
+          yearsOfExperience: s.yearsOfExperience
         })),
         softSkills: softSkills,
         budget: data.budget ? Number(data.budget) : undefined,
         positions: Number(data.positions),
         deadline: data.deadline ? new Date(data.deadline).toISOString() : undefined,
       };
-      
+
       await taskService.createTask(payload);
       router.push("/company/tasks");
     } catch (err) {
@@ -171,14 +176,14 @@ export default function NewTaskPage() {
       <main className="max-w-7xl mx-auto px-6 py-8">
         {/* Header & Breadcrumbs */}
         <div className="mb-8">
-          <Breadcrumb 
+          <Breadcrumb
             items={[
               { label: "Dashboard", href: "/company/dashboard" },
               { label: "Tasks", href: "/company/tasks" },
               { label: "New Task", active: true }
-            ]} 
+            ]}
           />
-          
+
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
             <h1 className="text-3xl font-bold text-primary tracking-tight">Yeni Görev Yayınla</h1>
           </div>
@@ -194,7 +199,7 @@ export default function NewTaskPage() {
           {/* Left Column: Core Info & Skills */}
           <div className="lg:col-span-8 space-y-6">
             {/* Basic Information Card */}
-            <section className="bg-white/60 backdrop-blur-xl border border-[#DFDED6] rounded-2xl p-6 transition-all duration-300 hover:rounded-none hover:shadow-xl hover:shadow-primary/5 group">
+            <section className=" border border-[#DFDED6] rounded-3xl p-8 ">
               <div className="flex items-center gap-2 mb-6">
                 <div className="p-2 bg-primary/10 rounded-lg">
                   <FiBookOpen className="w-5 h-5 text-primary" />
@@ -205,17 +210,18 @@ export default function NewTaskPage() {
               <div className="space-y-6">
                 <div>
                   <label className="block text-xs font-bold text-[#3f4945] mb-2 uppercase tracking-wider">Görev Başlığı</label>
-                  <input 
+                  <Input
                     {...register("title")}
-                    className="w-full bg-[#faf9f6]/50 border-transparent rounded-xl px-4 py-3 text-lg font-bold text-primary focus:bg-white focus:ring-4 focus:ring-primary/5 transition-all outline-none"
+                    className="px-4 py-3 text-lg font-bold text-primary"
                     placeholder="Görev Başlığını Giriniz"
+                    error={!!errors.title}
                   />
                   {errors.title && <p className="text-red-500 text-xs mt-1">{errors.title.message}</p>}
                 </div>
 
                 <div>
                   <label className="block text-xs font-bold text-[#3f4945] mb-2 uppercase tracking-wider">Görev Açıklaması</label>
-                  <div className="rounded-xl border border-[#DFDED6] bg-white overflow-hidden focus-within:ring-4 focus-within:ring-primary/5 transition-all">
+                  <div className="rounded-4xl border border-[#DFDED6]  overflow-hidden focus-within:ring-1 focus-within:ring-primary/8 transition-all">
                     <Controller
                       name="description"
                       control={control}
@@ -234,40 +240,42 @@ export default function NewTaskPage() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <label className="block text-xs font-bold text-[#3f4945] mb-2 uppercase tracking-wider">Kategori</label>
-                    <select 
+                    <Select
                       {...register("category")}
-                      className="w-full bg-[#faf9f6]/50 border-transparent rounded-xl px-4 py-3 text-sm font-medium focus:bg-white transition-all outline-none appearance-none cursor-pointer"
+                      className="px-4 py-3 text-sm font-medium"
                       onChange={(e) => {
                         setValue("category", e.target.value);
                         setValue("subcategory", "");
                       }}
+                      error={!!errors.category}
                     >
                       <option value="">Seçiniz</option>
                       {TASK_CATEGORIES.map(cat => (
                         <option key={cat.value} value={cat.value}>{cat.label}</option>
                       ))}
-                    </select>
+                    </Select>
                   </div>
                   <div>
                     <label className="block text-xs font-bold text-[#3f4945] mb-2 uppercase tracking-wider">Alt Kategori</label>
-                    <select 
+                    <Select
                       {...register("subcategory")}
                       disabled={!selectedCategory}
-                      className="w-full bg-[#faf9f6]/50 border-transparent rounded-xl px-4 py-3 text-sm font-medium focus:bg-white transition-all outline-none appearance-none cursor-pointer disabled:opacity-50"
+                      className="px-4 py-3 text-sm font-medium"
+                      error={!!errors.subcategory}
                     >
                       <option value="">{selectedCategory ? "Seçiniz" : "Önce kategori seçiniz"}</option>
                       {availableSubcategories.map(sub => (
                         <option key={sub.value} value={sub.value}>{sub.label}</option>
                       ))}
-                    </select>
+                    </Select>
                   </div>
                 </div>
 
                 <div>
                   <label className="block text-xs font-bold text-[#3f4945] mb-2 uppercase tracking-wider">Tercih Edilen Bölüm</label>
-                  <input 
+                  <Input
                     {...register("preferred_major")}
-                    className="w-full bg-[#faf9f6]/50 border-transparent rounded-xl px-4 py-3 text-sm font-medium focus:bg-white transition-all outline-none"
+                    className="px-4 py-3 text-sm font-medium"
                     placeholder="Bilgisayar Mühendisliği, Yazılım Mühendisliği..."
                   />
                 </div>
@@ -275,41 +283,46 @@ export default function NewTaskPage() {
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   <div>
                     <label className="block text-[10px] font-bold text-[#3f4945] mb-1.5 uppercase tracking-wider">Pozisyon Sayısı</label>
-                    <input 
-                      type="number" 
+                    <Input
+                      type="number"
+                      min={1}
+                      onKeyDown={(e) => { if (e.key === '-' || e.key === 'e') e.preventDefault(); }}
                       {...register("positions", { valueAsNumber: true })}
-                      className="w-full bg-[#faf9f6]/50 border-transparent rounded-lg px-3 py-2 text-sm font-bold"
+                      className="px-3 py-2 text-sm font-bold"
+                      error={!!errors.positions}
                     />
                   </div>
                   <div>
                     <label className="block text-[10px] font-bold text-[#3f4945] mb-1.5 uppercase tracking-wider">Deneyim</label>
-                    <select 
+                    <Select
                       {...register("experience_level")}
-                      className="w-full bg-[#faf9f6]/50 border-transparent rounded-lg px-3 py-2 text-sm font-bold"
+                      className="px-3 py-2 text-sm font-bold"
+                      error={!!errors.experience_level}
                     >
                       <option value="entry">Entry</option>
                       <option value="junior">Junior</option>
                       <option value="mid">Mid-Level</option>
                       <option value="senior">Senior</option>
-                    </select>
+                    </Select>
                   </div>
                   <div>
                     <label className="block text-[10px] font-bold text-[#3f4945] mb-1.5 uppercase tracking-wider">Çalışma Şekli</label>
-                    <select 
+                    <Select
                       {...register("work_type")}
-                      className="w-full bg-[#faf9f6]/50 border-transparent rounded-lg px-3 py-2 text-sm font-bold"
+                      className="px-3 py-2 text-sm font-bold"
+                      error={!!errors.work_type}
                     >
                       <option value="remote">Remote</option>
                       <option value="hybrid">Hybrid</option>
                       <option value="onsite">On-site</option>
-                    </select>
+                    </Select>
                   </div>
                   <div>
                     <label className="block text-[10px] font-bold text-[#3f4945] mb-1.5 uppercase tracking-wider">Son Başvuru</label>
-                    <input 
-                      type="date" 
+                    <Input
+                      type="date"
                       {...register("deadline")}
-                      className="w-full bg-[#faf9f6]/50 border-transparent rounded-lg px-3 py-2 text-sm font-bold"
+                      className="px-3 py-2 text-sm font-bold"
                     />
                   </div>
                 </div>
@@ -317,7 +330,7 @@ export default function NewTaskPage() {
             </section>
 
             {/* Skill Management Card (AI Core) */}
-            <section className="bg-white/60 backdrop-blur-xl border border-[#DFDED6] rounded-2xl p-6 transition-all duration-300 hover:rounded-none hover:shadow-xl hover:shadow-primary/5 group">
+            <section className="border border-[#DFDED6] rounded-4xl p-6 transition-all duration-300">
               <div className="flex items-center justify-between mb-8">
                 <div className="flex items-center gap-2">
                   <div className="p-2 bg-primary/10 rounded-lg">
@@ -330,89 +343,107 @@ export default function NewTaskPage() {
               {/* Skill Input Adder */}
               <div className="bg-primary/5 p-4 rounded-xl border border-primary/10 mb-8 space-y-4">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                  <input
+                  <Input
                     type="text"
                     placeholder="Yetenek adı (Örn: React, Node.js)"
                     value={hardSkillInput}
                     onChange={(e) => setHardSkillInput(e.target.value)}
-                    className="flex-1 bg-white border border-[#DFDED6] rounded-xl px-4 py-2.5 text-sm outline-none focus:border-primary transition-all"
+                    className="flex-1 px-4 py-2.5 text-sm"
                   />
                   <div className="flex items-center gap-4">
-                     <div className="flex-1 flex items-center gap-2">
-                        <span className="text-[10px] font-bold text-slate-500 uppercase">Seviye:</span>
-                        <input
-                          type="range"
-                          min="1"
-                          max="10"
-                          value={hardSkillLevel}
-                          onChange={(e) => setHardSkillLevel(Number(e.target.value))}
-                          className="flex-1 h-1.5 bg-primary/20 rounded-full appearance-none accent-primary cursor-pointer"
-                        />
-                        <span className="text-xs font-bold text-primary w-6">{hardSkillLevel}</span>
-                     </div>
+                    <div className="flex-1 flex items-center gap-2">
+                      <span className="text-[10px] font-bold text-slate-500 uppercase">Seviye:</span>
+                      <input
+                        type="range"
+                        min="1"
+                        max="10"
+                        value={hardSkillLevel}
+                        onChange={(e) => setHardSkillLevel(Number(e.target.value))}
+                        className="flex-1 h-1.5 bg-slate-200 rounded-full appearance-none accent-primary cursor-pointer"
+                      />
+                      <span className="text-xs font-bold text-primary w-6">{hardSkillLevel}</span>
+                    </div>
                   </div>
                 </div>
                 <div className="flex flex-wrap items-center justify-between gap-4">
-                   <div className="flex items-center gap-6">
-                      <label className="flex items-center gap-2 cursor-pointer group">
-                        <input
-                          type="checkbox"
-                          checked={hardSkillIsRequired}
-                          onChange={(e) => setHardSkillIsRequired(e.target.checked)}
-                          className="sr-only peer"
-                        />
-                        <div className="w-9 h-5 bg-slate-200 rounded-full peer-checked:bg-primary relative transition-colors after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-4 shadow-inner" />
-                        <span className="text-xs font-bold text-slate-600 group-hover:text-primary transition-colors">Zorunlu</span>
-                      </label>
-                      <div className="flex items-center gap-2">
-                        <span className="text-[10px] font-bold text-slate-500 uppercase">Deneyim (Yıl):</span>
-                        <input
-                          type="number"
-                          placeholder="Yıl"
-                          value={hardSkillYears}
-                          onChange={(e) => setHardSkillYears(e.target.value === "" ? "" : Number(e.target.value))}
-                          className="w-16 bg-white border border-[#DFDED6] rounded-lg px-2 py-1 text-xs text-center font-bold outline-none"
-                        />
-                      </div>
-                   </div>
-                   <button
+                  <div className="flex items-center gap-6">
+                    <ToggleSwitch
+                      checked={hardSkillIsRequired}
+                      onChange={setHardSkillIsRequired}
+                      label="Zorunlu"
+                    />
+                    <div className="flex items-center gap-2">
+                      <span className="text-[10px] font-bold text-slate-500 uppercase whitespace-nowrap">Deneyim (Yıl):</span>
+                      <Input
+                        type="number"
+                        placeholder="Yıl"
+                        value={hardSkillYears}
+                        min={0}
+                        onChange={(e) => setHardSkillYears(e.target.value === "" ? "" : Math.max(0, Number(e.target.value)))}
+                        className="!w-16 px-2 py-1 text-xs text-center font-bold"
+                      />
+                    </div>
+                  </div>
+                  <PrimaryButton
                     type="button"
                     onClick={handleAddHardSkill}
-                    className="bg-primary text-white px-6 py-2 rounded-xl text-xs font-bold hover:opacity-90 transition-all flex items-center gap-2 shadow-lg shadow-primary/20 active:scale-95"
+                    icon={FiPlus}
+                    className="px-6 py-2 rounded-4xl text-xs font-bold shadow-lg shadow-primary/20 active:scale-95"
                   >
-                    <FiPlus className="w-3.5 h-3.5" />
                     Listeye Ekle
-                  </button>
+                  </PrimaryButton>
                 </div>
               </div>
 
               <div className="space-y-4 mb-10">
                 <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-1">Hard Skills</h3>
                 <div className="space-y-3">
-                  {hardSkills.map((h) => (
-                    <div key={h.skill} className="bg-white/40 p-4 rounded-xl border border-[#F1F0EA] flex flex-col md:flex-row md:items-center gap-4 group/item hover:border-primary/30 transition-all">
+                  {hardSkills.map((h, index) => (
+                    <div key={h.skill} className="bg-white p-4 rounded-4xl border border-[#F1F0EA] flex flex-col md:flex-row md:items-center gap-4 group/item hover:border-primary/30 transition-all">
                       <div className="md:w-1/4">
-                        <span className="font-bold text-primary">{h.skill}</span>
+                        <span className="font-bold text-[#00342b]">{h.skill}</span>
                       </div>
-                      <div className="flex-1 flex items-center gap-3">
-                        <div className="flex-1 h-1.5 bg-slate-100 rounded-full overflow-hidden">
-                          <div className="h-full bg-primary/40 rounded-full" style={{ width: `${h.level * 10}%` }} />
-                        </div>
-                        <span className="text-xs font-bold text-primary/60">{h.level}/10</span>
+
+                      <div className="flex-1 flex items-center gap-4">
+                        <input
+                          type="range"
+                          min="1"
+                          max="10"
+                          value={h.level}
+                          onChange={(e) => {
+                            const newSkills = [...hardSkills];
+                            newSkills[index].level = Number(e.target.value);
+                            setHardSkills(newSkills);
+                          }}
+                          className="flex-1 h-1.5 bg-slate-200 rounded-full appearance-none accent-[#00342b] cursor-pointer"
+                        />
+                        <span className="text-xs font-medium text-slate-500 w-8">{h.level}/10</span>
+
+                        <ToggleSwitch
+                          checked={h.isRequired || false}
+                          onChange={(checked) => {
+                            const newSkills = [...hardSkills];
+                            newSkills[index].isRequired = checked;
+                            setHardSkills(newSkills);
+                          }}
+                          label="Zorunlu"
+                          className="ml-2"
+                        />
                       </div>
-                      <div className="md:w-1/4 flex items-center justify-between gap-4">
-                        <div className="flex items-center gap-2">
-                          <span className={cn("text-[10px] px-2 py-0.5 rounded-full font-bold", h.isRequired ? "bg-primary text-white" : "bg-slate-100 text-slate-400")}>
-                            {h.isRequired ? "Zorunlu" : "Opsiyonel"}
-                          </span>
-                          {h.yearsOfExperience !== undefined && (
-                            <span className="text-[10px] font-bold text-slate-500">{h.yearsOfExperience} Yıl Deneyim</span>
-                          )}
+
+                      <div className="md:w-1/4 flex items-center justify-end gap-6">
+                        <div className="flex flex-col min-w-[60px]">
+                          {h.yearsOfExperience ? (
+                            <>
+                              <span className="text-[10px] text-slate-400">Deneyim:</span>
+                              <span className="text-xs font-bold text-[#00342b]">{h.yearsOfExperience} Yıl</span>
+                            </>
+                          ) : null}
                         </div>
                         <button
                           type="button"
                           onClick={() => handleRemoveHardSkill(h.skill)}
-                          className="text-red-400 hover:text-red-600 hover:bg-red-50 p-1.5 rounded-lg transition-all"
+                          className="text-red-500 border border-red-100 hover:text-red-600 hover:bg-red-50 p-2 rounded-lg transition-all"
                         >
                           <FiTrash2 className="w-4 h-4" />
                         </button>
@@ -429,21 +460,21 @@ export default function NewTaskPage() {
 
               <div className="space-y-4">
                 <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-1">Soft Skills</h3>
-                <div className="flex flex-wrap gap-2 p-4 bg-[#faf9f6]/50 rounded-2xl border border-dashed border-[#DFDED6]">
+                <div className="flex flex-wrap gap-2 p-4 rounded-4xl border border-dashed border-[#DFDED6]">
                   {softSkills.map((s) => (
-                    <span key={s} className="bg-[#dae2fd] text-[#5c647a] px-3 py-1.5 rounded-xl text-xs font-bold flex items-center gap-2 group/tag animate-in fade-in zoom-in">
+                    <span key={s} className="bg-white border border-[#DFDED6] text-[#5c647a] px-3 py-1.5 rounded-4xl text-xs font-bold flex items-center gap-2 group/tag animate-in fade-in zoom-in">
                       {s}
                       <button type="button" onClick={() => handleRemoveSoftSkill(s)} className="hover:text-red-500 transition-colors">
                         <FiX className="w-3.5 h-3.5" />
                       </button>
                     </span>
                   ))}
-                  <input
+                  <Input
                     type="text"
                     value={softSkillInput}
                     onChange={(e) => setSoftSkillInput(e.target.value)}
                     onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), handleAddSoftSkill())}
-                    className="bg-transparent border-none focus:ring-0 text-sm py-1 placeholder:text-slate-300 min-w-[120px]"
+                    className="w-auto px-2 py-1 text-sm placeholder:text-slate-300 min-w-[120px]"
                     placeholder="Enter ile ekle..."
                   />
                 </div>
@@ -454,13 +485,8 @@ export default function NewTaskPage() {
           {/* Right Column: Reward Sidebar */}
           <aside className="lg:col-span-4 space-y-6 lg:sticky lg:top-8">
             {/* Reward Section */}
-            <section className="bg-white/80 backdrop-blur-xl rounded-3xl p-6 border-2 border-primary/10 shadow-xl shadow-primary/5">
-              <div className="flex items-center gap-2 mb-6">
-                <div className="p-2 bg-[#e28743]/10 rounded-lg">
-                  <FiDollarSign className="w-5 h-5 text-[#e28743]" />
-                </div>
-                <h2 className="text-xl font-bold text-[#0b1c30]">Ödül Sistemi</h2>
-              </div>
+            <section className=" rounded-3xl p-6 border border-[#DFDED6] shadow-primary/5">
+
 
               <div className="space-y-6">
                 <div>
@@ -475,7 +501,7 @@ export default function NewTaskPage() {
                           setActiveRewardTab(type);
                         }}
                         className={cn(
-                          "flex flex-col items-center gap-1.5 py-3 rounded-2xl border transition-all duration-300",
+                          "flex flex-col items-center gap-1.5 py-3 rounded-4xl border transition-all duration-300",
                           (watchedRewardType === type || activeRewardTab === type)
                             ? "bg-primary text-white border-primary shadow-lg shadow-primary/20 scale-105"
                             : "bg-white border-[#DFDED6] text-slate-400 hover:border-primary/30"
@@ -497,21 +523,24 @@ export default function NewTaskPage() {
                       <div className="flex gap-4">
                         <div className="flex-1">
                           <label className="block text-[10px] font-bold text-slate-400 mb-1.5 ml-1 uppercase">Bütçe</label>
-                          <input 
+                          <Input
+                            type="number"
+                            min={0}
+                            onKeyDown={(e) => { if (e.key === '-' || e.key === 'e') e.preventDefault(); }}
                             {...register("budget")}
-                            className="w-full bg-[#faf9f6] border-transparent rounded-xl px-4 py-3 font-bold text-primary outline-none focus:bg-white transition-colors"
+                            className="px-4 py-3 font-bold text-primary"
                           />
                         </div>
                         <div className="w-24">
                           <label className="block text-[10px] font-bold text-slate-400 mb-1.5 ml-1 uppercase">Para</label>
-                          <select 
+                          <Select
                             {...register("currency")}
-                            className="w-full bg-[#faf9f6] border-transparent rounded-xl px-4 py-3 font-bold outline-none cursor-pointer"
+                            className="px-4 py-3 font-bold"
                           >
                             <option value="TRY">TRY</option>
                             <option value="USD">USD</option>
                             <option value="EUR">EUR</option>
-                          </select>
+                          </Select>
                         </div>
                       </div>
                       <p className="text-[10px] text-slate-400 italic text-center">Nakit ödüller, görev tamamlandıktan sonra onaylanan hesaba 3 iş günü içinde aktarılır.</p>
@@ -522,20 +551,20 @@ export default function NewTaskPage() {
                     <div className="space-y-4">
                       <div>
                         <label className="block text-[10px] font-bold text-slate-400 mb-1.5 ml-1 uppercase">Staj Süresi</label>
-                        <select 
+                        <Select
                           {...register("internship_duration")}
-                          className="w-full bg-[#faf9f6] border-transparent rounded-xl px-4 py-3 font-bold outline-none"
+                          className="px-4 py-3 font-bold"
                         >
                           <option value="1 month">1 Ay</option>
                           <option value="3 months">3 Ay</option>
                           <option value="6 months">6 Ay</option>
-                        </select>
+                        </Select>
                       </div>
                       <div>
                         <label className="block text-[10px] font-bold text-slate-400 mb-1.5 ml-1 uppercase">Departman</label>
-                        <input 
+                        <Input
                           {...register("internship_department")}
-                          className="w-full bg-[#faf9f6] border-transparent rounded-xl px-4 py-3 font-bold outline-none"
+                          className="px-4 py-3 font-bold"
                           placeholder="Pazarlama / Yazılım..."
                         />
                       </div>
@@ -546,16 +575,16 @@ export default function NewTaskPage() {
                     <div className="space-y-4">
                       <div>
                         <label className="block text-[10px] font-bold text-slate-400 mb-1.5 ml-1 uppercase">Sertifika Adı</label>
-                        <input 
+                        <Input
                           {...register("certificate_name")}
-                          className="w-full bg-[#faf9f6] border-transparent rounded-xl px-4 py-3 font-bold outline-none"
+                          className="px-4 py-3 font-bold rounded-xl bg-[#faf9f6] border-transparent"
                         />
                       </div>
                       <div>
                         <label className="block text-[10px] font-bold text-slate-400 mb-1.5 ml-1 uppercase">Kurum</label>
-                        <input 
+                        <Input
                           {...register("certificate_issuer")}
-                          className="w-full bg-[#faf9f6] border-transparent rounded-xl px-4 py-3 font-bold outline-none"
+                          className="px-4 py-3 font-bold rounded-xl bg-[#faf9f6] border-transparent"
                         />
                       </div>
                     </div>
@@ -572,11 +601,11 @@ export default function NewTaskPage() {
               <h3 className="text-xs font-bold mb-4 text-slate-400 uppercase tracking-widest">AI Eşleşme Analizi</h3>
               <div className="flex items-center gap-4">
                 <div className="relative w-16 h-16 flex items-center justify-center">
-                   <svg className="w-full h-full transform -rotate-90">
+                  <svg className="w-full h-full transform -rotate-90">
                     <circle cx="32" cy="32" r="28" fill="transparent" stroke="#DFDED6" strokeWidth="4" />
                     <circle cx="32" cy="32" r="28" fill="transparent" stroke="#00342b" strokeWidth="4" strokeDasharray="176" strokeDashoffset={176 - (176 * 82) / 100} strokeLinecap="round" className="transition-all duration-1000" />
-                   </svg>
-                   <span className="absolute text-xs font-bold text-primary">--%</span>
+                  </svg>
+                  <span className="absolute text-xs font-bold text-primary">--%</span>
                 </div>
                 <div>
                   <p className="text-xs font-bold text-slate-600">Talent Pool Uyumu</p>
@@ -589,30 +618,25 @@ export default function NewTaskPage() {
       </main>
 
       {/* Floating Action Bar */}
-      <div className="fixed bottom-8 left-1/2 -translate-x-1/2 w-full max-w-[640px] px-6 z-50">
-        <div className="bg-white/80 backdrop-blur-2xl rounded-3xl p-3 shadow-2xl border border-[#DFDED6] flex items-center gap-3">
-          <button 
-            type="button" 
+      <div className="fixed bottom-8 left-1/2 -translate-x-1/2 w-max z-50">
+        <div className="bg-white/40 backdrop-blur-md rounded-[50px] p-2 shadow-2xl border border-[#DFDED6] flex items-center gap-2">
+          <Button
+            type="button"
+            variant="outline"
             onClick={() => router.back()}
-            className="px-8 py-3.5 rounded-2xl font-bold text-slate-500 hover:bg-slate-100 transition-all"
+            className="px-6 py-3 rounded-[50px] font-bold border-transparent hover:bg-white/50 transition-colors"
           >
             İptal
-          </button>
-          <button 
+          </Button>
+          <PrimaryButton
             type="submit"
-            disabled={isLoading}
+            isLoading={isLoading}
             onClick={handleSubmit(onSubmit)}
-            className="flex-1 bg-primary text-white px-8 py-3.5 rounded-2xl font-bold hover:bg-[#002b24] transition-all transform active:scale-[0.98] shadow-xl shadow-primary/20 flex items-center justify-center gap-2 group disabled:opacity-70"
+            icon={FiPlus}
+            className="px-8 py-3 rounded-[50px] font-bold active:scale-[0.98] shadow-xl shadow-primary/20 text-sm"
           >
-            {isLoading ? (
-              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
-            ) : (
-              <>
-                <FiPlus className="w-5 h-5" />
-                Görevi Yayınla
-              </>
-            )}
-          </button>
+            Görevi Yayınla
+          </PrimaryButton>
         </div>
       </div>
     </div>

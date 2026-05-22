@@ -1,11 +1,13 @@
 import Link from "next/link";
-import { FiUsers, FiClock } from "react-icons/fi";
+import { FiUsers, FiClock, FiArrowRight } from "react-icons/fi";
+import StatusBadge from "@/components/ui/badges/StatusBadge";
 
 interface ActiveTaskCardProps {
   id: number;
   title: string;
   submissionsCount: number;
   createdAt: string;
+  status?: string;
 }
 
 function formatDate(iso: string) {
@@ -21,32 +23,38 @@ export default function ActiveTaskCard({
   title,
   submissionsCount,
   createdAt,
+  status,
 }: ActiveTaskCardProps) {
-  const progressWidth = Math.min(100, Math.max(15, (submissionsCount / 10) * 100));
+  const isActive = status === 'open';
 
   return (
     <Link href={`/company/tasks/${id}/details`} className="block group">
-      <div className="p-6 transition-all duration-300 ease-out cursor-pointer hover:z-10 hover:bg-white hover:bg-gradient-to-br hover:from-[#004d40]/[0.045] hover:to-[#ffd54f]/[0.075] hover:scale-[1.02] bg-transparent relative border border-transparent hover:border-[#004d40]/50 hover:rounded-none hover:shadow-md">
-        <h3 className="text-[20px] font-semibold leading-[28px] text-[#0b1c30] mb-2 group-hover:text-[#004d40] transition-colors line-clamp-1">
-          {title}
-        </h3>
-        <div className="flex items-center gap-6 text-[#565e74] mb-4">
-          <div className="flex items-center gap-1 text-[12px] tracking-[0.05em] font-semibold leading-[16px]">
-            <FiUsers className="w-[18px] h-[18px]" />
-            <span>{submissionsCount} başvuru</span>
+      <div className="p-5 transition-all duration-300 ease-out cursor-pointer hover:z-10 hover:bg-white hover:bg-gradient-to-br hover:from-[#004d40]/[0.045] hover:to-[#ffd54f]/[0.075] hover:scale-[1.02] bg-transparent relative border border-transparent hover:border-[#004d40]/50 hover:rounded-none hover:shadow-md flex flex-col justify-between gap-3 h-full">
+        
+        <div className="flex items-start justify-between gap-2">
+          <h3 className="text-[15px] font-bold leading-[22px] text-[#0b1c30] group-hover:text-[#004d40] transition-colors line-clamp-2">
+            {title}
+          </h3>
+          <FiArrowRight className="text-[#00342b]/40 group-hover:text-[#00342b] shrink-0 transition-colors w-4 h-4 mt-1" />
+        </div>
+        
+        <div className="flex items-center justify-between w-full mt-2">
+          <div className="flex items-center gap-4 text-[#565e74]">
+            <div className="flex items-center gap-1.5 text-[12px] font-semibold">
+              <FiUsers className="w-3.5 h-3.5" />
+              <span>{submissionsCount} başvuru</span>
+            </div>
+            <div className="flex items-center gap-1.5 text-[12px] font-semibold">
+              <FiClock className="w-3.5 h-3.5" />
+              <span>{formatDate(createdAt)}</span>
+            </div>
           </div>
-          <div className="flex items-center gap-1 text-[12px] tracking-[0.05em] font-semibold leading-[16px]">
-            <FiClock className="w-[18px] h-[18px]" />
-            <span>{formatDate(createdAt)}</span>
+          
+          <div className="flex items-center">
+            <StatusBadge status={status || 'open'} />
           </div>
         </div>
-        {/* Progress Bar represents the student application/submission rate */}
-        <div className="w-full bg-[#dce9ff] h-1.5 rounded-full overflow-hidden">
-          <div
-            className="bg-[#00342b] h-full transition-all duration-500"
-            style={{ width: `${progressWidth}%` }}
-          />
-        </div>
+
       </div>
     </Link>
   );

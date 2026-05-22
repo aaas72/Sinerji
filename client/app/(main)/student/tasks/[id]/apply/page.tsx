@@ -12,6 +12,7 @@ import FormInput from "@/components/ui/form/FormInput";
 import FormButton from "@/components/ui/form/FormButton";
 import RichTextEditor from "@/components/ui/form/RichTextEditor";
 import MainSection from "@/components/ui/layouts/MainSection";
+import Input from "@/components/ui/Input";
 import Breadcrumb from "@/components/ui/Breadcrumb";
 import Button from "@/components/ui/Button";
 import { taskService } from "@/services/task.service";
@@ -195,11 +196,12 @@ export default function ApplyPage() {
                       <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 select-none">
                         <span className="font-bold text-sm">$</span>
                       </div>
-                      <input
+                      <Input
                         {...register("proposed_budget")}
                         type="number"
-                        className="w-full pl-8 pr-4 py-3 border border-gray-200 rounded-xl bg-white focus:ring-2 focus:ring-[#004d40]/15 focus:border-[#004d40] outline-none transition-all hover:border-gray-300 text-[#004d40] font-medium placeholder:text-gray-400"
+                        className="pl-8 pr-4 py-3 rounded-xl hover:border-gray-300 text-[#004d40] font-medium placeholder:text-gray-400"
                         placeholder="Örn: 150"
+                        error={!!errors.proposed_budget}
                       />
                     </div>
                   </FormField>
@@ -210,12 +212,13 @@ export default function ApplyPage() {
                     <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 select-none">
                       <FiBriefcase className="w-4 h-4 text-[#004d40]" />
                     </div>
-                    <input
+                    <Input
                       {...register("estimated_delivery_days")}
                       type="number"
                       required={isProjectTask}
-                      className="w-full pl-10 pr-4 py-3 border border-gray-200 rounded-xl bg-white focus:ring-2 focus:ring-[#004d40]/15 focus:border-[#004d40] outline-none transition-all hover:border-gray-300 text-[#004d40] font-medium placeholder:text-gray-400"
+                      className="pl-10 pr-4 py-3 rounded-xl hover:border-gray-300 text-[#004d40] font-medium placeholder:text-gray-400"
                       placeholder="Örn: 3"
+                      error={!!errors.estimated_delivery_days}
                     />
                   </div>
                 </FormField>

@@ -548,9 +548,9 @@ export default function TaskApplicantsPage() {
               onClick={() => {
                 /* TODO: open AI recommendation modal */
               }}
-              className="flex items-center justify-center gap-2 px-5 py-2.5 bg-[#00342b] text-white rounded-full font-bold text-xs hover:opacity-90 transition-all active:scale-95 cursor-pointer shadow-md shadow-[#00342b]/20 group/ai"
+              className="flex items-center justify-center gap-2 px-5 py-2.5 bg-gradient-to-r from-[#e28743] to-[#f09653] text-white rounded-full font-bold text-xs hover:opacity-90 transition-all active:scale-95 cursor-pointer shadow-md shadow-[#e28743]/30 group/ai"
             >
-              <FiZap className="w-3.5 h-3.5 fill-[#e28743] text-[#e28743] group-hover/ai:animate-pulse" />
+              <FiZap className="w-3.5 h-3.5 fill-white text-white group-hover/ai:animate-pulse" />
               AI Önerilen Adaylar
             </button>
 
