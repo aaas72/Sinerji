@@ -6,26 +6,34 @@ interface BreadcrumbProps {
 
 export default function Breadcrumb({ items }: BreadcrumbProps) {
   return (
-    <nav className="text-xs text-gray-500 mb-2" aria-label="breadcrumb">
-      <ol className="flex items-center gap-2">
-        {items.map((item, idx) => (
-          <div key={item.label} className="flex items-center gap-2">
-            {item.href && !item.active ? (
-              <li key={item.label}>
-                <Link href={item.href} className="hover:underline text-gray-600">
+    <nav className="text-[13px] font-sans mb-4" aria-label="breadcrumb">
+      <ol className="flex items-center flex-wrap gap-1.5 text-gray-500">
+        {items.map((item, idx) => {
+          const isLast = idx === items.length - 1;
+          return (
+            <div key={`${item.label}-${idx}`} className="flex items-center gap-1.5">
+              {item.href && !item.active ? (
+                <li>
+                  <Link
+                    href={item.href}
+                    className="text-[#2b6cb0] hover:text-[#1a365d] hover:underline font-medium transition-colors"
+                  >
+                    {item.label}
+                  </Link>
+                </li>
+              ) : (
+                <li className="text-[#00342b] font-bold">
                   {item.label}
-                </Link>
-              </li>
-            ) : (
-              <li key={item.label} className="text-yellow-600 font-semibold">
-                {item.label}
-              </li>
-            )}
-            {idx < items.length - 1 && (
-              <li className="mx-1 text-gray-400">/</li>
-            )}
-          </div>
-        ))}
+                </li>
+              )}
+              {!isLast && (
+                <li className="text-gray-400 font-normal select-none px-0.5" aria-hidden="true">
+                  ›
+                </li>
+              )}
+            </div>
+          );
+        })}
       </ol>
     </nav>
   );

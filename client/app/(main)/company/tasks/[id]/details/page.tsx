@@ -4,13 +4,11 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import MainSection from "@/components/ui/layouts/MainSection";
 import Button from "@/components/ui/Button";
-import PrimaryButton from "@/components/ui/PrimaryButton";
 import Breadcrumb from "@/components/ui/Breadcrumb";
 import { taskService } from "@/services/task.service";
 import { Task } from "@/types/task";
 import {
   FiArrowLeft,
-  FiEdit2,
   FiUsers,
   FiBriefcase,
   FiBook,
@@ -48,10 +46,8 @@ function SectionCard({
 }) {
   return (
     <div className="rounded-2xl border border-[#dfded6] bg-white/60 backdrop-blur-xs p-6 transition-all duration-300">
-      <div className="flex items-center gap-3 mb-4">
-        <div className="w-8 h-8 rounded-xl flex items-center justify-center bg-[#004d40]/5 border border-[#dfded6] text-[#004d40]">
-          <Icon size={16} className="text-[#004d40]" />
-        </div>
+      <div className="flex items-center gap-2.5 mb-4">
+        <Icon size={20} className="text-[#004d40] shrink-0" />
         <h3 className="text-base font-bold text-[#00342b] tracking-wide break-words">{title}</h3>
       </div>
       <div className="bg-transparent text-sm text-gray-600 leading-relaxed space-y-3">{children}</div>
@@ -61,10 +57,8 @@ function SectionCard({
 
 function InfoRow({ icon: Icon, label, value }: { icon: React.ElementType; label: string; value: string }) {
   return (
-    <div className="flex items-center gap-3.5 py-2.5 border-b border-[#dfded6]/50 last:border-0">
-      <div className="w-8 h-8 rounded-lg flex items-center justify-center bg-[#004d40]/5 border border-[#dfded6]/50 text-[#004d40]">
-        <Icon className="text-[#004d40]" size={16} />
-      </div>
+    <div className="flex items-center gap-3 py-2.5 border-b border-[#dfded6]/50 last:border-0">
+      <Icon className="text-[#004d40] shrink-0" size={18} />
       <div>
         <p className="text-[10px] uppercase tracking-wider font-extrabold text-[#565e74]">{label}</p>
         <p className="text-sm font-bold text-[#0b1c30] mt-0.5">{value}</p>
@@ -156,56 +150,56 @@ export default function TaskDetailsPage() {
 
         {/* ── Header Section ── */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8">
-          <div className="space-y-2">
-            <div className="flex flex-wrap items-center gap-3">
+          <div className="space-y-3">
+            <div className="flex flex-wrap items-center gap-2.5">
               {statusInfo && (
-                <span className="relative pl-4 text-xs uppercase tracking-wider font-extrabold text-[#004d40] inline-flex items-center select-none shrink-0">
-                  <span className={`w-2.5 h-2.5 rounded-full absolute left-0 ${statusInfo.dot}`} />
-                  {(task.status === "review" || task.status === "open" || !task.status) && (
-                    <span className={`w-2.5 h-2.5 rounded-full absolute left-0 ${statusInfo.dot} animate-ping opacity-75`} />
-                  )}
-                  <span className="ml-1.5">{statusInfo.label}</span>
+                <span className="text-[11px] uppercase tracking-wider font-extrabold text-[#004d40] inline-flex items-center gap-2 select-none shrink-0">
+                  <span className="relative flex h-2 w-2 shrink-0">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-[#e28743] opacity-75" />
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-[#e28743]" />
+                  </span>
+                  <span>{statusInfo.label}</span>
                 </span>
               )}
               {task.category && (
-                <span className="bg-[#dce9ff] px-3.5 py-1 rounded-full text-xs font-semibold text-[#0b1c30] border border-[#dfded6] break-words max-w-full">
+                <span className="bg-[#dce9ff] px-3.5 py-1.5 rounded-full text-xs font-semibold text-[#0b1c30] select-none shrink-0">
                   {task.category}{task.subcategory ? ` › ${task.subcategory}` : ""}
                 </span>
               )}
             </div>
-            <h1 className="text-[28px] md:text-[36px] font-extrabold leading-tight text-[#00342b] font-heading break-words">
+            <h1 className="text-[28px] md:text-[36px] font-bold leading-tight text-[#00342b] font-sans break-words tracking-tight">
               {task.title}
             </h1>
             {task.created_at && (
-              <p className="text-xs text-[#565e74] font-semibold">
+              <p className="text-sm text-[#565e74] font-medium">
                 Oluşturulma Tarihi: {new Date(task.created_at).toLocaleDateString("tr-TR", { day: "numeric", month: "long", year: "numeric" })}
               </p>
             )}
           </div>
 
           {/* Action buttons */}
-          <div className="flex flex-wrap items-center gap-2 shrink-0">
+          <div className="flex flex-wrap items-center gap-3 shrink-0">
             <button
               onClick={() => router.push("/company/tasks")}
-              className="px-6 py-2 border border-[#00342b] text-[#00342b] rounded-full text-xs font-bold hover:bg-[#00342b] hover:text-white transition-all cursor-pointer bg-transparent"
+              className="px-6 py-2.5 border border-[#dfded6] hover:border-[#00342b] text-[#00342b] rounded-full text-sm font-semibold transition-all duration-300 cursor-pointer bg-white/60 hover:bg-[#004d40]/5 hover:scale-[1.02] active:scale-[0.98]"
             >
               Görevlerim
             </button>
             <button
               onClick={() => router.push(`/company/tasks/${task.id}/applicants`)}
-              className="px-6 py-2 border border-[#00342b] text-[#00342b] rounded-full text-xs font-bold flex items-center gap-2 hover:bg-[#00342b] hover:text-white transition-all cursor-pointer bg-transparent"
+              className="px-6 py-2.5 border border-[#dfded6] hover:border-[#00342b] text-[#00342b] rounded-full text-sm font-semibold flex items-center gap-2.5 transition-all duration-300 cursor-pointer bg-white/60 hover:bg-[#004d40]/5 hover:scale-[1.02] active:scale-[0.98]"
             >
-              Başvurular
-              <span className="bg-[#00342b] text-white text-[10px] px-2 py-0.5 rounded-full font-bold group-hover:bg-white group-hover:text-[#00342b] transition-all">
+              <span>Başvurular</span>
+              <span className="bg-[#00342b] text-white text-xs w-5 h-5 flex items-center justify-center rounded-full font-bold select-none shrink-0">
                 {task._count?.submissions ?? 0}
               </span>
             </button>
-            <PrimaryButton
-              icon={FiEdit2}
+            <button
               onClick={() => router.push(`/company/tasks/${task.id}/edit`)}
+              className="px-6 py-2.5 bg-[#004d40] hover:bg-[#00342b] text-white rounded-full text-sm font-semibold transition-all duration-300 cursor-pointer shadow-sm hover:shadow-md hover:scale-[1.02] active:scale-[0.98]"
             >
               Düzenle
-            </PrimaryButton>
+            </button>
           </div>
         </div>
 
@@ -303,10 +297,8 @@ export default function TaskDetailsPage() {
             {/* Category */}
             {(task.category || task.subcategory) && (
               <SectionCard icon={FiLayers} title="Category Information">
-                <div className="flex items-center gap-3">
-                  <div className="w-12 h-12 bg-[#004d40] rounded-xl flex items-center justify-center text-white shrink-0">
-                    <FiLayers size={22} className="text-white" />
-                  </div>
+                <div className="flex items-center gap-3.5">
+                  <FiLayers size={22} className="text-[#004d40] shrink-0" />
                   <div>
                     <p className="text-[10px] uppercase tracking-wider font-extrabold text-[#565e74]">Parent Category</p>
                     <p className="text-sm font-bold text-[#0b1c30] mt-0.5">{task.category || "Belirtilmemiş"}</p>
@@ -359,7 +351,7 @@ export default function TaskDetailsPage() {
                   {/* Action button inside card */}
                   <button 
                     onClick={() => router.push(`/company/tasks/${task.id}/applicants`)}
-                    className="w-full mt-4 py-3 bg-[#e28743] hover:bg-[#d47632] text-[#00342b] rounded-xl font-bold hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 text-sm cursor-pointer shadow-md"
+                    className="w-full mt-4 py-3 bg-[#e28743] hover:bg-[#d47632] text-[#00342b] rounded-full font-bold hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 text-sm cursor-pointer shadow-md"
                   >
                     Başvuruları İncele ({task._count?.submissions || 0})
                   </button>

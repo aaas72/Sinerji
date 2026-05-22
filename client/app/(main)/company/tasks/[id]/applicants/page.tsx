@@ -10,6 +10,8 @@ import { taskService } from "@/services/task.service";
 import { Submission } from "@/types/submission";
 import { Task } from "@/types/task";
 import Button from "@/components/ui/Button";
+import ApplicantCard from "@/components/ui/cards/ApplicantCard";
+import ApplicantsSearchFilter from "@/components/ui/sections/ApplicantsSearchFilter";
 import { useToast } from "@/context/ToastContext";
 import {
   FiUser,
@@ -21,6 +23,14 @@ import {
   FiMail,
   FiBookOpen,
   FiCheckCircle,
+  FiSearch,
+  FiChevronDown,
+  FiChevronRight,
+  FiInfo,
+  FiStar,
+  FiAlertCircle,
+  FiAward,
+  FiZap,
 } from "react-icons/fi";
 import { reviewService } from "@/services/review.service";
 
@@ -125,295 +135,267 @@ function ReviewModal({
       : "bg-yellow-100 text-yellow-700";
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 md:p-6 backdrop-blur-sm bg-[#0b1c30]/40 animate-fadeIn">
       {/* backdrop */}
-      <div className="absolute inset-0 bg-black/40" onClick={onClose} />
+      <div className="absolute inset-0" onClick={onClose} />
 
-      <div className="relative bg-white rounded-2xl shadow-2xl max-w-4xl w-full p-8 z-10 animate-slideUp">
+      <div className="relative bg-white rounded-3xl shadow-2xl max-w-5xl w-full max-h-[90vh] overflow-hidden flex flex-col md:flex-row z-10 animate-scaleUp">
         {/* close */}
         <button
           onClick={onClose}
-          className="absolute top-4 right-4 text-gray-400 hover:text-gray-700 transition-colors"
+          className="absolute top-4 right-4 z-20 w-10 h-10 rounded-full bg-black/10 backdrop-blur-md text-white flex items-center justify-center hover:bg-black/20 transition-all cursor-pointer"
         >
           <FiX className="w-5 h-5" />
         </button>
 
-        {/* header */}
-        <div className="flex items-center gap-4 mb-6">
-          <div className="w-16 h-16 rounded-full bg-[#004d40]/10 text-[#004d40] font-bold text-2xl flex items-center justify-center shrink-0">
-            {submission.student.full_name.charAt(0)}
+        {/* Left Column: Candidate Info */}
+        <div className="w-full md:w-5/12 p-6 border-r border-[#dfded6]/40 flex flex-col gap-6 overflow-y-auto custom-scrollbar">
+          <div className="flex items-center gap-4">
+            <div className="w-20 h-20 avatar-gradient rounded-2xl flex items-center justify-center text-white text-3xl font-bold shadow-lg shrink-0">
+              {submission.student.full_name.charAt(0).toUpperCase()}
+            </div>
+            <div>
+              <h2 className="text-xl font-extrabold text-[#00342b]">
+                {submission.student.full_name}
+              </h2>
+              <div className="flex items-center gap-1 mt-1">
+                {[1, 2, 3, 4, 5].map((s) => (
+                  <FiStar
+                    key={s}
+                    className={`w-4 h-4 ${
+                      s <= (submission.review?.rating || 4.5)
+                        ? "text-[#e28743] fill-[#e28743]"
+                        : "text-gray-300"
+                    }`}
+                  />
+                ))}
+                <span className="text-xs font-bold text-gray-500 ml-1">
+                  {submission.review?.rating ? `${submission.review.rating}.0` : "4.5"}/5.0
+                </span>
+              </div>
+            </div>
           </div>
+
+          <div className="flex gap-3">
+            <button className="flex-1 flex items-center justify-center gap-2 py-3 bg-[#eff4ff]/60 rounded-xl border border-[#bfc9c4]/30 text-[#00342b] font-bold text-xs hover:bg-[#eff4ff] transition-colors cursor-default">
+              <FiBookOpen className="w-4 h-4 text-[#004d40]" />
+              Cover Letter
+            </button>
+            <a
+              href={`mailto:${submission.student.user.email}`}
+              className="flex-1 flex items-center justify-center gap-2 py-3 bg-[#eff4ff]/60 rounded-xl border border-[#bfc9c4]/30 text-[#00342b] font-bold text-xs hover:bg-[#eff4ff] transition-colors"
+            >
+              <FiMail className="w-4 h-4 text-[#004d40]" />
+              Contact
+            </a>
+          </div>
+
           <div>
-            <h3 className="text-xl font-black text-gray-900">
-              {submission.student.full_name}
-            </h3>
-            <div className="flex items-center gap-4 text-sm text-gray-500 flex-wrap mt-1">
+            <h4 className="text-[10px] font-bold text-[#565e74] uppercase tracking-wider mb-2">Cover Letter Summary</h4>
+            <div className="relative p-5 bg-[#faf9f6] rounded-xl border-l-4 border-[#00342b] italic text-xs text-gray-700 leading-relaxed max-h-48 overflow-y-auto custom-scrollbar shadow-sm">
+              &quot;{formatSubmissionContent(submission.submission_content, "İçerik belirtilmemiş.")}&quot;
+            </div>
+          </div>
+
+          <div>
+            <h4 className="text-[10px] font-bold text-[#565e74] uppercase tracking-wider mb-2">Technical Skill Stack</h4>
+            <div className="flex flex-wrap gap-2">
               {submission.student.university && (
-                <span className="flex items-center gap-1.5">
-                  <FiBookOpen className="w-4 h-4 text-gray-400" />
+                <span className="px-3 py-1 bg-[#00342b]/5 text-[#00342b] rounded-full text-xs font-semibold border border-[#00342b]/10">
                   {submission.student.university}
                 </span>
               )}
-              <span className="flex items-center gap-1.5">
-                <FiMail className="w-4 h-4 text-gray-400" />
+              <span className="px-3 py-1 bg-[#00342b]/5 text-[#00342b] rounded-full text-xs font-semibold border border-[#00342b]/10">
                 {submission.student.user.email}
               </span>
             </div>
           </div>
         </div>
 
-        {/* Main Grid: 2 Columns */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-8 mb-8">
-          
-          {/* Column 1: Submission Data */}
-          <div className="space-y-6">
-            {/* status & financials */}
-            <div className="bg-gray-50 rounded-2xl p-5 border border-gray-100">
-              <div className="flex items-center justify-between mb-4 pb-4 border-b border-gray-200/50">
-                <span className="text-xs font-bold text-gray-400 uppercase tracking-wider">Başvuru Durumu</span>
-                <span className={`text-[10px] font-bold px-2.5 py-1 rounded-full uppercase ${statusCls}`}>
-                  {statusLabel}
-                </span>
+        {/* Right Column: AI Analysis */}
+        <div className="w-full md:w-7/12 flex flex-col bg-white overflow-hidden">
+          {/* Header Panel */}
+          <div className="p-6 bg-[#00342b] text-white relative overflow-hidden shrink-0">
+            <div className="absolute top-0 right-0 w-64 h-64 bg-[#e28743]/10 opacity-20 rounded-full -translate-y-1/2 translate-x-1/2 blur-3xl" />
+            <div className="flex items-center justify-between mb-2 relative z-10">
+              <div className="flex items-center gap-2">
+                <span className="w-2.5 h-2.5 bg-[#e28743] rounded-full animate-pulse shadow-[0_0_8px_#e28743]" />
+                <span className="text-[10px] font-bold text-[#afefdd] uppercase tracking-wider">AI Matchmaking Active</span>
               </div>
-              
-              <div className="grid grid-cols-2 gap-4">
-                {submission.proposed_budget && (
-                  <div>
-                    <p className="text-[10px] text-gray-400 font-bold uppercase mb-1">Talep Edilen Bütçe</p>
-                    <p className="text-lg font-black text-[#004d40]">${submission.proposed_budget}</p>
-                  </div>
-                )}
-                {submission.estimated_delivery_days && (
-                  <div>
-                    <p className="text-[10px] text-gray-400 font-bold uppercase mb-1">Teslim Süresi</p>
-                    <p className="text-lg font-black text-[#004d40]">{submission.estimated_delivery_days} Gün</p>
-                  </div>
-                )}
+              <div className="text-4xl font-extrabold text-[#e28743]">
+                %{Number(submission.ai_match_details?.score || submission.ai_match_score || 0).toFixed(2)}
               </div>
             </div>
-
-            {/* cover letter */}
-            <div>
-              <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3 flex items-center gap-2">
-                <FiUser className="text-primary" /> Başvuru Mektubu
-              </p>
-              <div className="bg-white border border-gray-100 rounded-2xl p-5 max-h-72 overflow-y-auto custom-scrollbar shadow-sm">
-                <p className="text-sm text-gray-700 leading-relaxed whitespace-pre-wrap">
-                  {formatSubmissionContent(submission.submission_content, "İçerik belirtilmemiş.")}
-                </p>
-              </div>
-            </div>
-
-            <p className="text-xs text-gray-400 flex items-center gap-1.5 italic">
-              <FiCalendar className="w-3.5 h-3.5" />
-              Başvuru Tarihi: {new Date(submission.submitted_at || Date.now()).toLocaleDateString("tr-TR")}
-            </p>
+            <h3 className="text-base font-bold text-white relative z-10">Advanced Candidate Analytics</h3>
+            <p className="text-xs text-white/80 mt-1 relative z-10">Matching based on behavioral patterns and technical depth.</p>
           </div>
 
-          {/* Column 2: AI Analysis */}
-          <div>
-            {submission.ai_match_details ? (
-              <div className="border border-gray-100 rounded-2xl overflow-hidden shadow-sm h-full flex flex-col">
-                {/* Header Area */}
-                <div className="bg-[#004d40] px-5 py-4 flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <div className="w-2 h-2 bg-[#fbb049] rounded-full animate-pulse" />
-                    <span className="text-xs font-bold text-white uppercase tracking-widest">
-                      AI Eşleşme Analizi
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-1.5">
-                    <span className="text-sm font-black text-[#fbb049]">%{submission.ai_match_details.score}</span>
-                  </div>
+          {/* Scrollable Content */}
+          <div className="p-6 flex-grow overflow-y-auto custom-scrollbar flex flex-col gap-6 max-h-[50vh] md:max-h-[60vh]">
+            {/* Strengths & Weaknesses */}
+            <div>
+              <h4 className="text-[10px] font-bold text-[#565e74] uppercase tracking-wider mb-2">Strategic Analysis</h4>
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="bg-[#00342b]/5 rounded-xl p-4 border border-[#00342b]/10">
+                  <p className="text-xs font-bold text-[#00342b] flex items-center gap-1.5 mb-2">
+                    <FiCheckCircle className="text-[#00342b] w-4 h-4" /> Güçlü Yönler
+                  </p>
+                  <ul className="text-xs text-gray-700 space-y-1 list-disc list-inside">
+                    {submission.ai_match_details?.strengths?.map((s, idx) => (
+                      <li key={idx} className="leading-tight">{s}</li>
+                    )) || <li className="italic text-gray-400">Veri yok</li>}
+                  </ul>
                 </div>
+                <div className="bg-[#ba1a1a]/5 rounded-xl p-4 border border-[#ba1a1a]/10">
+                  <p className="text-xs font-bold text-[#ba1a1a] flex items-center gap-1.5 mb-2">
+                    <FiAlertCircle className="text-[#ba1a1a] w-4 h-4" /> Gelişim Alanları
+                  </p>
+                  <ul className="text-xs text-gray-700 space-y-1 list-disc list-inside">
+                    {submission.ai_match_details?.weaknesses?.map((w, idx) => (
+                      <li key={idx} className="leading-tight">{w}</li>
+                    )) || <li className="italic text-gray-400">Veri yok</li>}
+                  </ul>
+                </div>
+              </div>
+            </div>
 
-                <div className="p-5 bg-white flex-1 overflow-y-auto custom-scrollbar max-h-[450px]">
-                  {/* AI Explanation Summary */}
-                  {submission.ai_match_details.explanation && (
-                    <div className="mb-6 bg-[#004d40]/5 border border-[#004d40]/10 rounded-2xl p-5">
-                      <p className="text-[10px] font-bold text-[#004d40] uppercase tracking-wider mb-3 flex items-center gap-2">
-                        <FiCheckCircle className="w-3.5 h-3.5" /> التحليل الذكي للمطابقة
-                      </p>
-                      <p className="text-sm text-gray-800 leading-relaxed whitespace-pre-wrap font-medium italic">
-                        "{submission.ai_match_details.explanation}"
-                      </p>
+            {/* Skill Matrix */}
+            <div>
+              <h4 className="text-[10px] font-bold text-[#565e74] uppercase tracking-wider mb-3">Skill Match Matrix</h4>
+              <div className="space-y-4">
+                {submission.ai_match_details?.skill_details?.map((skill, idx) => {
+                  const matchTypeLabel = skill.match_type === 'exact' ? 'Tam Eşleşme' : 
+                                         skill.match_type.includes('semantic') ? `Benzerlik: ${skill.matched_to}` :
+                                         skill.match_type.includes('ontology') ? `İlişkili: ${skill.matched_to}` : 'Eksik';
+                  
+                  const similarityPercentage = Math.round(skill.similarity * 100);
+                  const isHigh = skill.satisfaction > 0.8;
+                  const isMedium = skill.satisfaction > 0.4;
+                  const barColor = isHigh ? 'bg-[#00342b]' : isMedium ? 'bg-[#e28743]' : 'bg-[#565e74]';
+                  
+                  return (
+                    <div key={idx}>
+                      <div className="flex justify-between text-xs font-semibold mb-1">
+                        <div className="flex flex-col">
+                          <span className="font-bold text-[#00342b]">{skill.required}</span>
+                          <span className="text-[10px] text-gray-400 mt-0.5">{matchTypeLabel}</span>
+                        </div>
+                        <span className="text-[#00342b]">%{similarityPercentage || 0}</span>
+                      </div>
+                      <div className="h-2 w-full bg-gray-100 rounded-full overflow-hidden">
+                        <div className={`h-full rounded-full ${barColor}`} style={{ width: `${similarityPercentage}%` }}></div>
+                      </div>
                     </div>
-                  )}
+                  );
+                }) || <p className="text-xs text-gray-400 italic">Yetenek matrisi verisi bulunamadı.</p>}
+              </div>
+            </div>
 
-                  {/* Skill Matrix */}
-                  {submission.ai_match_details.skill_details && submission.ai_match_details.skill_details.length > 0 && (
-                    <div className="space-y-3">
-                      <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-4">Yetenek Uyumluluk Matrisi</p>
+            {/* Top Projects */}
+            {submission.ai_match_details?.top_projects && submission.ai_match_details.top_projects.length > 0 && (
+              <div>
+                <h4 className="text-[10px] font-bold text-[#565e74] uppercase tracking-wider mb-2">Deneyim Kanıtları</h4>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                  {submission.ai_match_details.top_projects.map((proj, idx) => (
+                    <div key={idx} className="flex items-center justify-between bg-gray-50 px-3 py-2.5 rounded-xl border border-gray-100">
+                      <span className="text-xs text-gray-700 font-bold line-clamp-1">{proj.title}</span>
+                      <span className="text-xs font-black text-[#00342b] bg-white px-2 py-1 rounded-md shadow-sm">%{proj.similarity}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+          </div>
 
-                      {/* Strategic Analysis: Strengths & Weaknesses */}
-                      {(submission.ai_match_details.strengths || submission.ai_match_details.weaknesses) && (
-                        <div className="grid grid-cols-1 gap-3 mb-6">
-                          {submission.ai_match_details.strengths && submission.ai_match_details.strengths.length > 0 && (
-                            <div className="bg-green-50/50 border border-green-100 rounded-xl p-3">
-                              <p className="text-[10px] font-bold text-green-700 uppercase mb-2 flex items-center gap-1.5">
-                                <span className="w-1.5 h-1.5 rounded-full bg-green-500" />
-                                Güçlü Yönler
-                              </p>
-                              <ul className="space-y-1">
-                                {submission.ai_match_details.strengths.map((s, idx) => (
-                                  <li key={idx} className="text-[11px] text-green-800 flex items-start gap-1.5 leading-tight">
-                                    <span>•</span> {s}
-                                  </li>
-                                ))}
-                              </ul>
-                            </div>
-                          )}
-                          {submission.ai_match_details.weaknesses && submission.ai_match_details.weaknesses.length > 0 && (
-                            <div className="bg-red-50/50 border border-red-100 rounded-xl p-3">
-                              <p className="text-[10px] font-bold text-red-700 uppercase mb-2 flex items-center gap-1.5">
-                                <span className="w-1.5 h-1.5 rounded-full bg-red-500" />
-                                Gelişim Alanları
-                              </p>
-                              <ul className="space-y-1">
-                                {submission.ai_match_details.weaknesses.map((w, idx) => (
-                                  <li key={idx} className="text-[11px] text-red-800 flex items-start gap-1.5 leading-tight">
-                                    <span>•</span> {w}
-                                  </li>
-                                ))}
-                              </ul>
-                            </div>
-                          )}
-                        </div>
-                      )}
-
-                      {submission.ai_match_details.skill_details.map((skill, idx) => (
-                        <div key={idx} className="flex items-center justify-between py-2.5 border-b border-gray-50 last:border-0 group">
-                          <div className="flex flex-col">
-                            <span className="text-xs font-bold text-[#004d40] group-hover:text-[#00695c] transition-colors">{skill.required}</span>
-                            <span className="text-[9px] font-medium text-gray-400 uppercase mt-0.5">
-                              {skill.match_type === 'exact' ? 'Tam Eşleşme' : 
-                               skill.match_type.includes('semantic') ? `Benzerlik: ${skill.matched_to}` :
-                               skill.match_type.includes('ontology') ? `İlişkili: ${skill.matched_to}` : 'Eksik'}
-                            </span>
-                          </div>
-                          <div className="flex items-center gap-4">
-                            {skill.similarity > 0 && skill.match_type !== 'exact' && (
-                              <span className="text-[10px] font-bold text-[#004d40]/40">%{Math.round(skill.similarity * 100)}</span>
-                            )}
-                            <div className={`h-1.5 w-10 rounded-full ${
-                              skill.satisfaction > 0.8 ? 'bg-[#004d40]' : 
-                              skill.satisfaction > 0.4 ? 'bg-[#fbb049]' : 'bg-gray-100'
-                            }`} />
-                          </div>
-                        </div>
+          {/* Footer Actions */}
+          <div className="p-6 border-t border-[#dfded6]/30 flex flex-col gap-4 bg-[#faf9f6] shrink-0">
+            {submission.status === "pending" ? (
+              <div className="flex gap-3">
+                <button
+                  onClick={() => handle("rejected")}
+                  disabled={!!loading}
+                  className="flex-1 py-3 border-2 border-[#ba1a1a] text-[#ba1a1a] rounded-full font-bold hover:bg-[#ba1a1a] hover:text-white transition-all active:scale-95 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                >
+                  <FiX className="w-4 h-4" />
+                  {loading === "rejected" ? "İşleniyor..." : "Reddet"}
+                </button>
+                <button
+                  onClick={() => handle("approved")}
+                  disabled={!!loading}
+                  className="flex-1 py-3 bg-[#00342b] text-white rounded-full font-bold shadow-lg shadow-[#00342b]/20 hover:opacity-90 transition-all active:scale-95 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                >
+                  <FiCheck className="w-4 h-4" />
+                  {loading === "approved" ? "İşleniyor..." : "Onayla"}
+                </button>
+              </div>
+            ) : submission.status === "approved" ? (
+              <div className="space-y-4">
+                <h4 className="text-xs font-bold text-gray-800 flex items-center gap-2">
+                  <FiCheckCircle className="text-green-500 w-4 h-4" /> Öğrenci Değerlendirmesi
+                </h4>
+                
+                {hasReview ? (
+                  <div className="bg-green-50 rounded-xl p-4 border border-green-100">
+                    <div className="flex items-center gap-1 mb-2">
+                      {[1, 2, 3, 4, 5].map((s) => (
+                        <FiStar key={s} className={`w-3.5 h-3.5 ${s <= rating ? "text-[#e28743] fill-[#e28743]" : "text-gray-300"}`} />
                       ))}
+                      <span className="text-xs font-bold ml-2 text-green-700">{rating}/5</span>
                     </div>
-                  )}
-
-                  {/* Projects Evidence */}
-                  {submission.ai_match_details.top_projects && submission.ai_match_details.top_projects.length > 0 && (
-                    <div className="mt-6 pt-6 border-t border-gray-100">
-                       <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-3">Deneyim Kanıtları</p>
-                       <div className="grid grid-cols-1 gap-2">
-                         {submission.ai_match_details.top_projects.map((proj, idx) => (
-                           <div key={idx} className="flex items-center justify-between bg-gray-50 px-3 py-2.5 rounded-xl border border-gray-100">
-                             <span className="text-[11px] text-gray-700 font-bold line-clamp-1">{proj.title}</span>
-                             <span className="text-[10px] font-black text-[#004d40] bg-white px-2 py-1 rounded-md shadow-sm">%{proj.similarity}</span>
-                           </div>
-                         ))}
-                       </div>
+                    <p className="text-xs text-green-800 italic">{feedback || "Geri bildirim yok."}</p>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    <div>
+                      <label className="block text-[10px] font-bold text-gray-500 mb-2 uppercase">Puan Ver</label>
+                      <div className="flex gap-2">
+                        {[1, 2, 3, 4, 5].map((s) => (
+                          <button
+                            key={s}
+                            onClick={() => setRating(s)}
+                            className={`w-10 h-10 rounded-xl flex items-center justify-center border-2 transition-all cursor-pointer font-bold ${
+                              rating === s
+                                ? "border-[#00342b] bg-[#00342b] text-white"
+                                : "border-gray-200 text-gray-400 hover:border-[#00342b]/20"
+                            }`}
+                          >
+                            {s}
+                          </button>
+                        ))}
+                      </div>
                     </div>
-                  )}
-                </div>
+                    <div>
+                      <label className="block text-[10px] font-bold text-gray-500 mb-2 uppercase">Geri Bildirim (Opsiyonel)</label>
+                      <textarea
+                        value={feedback}
+                        onChange={(e) => setFeedback(e.target.value)}
+                        className="w-full rounded-2xl border border-gray-200 p-3 text-xs outline-none focus:ring-2 focus:ring-[#00342b]/20 focus:border-[#00342b]"
+                        placeholder="Öğrencinin performansı hakkında not bırakın..."
+                      />
+                    </div>
+                    <button
+                      onClick={handleReview}
+                      disabled={!!loading}
+                      className="w-full bg-[#00342b] text-white font-bold py-2.5 rounded-full hover:opacity-90 shadow-md shadow-[#00342b]/15 transition-all cursor-pointer disabled:opacity-50"
+                    >
+                      {loading === "reviewing" ? "Kaydediliyor..." : "Değerlendirmeyi Kaydet"}
+                    </button>
+                  </div>
+                )}
               </div>
             ) : (
-              <div className="h-full flex items-center justify-center border-2 border-dashed border-gray-100 rounded-2xl text-gray-400 text-sm">
-                Analiz verisi bulunamadı.
-              </div>
+              <p className="text-center text-xs text-gray-400 bg-gray-50 py-3 rounded-xl border border-gray-100 font-medium">
+                Bu başvuru reddedildi.
+              </p>
             )}
           </div>
         </div>
-
-        {/* actions */}
-        {submission.status === "pending" ? (
-          <div className="flex gap-3">
-            <button
-              onClick={() => handle("approved")}
-              disabled={!!loading}
-              className="flex-1 flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white font-semibold py-2.5 rounded-xl transition-colors disabled:opacity-60"
-            >
-              <FiCheck className="w-4 h-4" />
-              {loading === "approved" ? "İşleniyor..." : "Onayla"}
-            </button>
-            <button
-              onClick={() => handle("rejected")}
-              disabled={!!loading}
-              className="fi-1 flex items-center justify-center gap-2 bg-red-500 hover:bg-red-600 text-white font-semibold py-2.5 rounded-xl transition-colors disabled:opacity-60"
-            >
-              <FiX className="w-4 h-4" />
-              {loading === "rejected" ? "İşleniyor..." : "Reddet"}
-            </button>
-          </div>
-        ) : submission.status === "approved" ? (
-          <div className="border-t border-gray-100 pt-5 mt-2">
-            <h4 className="text-sm font-bold text-gray-800 mb-3 flex items-center gap-2">
-              <FiCheckCircle className="text-green-500" /> Öğrenci Değerlendirmesi
-            </h4>
-            
-            {hasReview ? (
-              <div className="bg-green-50 rounded-xl p-4 border border-green-100">
-                <div className="flex items-center gap-1 mb-2">
-                  {[1, 2, 3, 4, 5].map((s) => (
-                    <FiCheck key={s} className={s <= rating ? "text-yellow-500" : "text-gray-300"} />
-                  ))}
-                  <span className="text-xs font-bold ml-2 text-green-700">{rating}/5</span>
-                </div>
-                <p className="text-sm text-green-800 italic">{feedback || "Geri bildirim yok."}</p>
-              </div>
-            ) : (
-              <div className="space-y-4">
-                <div>
-                  <label className="block text-xs font-semibold text-gray-500 mb-2">Puan Ver</label>
-                  <div className="flex gap-2">
-                    {[1, 2, 3, 4, 5].map((s) => (
-                      <button
-                        key={s}
-                        onClick={() => setRating(s)}
-                        className={`w-10 h-10 rounded-lg flex items-center justify-center border-2 transition-all ${
-                          rating === s ? "border-primary bg-primary text-white" : "border-gray-100 text-gray-400 hover:border-primary/20"
-                        }`}
-                      >
-                        {s}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-                <div>
-                  <label className="block text-xs font-semibold text-gray-500 mb-2">Geri Bildirim (Opsiyonel)</label>
-                  <textarea
-                    value={feedback}
-                    onChange={(e) => setFeedback(e.target.value)}
-                    className="w-full rounded-xl border border-gray-200 p-3 text-sm outline-none focus:ring-2 focus:ring-primary/20"
-                    placeholder="Öğrencinin performansı hakkında not bırakın..."
-                  />
-                </div>
-                <button
-                  onClick={handleReview}
-                  disabled={!!loading}
-                  className="w-full bg-primary text-white font-semibold py-2.5 rounded-xl hover:bg-primary/90 transition-all disabled:opacity-50"
-                >
-                  {loading === "reviewing" ? "Kaydediliyor..." : "Değerlendirmeyi Kaydet"}
-                </button>
-              </div>
-            )}
-          </div>
-        ) : (
-          <p className="text-center text-sm text-gray-400">
-            Bu başvuru reddedildi.
-          </p>
-        )}
       </div>
     </div>
   );
 }
 
-/* ── Ana Sayfa ── */
-
+/* ── Main Page ── */
 export default function TaskApplicantsPage() {
   const params = useParams();
   const router = useRouter();
@@ -429,12 +411,12 @@ export default function TaskApplicantsPage() {
   // Lock body scroll when modal is open
   useEffect(() => {
     if (selected) {
-      document.body.style.overflow = 'hidden';
+      document.body.style.overflow = "hidden";
     } else {
-      document.body.style.overflow = 'unset';
+      document.body.style.overflow = "unset";
     }
     return () => {
-      document.body.style.overflow = 'unset';
+      document.body.style.overflow = "unset";
     };
   }, [selected]);
 
@@ -463,9 +445,7 @@ export default function TaskApplicantsPage() {
   }, [params.id]);
 
   const handleUpdate = (updated: Submission) => {
-    setSubmissions((prev) =>
-      prev.map((s) => (s.id === updated.id ? updated : s))
-    );
+    setSubmissions((prev) => prev.map((s) => (s.id === updated.id ? updated : s)));
   };
 
   const minAiScoreNumber = minAiScore === "" ? null : Number(minAiScore);
@@ -477,12 +457,9 @@ export default function TaskApplicantsPage() {
       const query = searchQuery.trim().toLowerCase();
 
       const matchesQuery =
-        query.length === 0 ||
-        fullName.includes(query) ||
-        email.includes(query);
+        query.length === 0 || fullName.includes(query) || email.includes(query);
 
-      const matchesStatus =
-        statusFilter === "all" || submission.status === statusFilter;
+      const matchesStatus = statusFilter === "all" || submission.status === statusFilter;
 
       const score = typeof submission.ai_match_score === "number" ? submission.ai_match_score : 0;
       const matchesScore =
@@ -502,13 +479,31 @@ export default function TaskApplicantsPage() {
 
   if (loading)
     return (
-      <div className="min-h-screen p-0 mx-auto flex justify-center items-center text-gray-500">
-        Yükleniyor...
+      <div className="min-h-screen p-0 mx-auto flex justify-center items-center text-[#565e74] bg-[#faf9f6]">
+        <div className="flex flex-col items-center gap-3">
+          <div className="w-10 h-10 border-4 border-[#00342b]/20 border-t-[#00342b] rounded-full animate-spin" />
+          <p className="text-sm font-semibold">Yükleniyor...</p>
+        </div>
       </div>
     );
 
   return (
-    <div className="min-h-screen p-0 mx-auto">
+    <div className="min-h-screen w-full max-w-[1280px] mx-auto px-6 md:px-16 py-16 bg-[#faf9f6] text-[#0b1c30] relative flex flex-col font-sans">
+      {/* Dynamic Synaptic Line Background Decorations */}
+      <svg className="fixed inset-0 w-full h-full -z-10 opacity-20 pointer-events-none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M-100,200 Q400,100 800,400 T1600,200" fill="none" stroke="#004d40" strokeDasharray="10 5" strokeWidth="0.5" />
+        <path d="M-100,800 Q600,900 1200,600 T1800,800" fill="none" stroke="#e28743" strokeDasharray="8 4" strokeWidth="0.5" />
+      </svg>
+
+      <style dangerouslySetInnerHTML={{ __html: `
+        .glass-panel { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); }
+        .ai-glow { box-shadow: 0 0 15px rgba(226, 135, 67, 0.2); border: 1px solid rgba(226, 135, 67, 0.15); }
+        .avatar-gradient { background: linear-gradient(135deg, #004d40 0%, #00342b 100%); }
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; height: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #bfc9c4; border-radius: 10px; }
+      `}} />
+
       {selected && (
         <ReviewModal
           submission={selected}
@@ -517,174 +512,93 @@ export default function TaskApplicantsPage() {
         />
       )}
 
-      <Breadcrumb items={[
-        { label: "Panel", href: "/company/dashboard" },
-        { label: "Görevlerim", href: "/company/tasks" },
-        { label: task?.title || "Görev", href: `/company/tasks` },
-        { label: "Başvurular", active: true },
-      ]} />
+      {/* Breadcrumb Area */}
+      <Breadcrumb
+        items={[
+          { label: "Panel", href: "/company/dashboard" },
+          { label: "Görevlerim", href: "/company/tasks" },
+          { label: task?.title || "Görev", href: `/company/tasks` },
+          { label: "Başvurular", active: true },
+        ]}
+      />
 
-      <MainSection hideHeader>
-        {/* Header Row */}
-        <div className="flex justify-between items-center mb-6">
+      <MainSection hideHeader variant="transparent" bordered={false} padding="none">
+        {/* Breadcrumbs & Header */}
+        <div className="mb-8 flex flex-col sm:flex-row sm:items-end justify-between gap-4 mt-2">
           <div>
-            <h2 className="text-base font-semibold text-gray-900">
-              Başvuru Listesi
-              {filteredSubmissions.length > 0 && (
-                <span className="ml-2 text-xs font-normal text-gray-400">
-                  ({filteredSubmissions.length} başvuru)
-                </span>
-              )}
-            </h2>
+            <div className="flex items-center gap-3">
+              <h1 className="text-2xl font-extrabold text-[#00342b]">Başvuru Listesi</h1>
+              <span className="bg-[#00342b]/10 text-[#00342b] px-3 py-0.5 rounded-full text-xs font-bold border border-[#00342b]/20">
+                {filteredSubmissions.length}
+              </span>
+            </div>
             {task && (
               <Link
                 href={`/company/tasks/${task.id}/details`}
-                className="inline-flex items-center gap-1 text-xs text-primary underline underline-offset-2 hover:text-primary/80 transition-colors mt-0.5"
+                className="inline-flex items-center gap-1 text-xs text-[#00342b] underline underline-offset-2 hover:text-[#004d40] transition-colors mt-1.5 font-bold"
               >
-                <FiExternalLink size={11} />
+                <FiExternalLink size={12} />
                 Görev Detayları
               </Link>
             )}
           </div>
-          <Button variant="outline" icon={FiArrowLeft} onClick={() => router.back()}>
-            Geri Dön
-          </Button>
-        </div>
-
-        <div className="bg-white border border-gray-100 rounded-xl p-4 mb-5">
-          <div className="grid grid-cols-1 md:grid-cols-4 gap-3">
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e.target.value)}
-              placeholder="İsim veya e-posta ara"
-              className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
-            />
-
-            <select
-              value={statusFilter}
-              onChange={(e) => setStatusFilter(e.target.value as "all" | "pending" | "approved" | "rejected")}
-              className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary/20"
+          <div className="flex items-center gap-3">
+            {/* AI Recommendation Button */}
+            <button
+              onClick={() => {
+                /* TODO: open AI recommendation modal */
+              }}
+              className="flex items-center justify-center gap-2 px-5 py-2.5 bg-[#00342b] text-white rounded-full font-bold text-xs hover:opacity-90 transition-all active:scale-95 cursor-pointer shadow-md shadow-[#00342b]/20 group/ai"
             >
-              <option value="all">Tüm Durumlar</option>
-              <option value="pending">Bekliyor</option>
-              <option value="approved">Onaylandı</option>
-              <option value="rejected">Reddedildi</option>
-            </select>
+              <FiZap className="w-3.5 h-3.5 fill-[#e28743] text-[#e28743] group-hover/ai:animate-pulse" />
+              AI Önerilen Adaylar
+            </button>
 
-            <input
-              type="number"
-              min={0}
-              max={100}
-              value={minAiScore}
-              onChange={(e) => setMinAiScore(e.target.value)}
-              placeholder="Min. AI Skor (%)"
-              className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary/20"
-            />
-
-            <select
-              value={sortBy}
-              onChange={(e) => setSortBy(e.target.value as "ai_desc" | "ai_asc" | "newest" | "oldest")}
-              className="w-full rounded-lg border border-gray-200 px-3 py-2 text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary/20"
+            {/* Back Button */}
+            <button
+              onClick={() => router.back()}
+              className="flex items-center justify-center gap-2 px-6 py-2.5 border-2 border-[#00342b] text-[#00342b] rounded-full font-bold text-xs hover:bg-[#00342b] hover:text-white transition-all active:scale-95 cursor-pointer shadow-sm"
             >
-              <option value="ai_desc">AI Skoru (Yüksekten Düşüğe)</option>
-              <option value="ai_asc">AI Skoru (Düşükten Yükseğe)</option>
-              <option value="newest">En Yeni Başvurular</option>
-              <option value="oldest">En Eski Başvurular</option>
-            </select>
+              <FiArrowLeft className="w-4 h-4" />
+              Geri Dön
+            </button>
           </div>
         </div>
 
+        {/* Reusable, Bordered & Background-less Search Filter Bar */}
+        <ApplicantsSearchFilter
+          searchQuery={searchQuery}
+          onSearchQueryChange={setSearchQuery}
+          statusFilter={statusFilter}
+          onStatusFilterChange={setStatusFilter}
+          minAiScore={minAiScore}
+          onMinAiScoreChange={setMinAiScore}
+          sortBy={sortBy}
+          onSortByChange={setSortBy}
+          onClearFilters={() => {
+            setSearchQuery("");
+            setStatusFilter("all");
+            setMinAiScore("");
+            setSortBy("ai_desc");
+          }}
+        />
+
+        {/* Candidate Grid */}
         {filteredSubmissions.length === 0 ? (
-          <div className="text-center py-12 text-gray-500">
-            <FiUser size={48} className="mx-auto mb-4 text-gray-300" />
-            <p>{submissions.length === 0 ? "Henüz başvuru bulunmamaktadır." : "Filtreye uygun başvuru bulunamadı."}</p>
+          <div className="text-center py-16 bg-white border border-[#dfded6] rounded-2xl p-6 shadow-sm">
+            <FiUser size={48} className="mx-auto mb-4 text-[#bfc9c4]" />
+            <p className="text-sm font-semibold text-[#565e74]">
+              {submissions.length === 0 ? "Henüz başvuru bulunmamaktadır." : "Filtrelere uygun başvuru bulunamadı."}
+            </p>
           </div>
         ) : (
-          <div className="space-y-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6 relative">
             {filteredSubmissions.map((submission) => (
-              <div
+              <ApplicantCard
                 key={submission.id}
-                className="border border-gray-100 rounded-xl p-6 hover:shadow-md transition-shadow bg-white"
-              >
-                <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
-                  <div className="flex gap-4">
-                    <div className="w-12 h-12 bg-primary/10 rounded-full flex items-center justify-center text-primary font-bold text-lg shrink-0">
-                      {submission.student.full_name.charAt(0)}
-                    </div>
-                    <div>
-                      <div className="flex items-center gap-2">
-                        <h3 className="font-bold text-gray-900">
-                          {submission.student.full_name}
-                        </h3>
-                        {typeof submission.ai_match_score === 'number' && (
-                          <span className="px-2 py-0.5 bg-[#004d40]/10 text-[#004d40] text-xs font-bold rounded-full border border-[#004d40]/20" title="Yapay Zeka Yetenek Eşleşmesi">
-                            % {submission.ai_match_score} AI Uyumlu
-                          </span>
-                        )}
-                      </div>
-                      <p className="text-sm text-gray-500 mt-0.5">
-                        {submission.student.university ||
-                          "Üniversite belirtilmemiş"}
-                      </p>
-                      
-                      {/* Metrikler (Bütçe / Zaman) */}
-                      <div className="flex items-center gap-4 mt-2">
-                        {submission.proposed_budget && (
-                           <span className="text-sm font-medium text-gray-800 bg-gray-50 px-2 py-0.5 rounded border border-gray-100">
-                             Bütçe: ${submission.proposed_budget}
-                           </span>
-                        )}
-                        {submission.estimated_delivery_days && (
-                           <span className="text-sm font-medium text-gray-800 bg-gray-50 px-2 py-0.5 rounded border border-gray-100">
-                             Süre: {submission.estimated_delivery_days} Gün
-                           </span>
-                        )}
-                      </div>
-
-                      <div className="flex items-center gap-4 mt-3 text-sm text-gray-500">
-                        <span className="flex items-center gap-1">
-                          <FiCalendar size={14} />
-                          {new Date(
-                            submission.submitted_at || Date.now()
-                          ).toLocaleDateString("tr-TR")}
-                        </span>
-                        <span
-                          className={`px-2 py-0.5 rounded-full text-xs font-medium ${
-                            submission.status === "approved"
-                              ? "bg-green-100 text-green-700"
-                              : submission.status === "rejected"
-                              ? "bg-red-100 text-red-700"
-                              : "bg-yellow-100 text-yellow-700"
-                          }`}
-                        >
-                          {submission.status === "approved"
-                            ? "Onaylandı"
-                            : submission.status === "rejected"
-                            ? "Reddedildi"
-                            : "Bekliyor"}
-                        </span>
-                      </div>
-                    </div>
-                  </div>
-
-                  <div className="flex flex-col gap-2 shrink-0">
-                    <Button
-                      variant="primary"
-                      className="text-sm w-full md:w-auto"
-                      onClick={() => setSelected(submission)}
-                    >
-                      İncele
-                    </Button>
-                  </div>
-                </div>
-
-                <div className="mt-4 pt-4 border-t border-gray-50 mb-4">
-                  <p className="text-gray-600 text-sm line-clamp-2 italic">
-                    {formatSubmissionContent(submission.submission_content, "İçerik yok")}
-                  </p>
-                </div>
-              </div>
+                submission={submission}
+                onClick={() => setSelected(submission)}
+              />
             ))}
           </div>
         )}

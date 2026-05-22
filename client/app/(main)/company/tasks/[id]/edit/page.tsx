@@ -1,214 +1,217 @@
 "use client";
-import { useState, useEffect } from "react";
+
+import { useEffect, useState, useMemo } from "react";
 import { useRouter, useParams } from "next/navigation";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import Breadcrumb from "@/components/ui/Breadcrumb";
-import RichTextEditor from "@/components/ui/form/RichTextEditor";
 import {
-  FormCard,
-  FormInput,
-  FormTextarea,
-  FormSelect,
-  FormRow,
-  FormSection,
-  FormButton,
-} from "@/components/ui/form";
-import { FiX, FiPlus, FiDollarSign, FiCalendar } from "react-icons/fi";
-import { taskService } from "@/services/task.service";
-import { TASK_CATEGORIES, getSubcategories } from "@/constants/categories";
+  FiBookOpen,
+  FiPlus,
+  FiTrash2,
+  FiX,
+  FiDollarSign,
+  FiAward,
+  FiCheck,
+  FiZap,
+} from "react-icons/fi";
+import { HiSparkles } from "react-icons/hi2";
 
+import { taskService } from "@/services/task.service";
+import { TASK_CATEGORIES } from "@/constants/categories";
+import RichTextEditor from "@/components/ui/form/RichTextEditor";
+import Breadcrumb from "@/components/ui/Breadcrumb";
+import { cn } from "@/utils/cn";
+
+// Form Schema
 const editTaskSchema = z.object({
-  title: z.string().min(1, "Görev başlığı zorunludur"),
-  description: z.string().min(10, "Açıklama zorunludur ve en az 10 karakter olmalı"),
-  category: z.string().min(1, "Kategori seçimi zorunludur"),
-  subcategory: z.string().min(1, "Alt kategori seçimi zorunludur"),
-  hardSkills: z.array(z.object({
-    skill: z.string().min(1),
-    level: z.number().min(1).max(10),
-    isRequired: z.boolean(),
-    yearsOfExperience: z.number().min(0).optional(),
-  })).min(1, "En az bir teknik yetenek eklenmeli"),
-  softSkills: z.array(z.string()).optional(),
-  reward_type: z.string().optional(),
-  budget: z.string().optional(),
+  title: z.string().min(5, "Başlık en az 5 karakter olmalıdır."),
+  description: z.string().min(20, "Açıklama en az 20 karakter olmalıdır."),
+  category: z.string().min(1, "Kategori seçiniz."),
+  subcategory: z.string().min(1, "Alt kategori seçiniz."),
+  status: z.enum(["open", "review", "in_progress", "closed"]),
+  reward_type: z.string().min(1, "Ödül türü seçiniz."),
+  budget: z.any().optional(),
   currency: z.string().optional(),
   internship_duration: z.string().optional(),
   internship_department: z.string().optional(),
   internship_is_paid: z.string().optional(),
   certificate_name: z.string().optional(),
   certificate_issuer: z.string().optional(),
-  positions: z.number().min(1, "Pozisyon sayısı zorunludur"),
-  experience_level: z.string().min(1, "Seviye seçimi zorunludur"),
+  positions: z.number().min(1, "En az 1 pozisyon olmalıdır."),
+  experience_level: z.string().min(1, "Deneyim seviyesi seçiniz."),
   preferred_major: z.string().optional(),
-  work_type: z.string().min(1, "Çalışma tipi zorunludur"),
+  work_type: z.string().min(1, "Çalışma şekli seçiniz."),
   deadline: z.string().optional(),
-  status: z.enum(["open", "review", "in_progress", "closed"]).optional(),
 });
 
 type EditTaskFormData = z.infer<typeof editTaskSchema>;
 
+interface SkillItem {
+  skill: string;
+  level: number;
+  isRequired?: boolean;
+  yearsOfExperience?: number;
+}
+
 export default function EditTaskPage() {
   const router = useRouter();
   const params = useParams();
-  const taskId = Number(params.id);
+  const taskId = params.id as string;
 
-  const [hardSkills, setHardSkills] = useState<{ skill: string; level: number; isRequired: boolean; yearsOfExperience?: number }[]>([]);
-  const [hardSkillInput, setHardSkillInput] = useState("");
-  const [hardSkillLevel, setHardSkillLevel] = useState(5);
-  const [hardSkillIsRequired, setHardSkillIsRequired] = useState(true);
-  const [hardSkillYears, setHardSkillYears] = useState<number | "">("");
-  const [softSkills, setSoftSkills] = useState<string[]>([]);
-  const [softSkillInput, setSoftSkillInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [isFetching, setIsFetching] = useState(true);
-  const [fetchError, setFetchError] = useState("");
+  const [fetchError, setFetchError] = useState<string | null>(null);
+
+  // Skill states
+  const [hardSkills, setHardSkills] = useState<SkillItem[]>([]);
+  const [softSkills, setSoftSkills] = useState<string[]>([]);
+  const [hardSkillInput, setHardSkillInput] = useState("");
+  const [hardSkillLevel, setHardSkillLevel] = useState(5);
+  const [hardSkillIsRequired, setHardSkillIsRequired] = useState(false);
+  const [hardSkillYears, setHardSkillYears] = useState<number | "">("");
+  const [softSkillInput, setSoftSkillInput] = useState("");
+  const [activeRewardTab, setActiveRewardTab] = useState<string>("money");
 
   const {
     register,
     handleSubmit,
-    watch,
-    setValue,
     control,
+    setValue,
+    watch,
+    reset,
     formState: { errors },
   } = useForm<EditTaskFormData>({
     resolver: zodResolver(editTaskSchema),
+    defaultValues: {
+      status: "open",
+      positions: 1,
+      currency: "TRY",
+    },
   });
 
   const selectedCategory = watch("category");
-  const availableSubcategories = selectedCategory ? getSubcategories(selectedCategory) : [];
   const watchedRewardType = watch("reward_type");
 
-  useEffect(() => {
-    setValue("hardSkills", hardSkills, { shouldValidate: true });
-  }, [hardSkills, setValue]);
+  const availableSubcategories = useMemo(() => {
+    const cat = TASK_CATEGORIES.find((c) => c.value === selectedCategory);
+    return cat ? cat.subcategories : [];
+  }, [selectedCategory]);
 
-  useEffect(() => {
-    setValue("softSkills", softSkills, { shouldValidate: true });
-  }, [softSkills, setValue]);
-
-  // ─── Fetch existing task data ──────────────────────────────────────────────
   useEffect(() => {
     const fetchTask = async () => {
       try {
-        const task = await taskService.getTaskById(taskId);
+        setIsFetching(true);
+        const task = await taskService.getTaskById(Number(taskId));
+        
+        reset({
+          title: task.title ?? "",
+          description: task.description ?? "",
+          category: task.category ?? "",
+          subcategory: task.subcategory ?? "",
+          status: task.status as "open" | "review" | "in_progress" | "closed",
+          reward_type: task.reward_type ?? "",
+          budget: task.budget ?? "",
+          currency: task.currency ?? "",
+          internship_duration: task.internship_duration ?? "",
+          internship_department: task.internship_department ?? "",
+          internship_is_paid: task.internship_is_paid ?? "",
+          certificate_name: task.certificate_name ?? "",
+          certificate_issuer: task.certificate_issuer ?? "",
+          positions: task.positions ?? 1,
+          experience_level: task.experience_level ?? "",
+          preferred_major: task.preferred_major ?? "",
+          work_type: task.work_type ?? "",
+          deadline: task.deadline ? new Date(task.deadline).toISOString().split("T")[0] : "",
+        });
 
-        setValue("title", task.title || "");
-        setValue("description", task.description || "");
-        setValue("reward_type", task.reward_type || "");
-        setValue("category", task.category || "");
-        setValue("subcategory", "");
-        setTimeout(() => setValue("subcategory", task.subcategory || ""), 50);
-
-        if (task.deadline) {
-          setValue("deadline", new Date(task.deadline).toISOString().split("T")[0]);
+        // Set skills
+        if (task.skills && Array.isArray(task.skills)) {
+          const hard = task.skills
+            .filter((s: { type: string; name: string; level?: number; isRequired?: boolean; yearsOfExperience?: number }) => s.type === "hard")
+            .map((s: { type: string; name: string; level?: number; isRequired?: boolean; yearsOfExperience?: number }) => ({
+              skill: s.name,
+              level: s.level || 5,
+              isRequired: s.isRequired,
+              yearsOfExperience: s.yearsOfExperience,
+            }));
+          const soft = task.skills
+            .filter((s: { type: string; name: string }) => s.type === "soft")
+            .map((s: { type: string; name: string }) => s.name);
+          
+          setHardSkills(hard);
+          setSoftSkills(soft);
         }
-
-        if (task.positions) setValue("positions", Number(task.positions));
-        if (task.experience_level) setValue("experience_level", task.experience_level);
-        if (task.work_type) setValue("work_type", task.work_type);
-        if (task.status) setValue("status", task.status as any);
-
-        if (task.budget) setValue("budget", String(task.budget));
-        if (task.currency) setValue("currency", task.currency);
-        if (task.internship_duration) setValue("internship_duration", task.internship_duration);
-        if (task.internship_department) setValue("internship_department", task.internship_department);
-        if (task.internship_is_paid) setValue("internship_is_paid", task.internship_is_paid);
-        if (task.certificate_name) setValue("certificate_name", task.certificate_name);
-        if (task.certificate_issuer) setValue("certificate_issuer", task.certificate_issuer);
-
-        // requiredSkills → hard skills with default values
-        if (task.requiredSkills && Array.isArray(task.requiredSkills)) {
-          setHardSkills(task.requiredSkills.map((s: { skill?: { name: string } | string; level?: number; isRequired?: boolean; yearsOfExperience?: number } | string) => {
-            const skillSource = typeof s === "string" 
-              ? s 
-              : (typeof s.skill === "string" ? s.skill : s.skill?.name ?? "");
-            return {
-              skill: skillSource,
-              level: typeof s === "object" && s !== null ? s.level ?? 5 : 5,
-              isRequired: typeof s === "object" && s !== null ? s.isRequired ?? true : true,
-              yearsOfExperience: typeof s === "object" && s !== null ? s.yearsOfExperience ?? undefined : undefined,
-            }
-          }));
-        }
-
-        // soft skills
-        if (task.softSkills && Array.isArray(task.softSkills)) {
-          setSoftSkills(task.softSkills.map((s: { name?: string } | string) => (typeof s === "string" ? s : s.name || "")));
+        
+        if (task.reward_type) {
+          setActiveRewardTab(task.reward_type);
         }
       } catch (err) {
-        console.error("Failed to fetch task", err);
-        setFetchError("Görev bilgileri yüklenemedi.");
+        console.error("Task fetch error:", err);
+        setFetchError("Görev bilgileri yüklenirken bir hata oluştu.");
       } finally {
         setIsFetching(false);
       }
     };
 
-    if (taskId) fetchTask();
-  }, [taskId, setValue]);
+    if (taskId) {
+      fetchTask();
+    }
+  }, [taskId, reset]);
 
-  // ─── Hard skill handlers ───────────────────────────────────────────────────
   const handleAddHardSkill = () => {
-    if (hardSkillInput.trim() && !hardSkills.some(h => h.skill === hardSkillInput.trim())) {
-      setHardSkills([...hardSkills, {
-        skill: hardSkillInput.trim(),
-        level: hardSkillLevel,
-        isRequired: hardSkillIsRequired,
-        yearsOfExperience: hardSkillYears !== "" ? Number(hardSkillYears) : undefined,
-      }]);
+    if (!hardSkillInput.trim()) return;
+    if (hardSkills.some((s) => s.skill.toLowerCase() === hardSkillInput.toLowerCase())) {
       setHardSkillInput("");
-      setHardSkillLevel(5);
-      setHardSkillIsRequired(true);
-      setHardSkillYears("");
+      return;
     }
-  };
-  const handleRemoveHardSkill = (skill: string) => setHardSkills(hardSkills.filter(h => h.skill !== skill));
 
-  // ─── Soft skill handlers ───────────────────────────────────────────────────
+    const newSkill: SkillItem = {
+      skill: hardSkillInput.trim(),
+      level: hardSkillLevel,
+      isRequired: hardSkillIsRequired,
+      yearsOfExperience: hardSkillYears === "" ? undefined : hardSkillYears,
+    };
+
+    setHardSkills([...hardSkills, newSkill]);
+    setHardSkillInput("");
+    setHardSkillLevel(5);
+    setHardSkillIsRequired(false);
+    setHardSkillYears("");
+  };
+
+  const handleRemoveHardSkill = (skillName: string) => {
+    setHardSkills(hardSkills.filter((s) => s.skill !== skillName));
+  };
+
   const handleAddSoftSkill = () => {
-    if (softSkillInput.trim() && !softSkills.includes(softSkillInput.trim())) {
-      setSoftSkills([...softSkills, softSkillInput.trim()]);
+    if (!softSkillInput.trim()) return;
+    if (softSkills.some((s) => s.toLowerCase() === softSkillInput.toLowerCase())) {
       setSoftSkillInput("");
+      return;
     }
+    setSoftSkills([...softSkills, softSkillInput.trim()]);
+    setSoftSkillInput("");
   };
-  const handleRemoveSoftSkill = (skill: string) => setSoftSkills(softSkills.filter(s => s !== skill));
 
-  // ─── Submit ────────────────────────────────────────────────────────────────
+  const handleRemoveSoftSkill = (skillName: string) => {
+    setSoftSkills(softSkills.filter((s) => s !== skillName));
+  };
+
   const onSubmit = async (data: EditTaskFormData) => {
-    setIsLoading(true);
     try {
-      // Clean up fields based on reward type to pass backend validation
-      const cleanedData: Partial<EditTaskFormData> = { ...data };
-      if (cleanedData.reward_type !== "money") {
-        delete cleanedData.budget;
-        delete cleanedData.currency;
-      }
-      if (cleanedData.reward_type !== "internship") {
-        delete cleanedData.internship_duration;
-        delete cleanedData.internship_department;
-        delete cleanedData.internship_is_paid;
-      }
-      if (cleanedData.reward_type !== "certificate") {
-        delete cleanedData.certificate_name;
-        delete cleanedData.certificate_issuer;
-      }
-
-      // Remove any empty string values that are supposed to be ENUMs
-      (["currency", "internship_is_paid", "experience_level", "preferred_major", "work_type"] as const).forEach((key) => {
-          if (cleanedData[key] === "") {
-             delete cleanedData[key];
-          }
-      });
-
+      setIsLoading(true);
       const payload = {
-        ...cleanedData,
-        hardSkills,
-        softSkills,
-        requiredSkills: hardSkills.map(h => h.skill),
+        ...data,
+        skills: [
+          ...hardSkills.map((s) => ({ name: s.skill, type: "hard", level: s.level, isRequired: s.isRequired, yearsOfExperience: s.yearsOfExperience })),
+          ...softSkills.map((s) => ({ name: s, type: "soft" })),
+        ],
+        budget: data.budget ? Number(data.budget) : undefined,
+        positions: Number(data.positions),
         deadline: data.deadline ? new Date(data.deadline).toISOString() : undefined,
       };
-      await taskService.updateTask(taskId, payload);
+      await taskService.updateTask(Number(taskId), payload);
       router.push(`/company/tasks/${taskId}`);
     } catch (err) {
       const error = err as { response?: { data?: { message?: string } }, message?: string };
@@ -221,10 +224,10 @@ export default function EditTaskPage() {
 
   if (isFetching) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="flex flex-col items-center gap-3 text-gray-500">
-          <div className="w-8 h-8 border-2 border-primary border-t-transparent rounded-full animate-spin" />
-          <span className="text-sm">Görev yükleniyor...</span>
+      <div className="min-h-screen flex items-center justify-center bg-[#FCFBF7]">
+        <div className="flex flex-col items-center gap-3 text-primary">
+          <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin" />
+          <span className="font-bold text-sm">Görev yükleniyor...</span>
         </div>
       </div>
     );
@@ -232,353 +235,486 @@ export default function EditTaskPage() {
 
   if (fetchError) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="bg-red-50 border border-red-200 text-red-700 px-6 py-4 rounded-xl text-sm">{fetchError}</div>
+      <div className="min-h-screen flex items-center justify-center bg-[#FCFBF7]">
+        <div className="bg-red-50 border border-red-200 text-red-700 px-8 py-6 rounded-2xl text-sm shadow-sm font-medium">
+          {fetchError}
+        </div>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen container mx-auto">
-      <Breadcrumb
-        items={[
-          { label: "Görevler", href: "/company/tasks" },
-          { label: "Görevi Düzenle" },
-        ]}
-      />
-
-      <FormCard
-        onSubmit={handleSubmit(onSubmit)}
-        className="max-w-full"
-        actions={
-          <div className="flex justify-end gap-3 w-full">
-            <FormButton type="button" variant="outline" onClick={() => router.back()}>
-              Vazgeç
-            </FormButton>
-            <FormButton type="submit" isLoading={isLoading}>
-              {isLoading ? "Güncelleniyor..." : "Güncelle"}
-            </FormButton>
-          </div>
-        }
-      >
-        {/* ── Category & Subcategory ─────────────────────────────────────── */}
-        <FormSection title="Görev Durumu & Kategori">
-          <FormRow cols={3}>
-            <FormSelect
-              label="Görev Durumu"
-              name="status"
-              options={[
-                { value: "open", label: "Başvurulara Açık" },
-                { value: "review", label: "İnceleniyor" },
-                { value: "in_progress", label: "Devam Ediyor" },
-                { value: "closed", label: "Tamamlandı / Kapalı" },
-              ]}
-              value={watch("status") || "open"}
-              onChange={(val) => setValue("status", val as any)}
-              required
-            />
-            <FormSelect
-              label="Kategori"
-              name="category"
-              options={TASK_CATEGORIES}
-              value={watch("category") || ""}
-              onChange={(val) => {
-                setValue("category", val, { shouldValidate: true });
-                setValue("subcategory", "");
-              }}
-              error={errors.category?.message}
-              required
-            />
-            <FormSelect
-              label="Alt Kategori"
-              name="subcategory"
-              options={availableSubcategories}
-              value={watch("subcategory") || ""}
-              onChange={(val) => setValue("subcategory", val, { shouldValidate: true })}
-              disabled={!selectedCategory}
-              placeholder={selectedCategory ? "Seçiniz" : "Önce kategori seçiniz"}
-              error={errors.subcategory?.message}
-              required
-            />
-          </FormRow>
-        </FormSection>
-
-        {/* ── Title ─────────────────────────────────────────────────────── */}
-        <FormInput
-          label="Görev Başlığı"
-          {...register("title")}
-          error={errors.title?.message}
-          hint="Adayların ilgisini çekecek net ve anlaşılır bir başlık giriniz."
-          placeholder="Örn: React Frontend Developer Stajyeri"
-          required
-        />
-
-        {/* ── Description ───────────────────────────────────────────────── */}
-        <Controller
-          name="description"
-          control={control}
-          render={({ field }) => (
-            <RichTextEditor
-              label="Açıklama"
-              value={field.value || ""}
-              onChange={(val) => {
-                if (val === "<p><br></p>") field.onChange("");
-                else field.onChange(val);
-              }}
-              error={errors.description?.message}
-              placeholder="Görev detaylarını, beklentileri ve sorumlulukları yazınız..."
-              required
-            />
-          )}
-        />
-
-        {/* ── Hard Skills ───────────────────────────────────────────────── */}
-        <div className="group">
-          <label className="block text-sm font-semibold text-gray-700 mb-2">Teknik Yetenekler (Hard Skills)</label>
-          {/* Row 1: skill input + level ring + add */}
-          <div className="flex gap-2 mb-2">
-            <div className="relative grow">
-              <input
-                type="text"
-                value={hardSkillInput}
-                onChange={(e) => setHardSkillInput(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), handleAddHardSkill())}
-                className="w-full px-4 py-3 border border-gray-200 rounded-lg bg-gray-100/80 focus:ring-2 focus:ring-primary/20 focus:border-primary focus:bg-white outline-none transition-all hover:border-gray-300"
-                placeholder="Yetenek ekle (örn: React, Python)"
-              />
-            </div>
-            {/* Circular level ring */}
-            {(() => {
-              const r = 16;
-              const circ = 2 * Math.PI * r;
-              const progress = (hardSkillLevel / 10) * circ;
-              const levelColor = hardSkillLevel <= 2 ? "#ef4444" : hardSkillLevel <= 4 ? "#fb923c" : hardSkillLevel <= 6 ? "#facc15" : hardSkillLevel <= 8 ? "#84cc16" : "#22c55e";
-              return (
-                <div className="flex items-center gap-1 px-3 border border-gray-300 rounded-lg shadow-sm hover:border-gray-400 transition-all bg-white self-stretch">
-                  <button type="button" onClick={() => setHardSkillLevel(Math.max(1, hardSkillLevel - 1))} className="w-7 h-7 flex items-center justify-center rounded-full border border-gray-200 hover:border-gray-400 bg-white text-gray-500 hover:text-gray-800 transition-all text-sm font-bold shadow-sm">−</button>
-                  <div className="relative flex items-center justify-center" style={{ width: 48, height: 48 }}>
-                    <svg width="48" height="48" viewBox="0 0 44 44" className="-rotate-90">
-                      <circle cx="22" cy="22" r={r} fill="none" stroke="#e5e7eb" strokeWidth="3" />
-                      <circle cx="22" cy="22" r={r} fill="none" stroke={levelColor} strokeWidth="3" strokeLinecap="round" strokeDasharray={`${progress} ${circ}`} style={{ transition: "stroke-dasharray 0.25s ease, stroke 0.25s ease" }} />
-                    </svg>
-                    <div className="absolute inset-0 flex items-center justify-center">
-                      <span className="text-[10px] font-semibold text-gray-700 tracking-tight leading-none" style={{ fontVariantNumeric: "tabular-nums" }}>
-                        {hardSkillLevel}<span className="text-[8px] font-normal text-gray-400">/10</span>
-                      </span>
-                    </div>
-                  </div>
-                  <button type="button" onClick={() => setHardSkillLevel(Math.min(10, hardSkillLevel + 1))} className="w-7 h-7 flex items-center justify-center rounded-full border border-gray-200 hover:border-gray-400 bg-white text-gray-500 hover:text-gray-800 transition-all text-sm font-bold shadow-sm">+</button>
-                </div>
-              );
-            })()}
-            <button type="button" onClick={handleAddHardSkill} className="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors shadow-sm active:scale-95">
-              <FiPlus size={20} />
-            </button>
-          </div>
-          {/* Row 2: Required toggle + Years */}
-          <div className="flex items-center gap-3 mb-3 pl-1">
-            <div className="flex rounded-lg border border-gray-200 overflow-hidden text-xs font-semibold">
-              <button type="button" onClick={() => setHardSkillIsRequired(true)}
-                className={`px-3 py-1.5 transition-colors ${hardSkillIsRequired ? "bg-red-500 text-white" : "bg-white text-gray-500 hover:bg-gray-50"}`}>
-                Zorunlu
-              </button>
-              <button type="button" onClick={() => setHardSkillIsRequired(false)}
-                className={`px-3 py-1.5 border-l border-gray-200 transition-colors ${!hardSkillIsRequired ? "bg-blue-500 text-white" : "bg-white text-gray-500 hover:bg-gray-50"}`}>
-                Tercih Edilen
-              </button>
-            </div>
-            <div className="flex items-center gap-2 border border-gray-200 rounded-lg px-3 py-1.5 bg-white">
-              <span className="text-xs text-gray-500 whitespace-nowrap">Deneyim (yıl)</span>
-              <input
-                type="number"
-                min={0}
-                max={20}
-                value={hardSkillYears}
-                onChange={(e) => setHardSkillYears(e.target.value === "" ? "" : Number(e.target.value))}
-                className="w-12 text-xs text-center border-none outline-none bg-transparent text-gray-700 font-semibold"
-                placeholder="-"
-              />
-            </div>
-          </div>
-          {hardSkills.length > 0 ? (
-            <div className="flex flex-wrap gap-2 p-4 bg-gray-50 rounded-lg border border-gray-100 border-dashed min-h-[60px]">
-              {hardSkills.map((h) => (
-                <span key={h.skill} className="bg-white border text-xs px-3 py-1.5 rounded-full flex items-center gap-2 shadow-sm transition-all hover:shadow-md"
-                  style={{ borderColor: h.isRequired ? "#fca5a5" : "#93c5fd", color: h.isRequired ? "#dc2626" : "#2563eb" }}>
-                  <span className="w-1.5 h-1.5 rounded-full shrink-0" style={{ backgroundColor: h.isRequired ? "#ef4444" : "#3b82f6" }} title={h.isRequired ? "Zorunlu" : "Tercih Edilen"} />
-                  <span className="text-gray-800 font-medium">{h.skill}</span>
-                  {(() => {
-                    const filled = Math.round(h.level / 10 * 5);
-                    const color = h.level <= 2 ? "#ef4444" : h.level <= 4 ? "#fb923c" : h.level <= 6 ? "#facc15" : h.level <= 8 ? "#84cc16" : "#22c55e";
-                    return (
-                      <span className="flex items-end gap-0.5" title={`Seviye: ${h.level}/10`}>
-                        {[1, 2, 3, 4, 5].map(i => (
-                          <span key={i} style={{ width: 3, height: 4 + i * 2, borderRadius: 2, backgroundColor: i <= filled ? color : "#e5e7eb", display: "inline-block", transition: "background-color 0.2s" }} />
-                        ))}
-                      </span>
-                    );
-                  })()}
-                  {h.yearsOfExperience !== undefined && h.yearsOfExperience > 0 && (
-                    <span className="text-[10px] text-gray-400 font-normal">{h.yearsOfExperience}y</span>
+    <div className="min-h-screen bg-[#FCFBF7] text-[#0b1c30] antialiased pb-32">
+      <main className="max-w-7xl mx-auto px-6 py-8">
+        {/* Header & Breadcrumbs */}
+        <div className="mb-8">
+          <Breadcrumb 
+            items={[
+              { label: "Dashboard", href: "/company/dashboard" },
+              { label: "Tasks", href: "/company/tasks" },
+              { label: "Edit Task", active: true }
+            ]} 
+          />
+          
+          <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6">
+            <h1 className="text-3xl font-bold text-primary tracking-tight">Görevi Düzenle</h1>
+            <div className="flex bg-[#F1F0EA] p-1 rounded-xl shadow-inner border border-[#DFDED6]">
+              {(["open", "review", "in_progress", "closed"] as const).map((status) => (
+                <button
+                  key={status}
+                  type="button"
+                  onClick={() => setValue("status", status)}
+                  className={cn(
+                    "px-4 py-2 rounded-lg text-xs font-bold transition-all duration-200",
+                    watch("status") === status 
+                      ? "bg-primary text-white shadow-md scale-105" 
+                      : "text-slate-600 hover:bg-black/5"
                   )}
-                  <button type="button" onClick={() => handleRemoveHardSkill(h.skill)} className="hover:text-red-500 hover:bg-red-50 rounded-full p-0.5 transition-colors ml-0.5"><FiX size={13} /></button>
-                </span>
+                >
+                  {status.charAt(0).toUpperCase() + status.slice(1).replace("_", " ")}
+                </button>
               ))}
             </div>
-          ) : (
-            <div className="text-sm text-gray-400 italic p-2">Henüz teknik yetenek eklenmedi.</div>
-          )}
-        </div>
-
-        {/* ── Soft Skills ───────────────────────────────────────────────── */}
-        <div className="group">
-          <label className="block text-sm font-semibold text-gray-700 mb-2">Soft Skills (Opsiyonel)</label>
-          <div className="flex gap-2 mb-3">
-            <div className="relative grow">
-              <input
-                type="text"
-                value={softSkillInput}
-                onChange={(e) => setSoftSkillInput(e.target.value)}
-                onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), handleAddSoftSkill())}
-                className="w-full px-4 py-3 border border-gray-200 rounded-lg bg-gray-100/80 focus:ring-2 focus:ring-primary/20 focus:border-primary focus:bg-white outline-none transition-all hover:border-gray-300"
-                placeholder="Soft skill ekle (örn: Takım Çalışması)"
-              />
-            </div>
-            <button type="button" onClick={handleAddSoftSkill} className="bg-primary text-white px-4 py-2 rounded-lg hover:bg-primary/90 transition-colors shadow-sm active:scale-95"><FiPlus size={20} /></button>
           </div>
-          {softSkills.length > 0 ? (
-            <div className="flex flex-wrap gap-2 p-4 bg-gray-50 rounded-lg border border-gray-100 border-dashed min-h-10">
-              {softSkills.map((s) => (
-                <span key={s} className="bg-white border border-primary/20 text-primary px-3 py-1.5 rounded-full text-sm flex items-center gap-2 shadow-sm transition-all hover:shadow-md hover:border-primary/40">
-                  {s}
-                  <button type="button" onClick={() => handleRemoveSoftSkill(s)} className="hover:text-red-500 hover:bg-red-50 rounded-full p-0.5 transition-colors"><FiX size={14} /></button>
-                </span>
-              ))}
-            </div>
-          ) : (
-            <div className="text-sm text-gray-400 italic p-2">Henüz soft skill eklenmedi.</div>
-          )}
         </div>
 
-        {/* ── Task Details ──────────────────────────────────────────────── */}
-        <FormSection title="Görev Detayları">
-          <FormRow cols={2}>
-            <FormSelect
-              label="Ödül Türü"
-              name="reward_type"
-              options={[
-                { value: "money", label: "Para Ödülü" },
-                { value: "internship", label: "Staj İmkanı" },
-                { value: "certificate", label: "Sertifika" },
-                { value: "recommendation", label: "Tavsiye Mektubu" },
-                { value: "mentorship", label: "Mentorluk" },
-              ]}
-              value={watchedRewardType || ""}
-              onChange={(val) => {
-                setValue("reward_type", val);
-                setValue("budget", "");
-                setValue("currency", "");
-                setValue("internship_duration", "");
-                setValue("internship_department", "");
-                setValue("internship_is_paid", "");
-                setValue("certificate_name", "");
-                setValue("certificate_issuer", "");
-              }}
-            />
-
-            {watchedRewardType === "money" && (
-              <>
-                <FormInput label="Ödül Miktarı" type="number" min={0} step={1} {...register("budget")} icon={FiDollarSign} placeholder="Miktar giriniz" required />
-                <FormSelect
-                  label="Para Birimi"
-                  name="currency"
-                  options={[
-                    { value: "TRY", label: "₺ Türk Lirası" },
-                    { value: "USD", label: "$ Amerikan Doları" },
-                    { value: "EUR", label: "€ Euro" },
-                  ]}
-                  value={watch("currency") || ""}
-                  onChange={(val) => setValue("currency", val)}
-                  placeholder="Para birimi seçiniz"
-                />
-              </>
-            )}
-
-            {watchedRewardType === "internship" && (
-              <>
-                <FormInput label="Staj Süresi" {...register("internship_duration")} placeholder="Örn: 3 ay, 1 yıl" icon={FiCalendar} required />
-                <FormInput label="Staj Departmanı" {...register("internship_department")} placeholder="Örn: Yazılım Geliştirme" />
-                <FormSelect
-                  label="Ücretli mi?"
-                  name="internship_is_paid"
-                  options={[
-                    { value: "paid", label: "Ücretli" },
-                    { value: "unpaid", label: "Ücretsiz" },
-                  ]}
-                  value={watch("internship_is_paid") || ""}
-                  onChange={(val) => setValue("internship_is_paid", val)}
-                  placeholder="Seçiniz"
-                />
-              </>
-            )}
-
-            {watchedRewardType === "certificate" && (
-              <>
-                <FormInput label="Sertifika Adı" {...register("certificate_name")} placeholder="Örn: Frontend Geliştirici Sertifikası" required />
-                <FormInput label="Veren Kurum" {...register("certificate_issuer")} placeholder="Örn: Şirket adı veya platform" />
-              </>
-            )}
-
-            {watchedRewardType === "recommendation" && (
-              <div className="md:col-span-2 bg-blue-50 border border-blue-200 rounded-xl px-5 py-4 text-sm text-blue-800 space-y-1">
-                <p className="font-semibold">Tavsiye Mektubu</p>
-                <p className="text-blue-600">Görevi başarıyla tamamlayan adaya şirket yetkilisi tarafından kişisel tavsiye mektubu yazılacaktır.</p>
+        <form onSubmit={handleSubmit(onSubmit)} className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+          {/* Left Column: Core Info & Skills */}
+          <div className="lg:col-span-8 space-y-6">
+            {/* Basic Information Card */}
+            <section className=" border border-[#DFDED6] rounded-3xl p-8 ">
+              <div className="flex items-center gap-2 mb-6">
+                <div className="p-2 bg-primary/10 rounded-lg">
+                  <FiBookOpen className="w-5 h-5 text-primary" />
+                </div>
+                <h2 className="text-xl font-bold text-[#0b1c30]">Temel Bilgiler</h2>
               </div>
-            )}
 
-            {watchedRewardType === "mentorship" && (
-              <div className="md:col-span-2 bg-purple-50 border border-purple-200 rounded-xl px-5 py-4 text-sm text-purple-800 space-y-1">
-                <p className="font-semibold">Mentorluk Programı</p>
-                <p className="text-purple-600">Görevi başarıyla tamamlayan aday, şirketin deneyimli uzmanlarından bire bir mentorluk desteği alacaktır.</p>
+              <div className="space-y-6">
+                <div>
+                  <label className="block text-xs font-bold text-[#3f4945] mb-2 uppercase tracking-wider">Görev Başlığı</label>
+                  <input 
+                    {...register("title")}
+                    className="w-full  border border-[#DFDED6] rounded-4xl px-4 py-3 text-lg font-bold text-primary focus:bg-white focus:ring-1 focus:ring-primary/8 transition-all outline-none"
+                    placeholder="Görev Başlığını Giriniz"
+                  />
+                  {errors.title && <p className="text-red-500 text-xs mt-1">{errors.title.message}</p>}
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-[#3f4945] mb-2 uppercase tracking-wider">Görev Açıklaması</label>
+                  <div className="rounded-4xl border border-[#DFDED6]  overflow-hidden focus-within:ring-1 focus-within:ring-primary/8 transition-all">
+                    <Controller
+                      name="description"
+                      control={control}
+                      render={({ field }) => (
+                        <RichTextEditor
+                          value={field.value}
+                          onChange={field.onChange}
+                          placeholder="Görev detaylarını buraya yazınız..."
+                        />
+                      )}
+                    />
+                  </div>
+                  {errors.description && <p className="text-red-500 text-xs mt-1">{errors.description.message}</p>}
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div>
+                    <label className="block text-xs font-bold text-[#3f4945] mb-2 uppercase tracking-wider">Kategori</label>
+                    <select 
+                      {...register("category")}
+                      className="w-full  border border-[#DFDED6] rounded-4xl px-4 py-3 text-sm font-medium focus:bg-white transition-all outline-none appearance-none cursor-pointer"
+                      onChange={(e) => {
+                        setValue("category", e.target.value);
+                        setValue("subcategory", "");
+                      }}
+                    >
+                      <option value="">Seçiniz</option>
+                      {TASK_CATEGORIES.map(cat => (
+                        <option key={cat.value} value={cat.value}>{cat.label}</option>
+                      ))}
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-xs font-bold text-[#3f4945] mb-2 uppercase tracking-wider">Alt Kategori</label>
+                    <select 
+                      {...register("subcategory")}
+                      disabled={!selectedCategory}
+                      className="w-full  border border-[#DFDED6] rounded-4xl px-4 py-3 text-sm font-medium focus:bg-white transition-all outline-none appearance-none cursor-pointer"
+                    >
+                      <option value="">{selectedCategory ? "Seçiniz" : "Önce kategori seçiniz"}</option>
+                      {availableSubcategories.map(sub => (
+                        <option key={sub.value} value={sub.value}>{sub.label}</option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                <div>
+                  <label className="block text-xs font-bold text-[#3f4945] mb-2 uppercase tracking-wider">Tercih Edilen Bölüm</label>
+                  <input 
+                    {...register("preferred_major")}
+                      className="w-full  border border-[#DFDED6] rounded-4xl px-4 py-3 text-sm font-medium focus:bg-white transition-all outline-none appearance-none cursor-pointer"
+                    placeholder="Bilgisayar Mühendisliği, Yazılım Mühendisliği..."
+                  />
+                </div>
+
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  <div>
+                    <label className="block text-[10px] font-bold text-[#3f4945] mb-1.5 uppercase tracking-wider">Pozisyon Sayısı</label>
+                    <input 
+                      type="number" 
+                      {...register("positions", { valueAsNumber: true })}
+                      className="w-full border border-[#DFDED6] rounded-4xl px-3 py-2 text-sm font-bold"
+                    />
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-bold text-[#3f4945] mb-1.5 uppercase tracking-wider">Deneyim</label>
+                    <select 
+                      {...register("experience_level")}
+                      className="w-full border border-[#DFDED6] rounded-4xl px-3 py-2 text-sm font-bold"
+                    >
+                      <option value="entry">Entry</option>
+                      <option value="junior">Junior</option>
+                      <option value="mid">Mid-Level</option>
+                      <option value="senior">Senior</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-bold text-[#3f4945] mb-1.5 uppercase tracking-wider">Çalışma Şekli</label>
+                    <select 
+                      {...register("work_type")}
+                      className="w-full border border-[#DFDED6] rounded-4xl px-3 py-2 text-sm font-bold"
+                    >
+                      <option value="remote">Remote</option>
+                      <option value="hybrid">Hybrid</option>
+                      <option value="onsite">On-site</option>
+                    </select>
+                  </div>
+                  <div>
+                    <label className="block text-[10px] font-bold text-[#3f4945] mb-1.5 uppercase tracking-wider">Son Başvuru</label>
+                    <input 
+                      type="date" 
+                      {...register("deadline")}
+                      className="w-full border border-[#DFDED6] rounded-4xl px-3 py-2 text-sm font-bold"
+                    />
+                  </div>
+                </div>
               </div>
+            </section>
+
+            {/* Skill Management Card (AI Core) */}
+            <section className="border border-[#DFDED6] rounded-4xl p-6 transition-all duration-300">
+              <div className="flex items-center justify-between mb-8">
+                <div className="flex items-center gap-2">
+                  <div className="p-2 bg-primary/10 rounded-lg">
+                    <HiSparkles className="w-5 h-5 text-primary" />
+                  </div>
+                  <h2 className="text-xl font-bold text-[#0b1c30]">Yetenek Yönetimi <span className="text-primary/50 text-sm font-normal ml-2">(AI Core)</span></h2>
+                </div>
+              </div>
+
+              {/* Skill Input Adder */}
+              <div className="bg-primary/5 p-4 rounded-xl border border-primary/10 mb-8 space-y-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <input
+                    type="text"
+                    placeholder="Yetenek adı (Örn: React, Node.js)"
+                    value={hardSkillInput}
+                    onChange={(e) => setHardSkillInput(e.target.value)}
+                    className="flex-1 border border-[#DFDED6] rounded-4xl px-4 py-2.5 text-sm outline-none focus:border focus:bg-white focus:border-primary transition-all"
+                  />
+                  <div className="flex items-center gap-4">
+                     <div className="flex-1 flex items-center gap-2">
+                        <span className="text-[10px] font-bold text-slate-500 uppercase">Seviye:</span>
+                        <input
+                          type="range"
+                          min="1"
+                          max="10"
+                          value={hardSkillLevel}
+                          onChange={(e) => setHardSkillLevel(Number(e.target.value))}
+                          className="flex-1 h-1.5 bg-primary/20 rounded-full appearance-none accent-primary cursor-pointer"
+                        />
+                        <span className="text-xs font-bold text-primary w-6">{hardSkillLevel}</span>
+                     </div>
+                  </div>
+                </div>
+                <div className="flex flex-wrap items-center justify-between gap-4">
+                   <div className="flex items-center gap-6">
+                      <label className="flex items-center gap-2 cursor-pointer group">
+                        <input
+                          type="checkbox"
+                          checked={hardSkillIsRequired}
+                          onChange={(e) => setHardSkillIsRequired(e.target.checked)}
+                          className="sr-only peer"
+                        />
+                        <div className="w-9 h-5 bg-slate-200 rounded-full peer-checked:bg-primary relative transition-colors after:content-[''] after:absolute after:top-0.5 after:left-0.5 after:bg-white after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:after:translate-x-4 shadow-inner" />
+                        <span className="text-xs font-bold text-slate-600 group-hover:text-primary transition-colors">Zorunlu</span>
+                      </label>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] font-bold text-slate-500 uppercase">Deneyim (Yıl):</span>
+                        <input
+                          type="number"
+                          placeholder="Yıl"
+                          value={hardSkillYears}
+                          onChange={(e) => setHardSkillYears(e.target.value === "" ? "" : Number(e.target.value))}
+                          className="w-16 bg-white border border-[#DFDED6] rounded-lg px-2 py-1 text-xs text-center font-bold outline-none"
+                        />
+                      </div>
+                   </div>
+                   <button
+                    type="button"
+                    onClick={handleAddHardSkill}
+                    className="bg-primary text-white px-6 py-2 rounded-xl text-xs font-bold hover:opacity-90 transition-all flex items-center gap-2 shadow-lg shadow-primary/20 active:scale-95"
+                  >
+                    <FiPlus className="w-3.5 h-3.5" />
+                    Listeye Ekle
+                  </button>
+                </div>
+              </div>
+
+              <div className="space-y-4 mb-10">
+                <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-1">Hard Skills</h3>
+                <div className="space-y-3">
+                  {hardSkills.map((h) => (
+                    <div key={h.skill} className="bg-white/40 p-4 rounded-xl border border-[#F1F0EA] flex flex-col md:flex-row md:items-center gap-4 group/item hover:border-primary/30 transition-all">
+                      <div className="md:w-1/4">
+                        <span className="font-bold text-primary">{h.skill}</span>
+                      </div>
+                      <div className="flex-1 flex items-center gap-3">
+                        <div className="flex-1 h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                          <div className="h-full bg-primary/40 rounded-full" style={{ width: `${h.level * 10}%` }} />
+                        </div>
+                        <span className="text-xs font-bold text-primary/60">{h.level}/10</span>
+                      </div>
+                      <div className="md:w-1/4 flex items-center justify-between gap-4">
+                        <div className="flex items-center gap-2">
+                          <span className={cn("text-[10px] px-2 py-0.5 rounded-full font-bold", h.isRequired ? "bg-primary text-white" : "bg-slate-100 text-slate-400")}>
+                            {h.isRequired ? "Zorunlu" : "Opsiyonel"}
+                          </span>
+                          {h.yearsOfExperience !== undefined && (
+                            <span className="text-[10px] font-bold text-slate-500">{h.yearsOfExperience} Yıl Deneyim</span>
+                          )}
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => handleRemoveHardSkill(h.skill)}
+                          className="text-red-400 hover:text-red-600 hover:bg-red-50 p-1.5 rounded-lg transition-all"
+                        >
+                          <FiTrash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                    </div>
+                  ))}
+                  {hardSkills.length === 0 && (
+                    <div className="text-center py-8 border-2 border-dashed border-slate-100 rounded-2xl text-slate-300 text-sm font-medium">
+                      Henüz teknik yetenek eklenmedi.
+                    </div>
+                  )}
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-1">Soft Skills</h3>
+                <div className="flex flex-wrap gap-2 p-4 rounded-4xl border border-dashed border-[#DFDED6]">
+                  {softSkills.map((s) => (
+                    <span key={s} className="bg-white border border-[#DFDED6] text-[#5c647a] px-3 py-1.5 rounded-4xl text-xs font-bold flex items-center gap-2 group/tag animate-in fade-in zoom-in">
+                      {s}
+                      <button type="button" onClick={() => handleRemoveSoftSkill(s)} className="hover:text-red-500 transition-colors">
+                        <FiX className="w-3.5 h-3.5" />
+                      </button>
+                    </span>
+                  ))}
+                  <input
+                    type="text"
+                    value={softSkillInput}
+                    onChange={(e) => setSoftSkillInput(e.target.value)}
+                    onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), handleAddSoftSkill())}
+                    className=" border border-[#DFDED6] rounded-4xl px-2 focus:ring-0 text-sm py-1 placeholder:text-slate-300 min-w-[120px]"
+                    placeholder="Enter ile ekle..."
+                  />
+                </div>
+              </div>
+            </section>
+          </div>
+
+          {/* Right Column: Reward Sidebar */}
+          <aside className="lg:col-span-4 space-y-6 lg:sticky lg:top-8">
+            {/* Reward Section */}
+            <section className=" rounded-3xl p-6 border border-[#DFDED6] shadow-primary/5">
+              <div className="flex items-center gap-2 mb-6">
+                <div className="p-2 bg-[#e28743]/10 rounded-lg">
+                  <FiDollarSign className="w-5 h-5 text-[#e28743]" />
+                </div>
+                <h2 className="text-xl font-bold text-[#0b1c30]">Ödül Sistemi</h2>
+              </div>
+
+              <div className="space-y-6">
+                <div>
+                  <label className="block text-[10px] font-bold text-slate-400 uppercase mb-3 tracking-widest text-center">Ödül Türü Seçiniz</label>
+                  <div className="grid grid-cols-3 gap-2">
+                    {(["money", "internship", "certificate"] as const).map((type) => (
+                      <button
+                        key={type}
+                        type="button"
+                        onClick={() => {
+                          setValue("reward_type", type);
+                          setActiveRewardTab(type);
+                        }}
+                        className={cn(
+                          "flex flex-col items-center gap-1.5 py-3 rounded-4xl border transition-all duration-300",
+                          (watchedRewardType === type || activeRewardTab === type)
+                            ? "bg-primary text-white border-primary shadow-lg shadow-primary/20 scale-105"
+                            : "bg-white border-[#DFDED6] text-slate-400 hover:border-primary/30"
+                        )}
+                      >
+                        {type === "money" && <FiDollarSign className="w-5 h-5" />}
+                        {type === "internship" && <FiAward className="w-5 h-5" />}
+                        {type === "certificate" && <FiCheck className="w-5 h-5" />}
+                        <span className="text-[9px] font-extrabold uppercase">{type === "money" ? "Nakit" : type === "internship" ? "Staj" : "Belge"}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                {/* Conditional Fields */}
+                <div className="animate-in fade-in slide-in-from-top-2 duration-500">
+                  {watchedRewardType === "money" && (
+                    <div className="space-y-4">
+                      <div className="flex gap-4">
+                        <div className="flex-1">
+                          <label className="block text-[10px] font-bold text-slate-400 mb-1.5 ml-1 uppercase">Bütçe</label>
+                          <input 
+                            {...register("budget")}
+                            className="w-full border border-[#DFDED6] rounded-4xl px-4 py-3 font-bold text-primary outline-none focus:bg-white transition-colors"
+                          />
+                        </div>
+                        <div className="w-24">
+                          <label className="block text-[10px] font-bold text-slate-400 mb-1.5 ml-1 uppercase">Para</label>
+                          <select 
+                            {...register("currency")}
+                            className="w-full border border-[#DFDED6] rounded-4xl px-4 py-3 font-bold outline-none cursor-pointer"
+                          >
+                            <option value="TRY">TRY</option>
+                            <option value="USD">USD</option>
+                            <option value="EUR">EUR</option>
+                          </select>
+                        </div>
+                      </div>
+                      <p className="text-[10px] text-slate-400 italic text-center">Nakit ödüller, görev tamamlandıktan sonra onaylanan hesaba 3 iş günü içinde aktarılır.</p>
+                    </div>
+                  )}
+
+                  {watchedRewardType === "internship" && (
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-[10px] font-bold text-slate-400 mb-1.5 ml-1 uppercase">Staj Süresi</label>
+                        <select 
+                          {...register("internship_duration")}
+                          className="w-full border border-[#DFDED6] rounded-4xl px-4 py-3 font-bold outline-none"
+                        >
+                          <option value="1 month">1 Ay</option>
+                          <option value="3 months">3 Ay</option>
+                          <option value="6 months">6 Ay</option>
+                        </select>
+                      </div>
+                      <div>
+                        <label className="block text-[10px] font-bold text-slate-400 mb-1.5 ml-1 uppercase">Departman</label>
+                        <input 
+                          {...register("internship_department")}
+                          className="w-full border border-[#DFDED6] rounded-4xl px-4 py-3 font-bold outline-none"
+                          placeholder="Pazarlama / Yazılım..."
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  {watchedRewardType === "certificate" && (
+                    <div className="space-y-4">
+                      <div>
+                        <label className="block text-[10px] font-bold text-slate-400 mb-1.5 ml-1 uppercase">Sertifika Adı</label>
+                        <input 
+                          {...register("certificate_name")}
+                          className="w-full bg-[#faf9f6] border-transparent rounded-xl px-4 py-3 font-bold outline-none"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-[10px] font-bold text-slate-400 mb-1.5 ml-1 uppercase">Kurum</label>
+                        <input 
+                          {...register("certificate_issuer")}
+                          className="w-full bg-[#faf9f6] border-transparent rounded-xl px-4 py-3 font-bold outline-none"
+                        />
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
+            </section>
+
+            {/* AI Matching Indicator Card */}
+            <section className="bg-white/60 backdrop-blur-xl rounded-3xl p-6 border border-[#DFDED6] relative overflow-hidden group">
+              <div className="absolute -right-4 -top-4 opacity-5 group-hover:opacity-10 transition-opacity">
+                <FiZap className="w-24 h-24 text-primary" />
+              </div>
+              <h3 className="text-xs font-bold mb-4 text-slate-400 uppercase tracking-widest">AI Eşleşme Analizi</h3>
+              <div className="flex items-center gap-4">
+                <div className="relative w-16 h-16 flex items-center justify-center">
+                   <svg className="w-full h-full transform -rotate-90">
+                    <circle cx="32" cy="32" r="28" fill="transparent" stroke="#DFDED6" strokeWidth="4" />
+                    <circle cx="32" cy="32" r="28" fill="transparent" stroke="#00342b" strokeWidth="4" strokeDasharray="176" strokeDashoffset={176 - (176 * 82) / 100} strokeLinecap="round" className="transition-all duration-1000" />
+                   </svg>
+                   <span className="absolute text-xs font-bold text-primary">82%</span>
+                </div>
+                <div>
+                  <p className="text-xs font-bold text-slate-600">Talent Pool Uyumu</p>
+                  <p className="text-[10px] text-slate-400 mt-1">Bu kriterlere uygun <span className="text-primary font-bold">24</span> potansiyel aday bulundu.</p>
+                </div>
+              </div>
+            </section>
+
+            {/* Stats Card */}
+            <section className="bg-primary/5 rounded-2xl p-5 border-none">
+              <div className="flex items-center justify-between text-[11px] font-bold mb-2">
+                <span className="text-slate-400 uppercase tracking-wider">Son Düzenleme</span>
+                <span className="text-primary">Bugün, 14:20</span>
+              </div>
+              <div className="flex items-center justify-between text-[11px] font-bold">
+                <span className="text-slate-400 uppercase tracking-wider">Oluşturan</span>
+                <span className="text-primary">Zeynep Yılmaz</span>
+              </div>
+            </section>
+          </aside>
+        </form>
+      </main>
+
+      {/* Floating Action Bar */}
+      <div className="fixed bottom-8 left-1/2 -translate-x-1/2 w-full max-w-[640px] px-6 z-50">
+        <div className="bg-white/80 backdrop-blur-2xl rounded-3xl p-3 shadow-2xl border border-[#DFDED6] flex items-center gap-3">
+          <button 
+            type="button" 
+            onClick={() => router.back()}
+            className="px-8 py-3.5 rounded-2xl font-bold text-slate-500 hover:bg-slate-100 transition-all"
+          >
+            İptal
+          </button>
+          <button 
+            type="submit"
+            disabled={isLoading}
+            onClick={handleSubmit(onSubmit)}
+            className="flex-1 bg-primary text-white px-8 py-3.5 rounded-2xl font-bold hover:bg-[#002b24] transition-all transform active:scale-[0.98] shadow-xl shadow-primary/20 flex items-center justify-center gap-2 group disabled:opacity-70"
+          >
+            {isLoading ? (
+              <div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin" />
+            ) : (
+              <>
+                <FiCheck className="w-5 h-5" />
+                Görevi Güncelle
+              </>
             )}
-
-            <FormInput label="Pozisyon Sayısı" type="number" min={1} {...register("positions", { valueAsNumber: true })} error={errors.positions?.message} placeholder="Kaç kişi alınacak?" required />
-
-            <FormSelect
-              label="Deneyim Seviyesi"
-              name="experience_level"
-              options={[
-                { value: "beginner", label: "Başlangıç" },
-                { value: "intermediate", label: "Orta" },
-                { value: "advanced", label: "İleri" },
-              ]}
-              value={watch("experience_level") || ""}
-              onChange={(val) => setValue("experience_level", val, { shouldValidate: true })}
-              error={errors.experience_level?.message}
-              required
-            />
-
-            <FormInput label="Tercih Edilen Bölüm (Opsiyonel)" {...register("preferred_major")} placeholder="Örn: Bilgisayar Mühendisliği" />
-
-            <FormSelect
-              label="Çalışma Tipi"
-              name="work_type"
-              options={[
-                { value: "remote", label: "Uzaktan" },
-                { value: "hybrid", label: "Hibrit" },
-                { value: "onsite", label: "Ofiste" },
-              ]}
-              value={watch("work_type") || ""}
-              onChange={(val) => setValue("work_type", val, { shouldValidate: true })}
-              error={errors.work_type?.message}
-              required
-            />
-
-            <FormInput label="Son Başvuru Tarihi" type="date" {...register("deadline")} icon={FiCalendar} />
-          </FormRow>
-        </FormSection>
-      </FormCard>
+          </button>
+        </div>
+      </div>
     </div>
   );
 }

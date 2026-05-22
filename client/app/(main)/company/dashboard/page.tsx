@@ -44,12 +44,12 @@ interface DashboardStats {
 
 function StatusBadge({ status }: { status: string }) {
   const map: Record<string, { label: string; cls: string; hasDot?: boolean; dotCls?: string }> = {
-    open: { label: "Aktif", cls: "bg-[#065043]/10 text-[#065043]", hasDot: true, dotCls: "bg-[#065043]" },
+    open: { label: "Aktif", cls: "bg-[#00342b]/10 text-[#00342b]", hasDot: true, dotCls: "bg-[#00342b]" },
     closed: { label: "Kapalı", cls: "bg-[#3f4945]/15 text-[#3f4945]" },
     pending: { label: "Bekliyor", cls: "bg-[#e28743]/10 text-[#e28743]", hasDot: true, dotCls: "bg-[#e28743] animate-pulse" },
-    accepted: { label: "Kabul Edildi", cls: "bg-[#065043]/10 text-[#065043]", hasDot: true, dotCls: "bg-[#065043]" },
+    accepted: { label: "Kabul Edildi", cls: "bg-[#00342b]/10 text-[#00342b]", hasDot: true, dotCls: "bg-[#00342b]" },
     rejected: { label: "Reddedildi", cls: "bg-[#ffdad6] text-[#93000a]" },
-    hired: { label: "İşe Alındı", cls: "bg-[#065043]/10 text-[#065043]", hasDot: true, dotCls: "bg-[#065043]" },
+    hired: { label: "İşe Alındı", cls: "bg-[#00342b]/10 text-[#00342b]", hasDot: true, dotCls: "bg-[#00342b]" },
   };
   const cfg = map[status?.toLowerCase()] ?? { label: status, cls: "bg-[#dce9ff] text-[#3f4945]" };
   return (
@@ -96,7 +96,7 @@ export default function CompanyDashboardPage() {
   if (loading) {
     return (
       <div className="flex justify-center items-center min-h-[40vh]">
-        <div className="w-8 h-8 border-4 border-[#004d40]/30 border-t-[#004d40] rounded-full animate-spin" />
+        <div className="w-8 h-8 border-4 border-[#00342b]/30 border-t-[#00342b] rounded-full animate-spin" />
       </div>
     );
   }
@@ -147,7 +147,7 @@ export default function CompanyDashboardPage() {
         />
 
         <StatCard
-          icon={<FiCheckCircle className="text-[#065043] w-6 h-6" />}
+          icon={<FiCheckCircle className="text-[#00342b] w-6 h-6" />}
           label="İşe Alınan"
           value={stats.hiredStudents}
           borderless
@@ -177,7 +177,7 @@ export default function CompanyDashboardPage() {
           <div className="border border-[#dfded6] rounded-2xl divide-y divide-[#dfded6] relative">
             {stats.recentApplications.length === 0 ? (
               <div className="p-8 text-center text-[#565e74] bg-transparent">
-                <FiUsers className="w-12 h-12 text-[#004d40]/10 mx-auto mb-3 animate-pulse" />
+                <FiUsers className="w-12 h-12 text-[#00342b]/10 mx-auto mb-3 animate-pulse" />
                 <p className="text-sm font-medium">Henüz başvuru yok</p>
               </div>
             ) : (
@@ -190,10 +190,10 @@ export default function CompanyDashboardPage() {
                   .slice(0, 2);
 
                 return (
-                  <div key={app.id} className="p-4 flex items-center justify-between group transition-all duration-300 ease-out cursor-pointer hover:z-10 hover:scale-[1.02] bg-transparent border border-transparent hover:border-[#004d40]/50 hover:rounded-none hover:shadow-md hover:bg-white hover:bg-gradient-to-br hover:from-[#004d40]/[0.045] hover:to-[#ffd54f]/[0.075]">
+                  <div key={app.id} className="p-4 flex items-center justify-between group transition-all duration-300 ease-out cursor-pointer hover:z-10 hover:scale-[1.02] bg-transparent border border-transparent hover:border-[#00342b]/50 hover:rounded-none hover:shadow-md hover:bg-white hover:bg-gradient-to-br hover:from-[#00342b]/[0.045] hover:to-[#ffd54f]/[0.075]">
                     <div className="flex items-center gap-4 min-w-0">
                       {/* Avatar with fallback initials */}
-                      <div className="w-12 h-12 rounded-full bg-[#004d40]/5 border border-[#dfded6] flex items-center justify-center text-[#004d40] font-bold text-sm shrink-0">
+                      <div className="w-12 h-12 rounded-full bg-[#00342b]/5 border border-[#dfded6] flex items-center justify-center text-[#00342b] font-bold text-sm shrink-0">
                         {initials}
                       </div>
                       <div className="min-w-0">
@@ -203,7 +203,7 @@ export default function CompanyDashboardPage() {
                     </div>
                     <div className="hidden md:block shrink-0">
                       <div className="flex items-center gap-1 text-[#565e74] text-[12px] tracking-[0.05em] font-semibold leading-[16px]">
-                        <FiCalendar className="w-4 h-4 text-[#004d40]/60" />
+                        <FiCalendar className="w-4 h-4 text-[#00342b]/60" />
                         <span>{formatDate(app.submitted_at)}</span>
                       </div>
                     </div>
@@ -220,7 +220,7 @@ export default function CompanyDashboardPage() {
           <div className="mt-8 hidden md:block">
             <svg className="opacity-50 stroke-[#f1f0ea] stroke-[0.5] fill-none" height="60" viewBox="0 0 400 60" width="100%">
               <path d="M 0 30 Q 100 0 200 30 T 400 30"></path>
-              <circle cx="200" cy="30" fill="#004d40" r="4"></circle>
+              <circle cx="200" cy="30" fill="#00342b" r="4"></circle>
             </svg>
           </div>
         </section>
@@ -232,9 +232,9 @@ export default function CompanyDashboardPage() {
           <div className="border border-[#dfded6] rounded-2xl divide-y divide-[#dfded6] relative mb-6">
             {stats.recentTasks.length === 0 ? (
               <div className="p-8 text-center text-[#565e74] bg-transparent">
-                <FiBriefcase className="w-12 h-12 text-[#004d40]/10 mx-auto mb-3" />
+                <FiBriefcase className="w-12 h-12 text-[#00342b]/10 mx-auto mb-3" />
                 <p className="text-sm font-medium">Henüz aktif görev yok</p>
-                <Link href="/company/tasks/new" className="text-xs text-[#004d40] hover:underline mt-2 inline-block font-semibold">
+                <Link href="/company/tasks/new" className="text-xs text-[#00342b] hover:underline mt-2 inline-block font-semibold">
                   İlk görevi oluştur →
                 </Link>
               </div>
