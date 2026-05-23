@@ -26,6 +26,7 @@ import Input from "@/components/ui/Input";
 import Select from "@/components/ui/Select";
 import Button from "@/components/ui/Button";
 import PrimaryButton from "@/components/ui/PrimaryButton";
+import SectionCard from "@/components/ui/cards/SectionCard";
 import { cn } from "@/utils/cn";
 
 // Form Schema
@@ -199,13 +200,7 @@ export default function NewTaskPage() {
           {/* Left Column: Core Info & Skills */}
           <div className="lg:col-span-8 space-y-6">
             {/* Basic Information Card */}
-            <section className=" border border-[#DFDED6] rounded-3xl p-8 ">
-              <div className="flex items-center gap-2 mb-6">
-                <div className="p-2 bg-primary/10 rounded-lg">
-                  <FiBookOpen className="w-5 h-5 text-primary" />
-                </div>
-                <h2 className="text-xl font-bold text-[#0b1c30]">Temel Bilgiler</h2>
-              </div>
+            <SectionCard icon={FiBookOpen} title="Temel Bilgiler">
 
               <div className="space-y-6">
                 <div>
@@ -327,18 +322,10 @@ export default function NewTaskPage() {
                   </div>
                 </div>
               </div>
-            </section>
+            </SectionCard>
 
             {/* Skill Management Card (AI Core) */}
-            <section className="border border-[#DFDED6] rounded-4xl p-6 transition-all duration-300">
-              <div className="flex items-center justify-between mb-8">
-                <div className="flex items-center gap-2">
-                  <div className="p-2 bg-primary/10 rounded-lg">
-                    <HiSparkles className="w-5 h-5 text-primary" />
-                  </div>
-                  <h2 className="text-xl font-bold text-[#0b1c30]">Yetenek Yönetimi <span className="text-primary/50 text-sm font-normal ml-2">(AI Core)</span></h2>
-                </div>
-              </div>
+            <SectionCard icon={HiSparkles} title={<span>Yetenek Yönetimi <span className="text-primary/50 text-sm font-normal ml-2">(AI Core)</span></span>}>
 
               {/* Skill Input Adder */}
               <div className="bg-primary/5 p-4 rounded-xl border border-primary/10 mb-8 space-y-4">
@@ -396,7 +383,7 @@ export default function NewTaskPage() {
               </div>
 
               <div className="space-y-4 mb-10">
-                <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-1">Hard Skills</h3>
+                <h3 className="block text-xs font-bold text-[#3f4945] mb-2 uppercase tracking-wider px-1">Hard Skills</h3>
                 <div className="space-y-3">
                   {hardSkills.map((h, index) => (
                     <div key={h.skill} className="bg-white p-4 rounded-4xl border border-[#F1F0EA] flex flex-col md:flex-row md:items-center gap-4 group/item hover:border-primary/30 transition-all">
@@ -451,7 +438,7 @@ export default function NewTaskPage() {
                     </div>
                   ))}
                   {hardSkills.length === 0 && (
-                    <div className="text-center py-8 border-2 border-dashed border-slate-100 rounded-2xl text-slate-300 text-sm font-medium">
+                    <div className="text-center py-8 border-2 border-dashed border-[#DFDED6] rounded-2xl text-[#565e74] text-sm font-medium">
                       Henüz teknik yetenek eklenmedi.
                     </div>
                   )}
@@ -459,7 +446,7 @@ export default function NewTaskPage() {
               </div>
 
               <div className="space-y-4">
-                <h3 className="text-[10px] font-bold text-slate-400 uppercase tracking-widest px-1">Soft Skills</h3>
+                <h3 className="block text-xs font-bold text-[#3f4945] mb-2 uppercase tracking-wider px-1">Soft Skills</h3>
                 <div className="flex flex-wrap gap-2 p-4 rounded-4xl border border-dashed border-[#DFDED6]">
                   {softSkills.map((s) => (
                     <span key={s} className="bg-white border border-[#DFDED6] text-[#5c647a] px-3 py-1.5 rounded-4xl text-xs font-bold flex items-center gap-2 group/tag animate-in fade-in zoom-in">
@@ -474,23 +461,22 @@ export default function NewTaskPage() {
                     value={softSkillInput}
                     onChange={(e) => setSoftSkillInput(e.target.value)}
                     onKeyDown={(e) => e.key === "Enter" && (e.preventDefault(), handleAddSoftSkill())}
-                    className="w-auto px-2 py-1 text-sm placeholder:text-slate-300 min-w-[120px]"
+                    className="w-auto px-2 py-1 text-sm placeholder:text-slate-500 min-w-[120px]"
                     placeholder="Enter ile ekle..."
                   />
                 </div>
               </div>
-            </section>
+            </SectionCard>
           </div>
 
           {/* Right Column: Reward Sidebar */}
           <aside className="lg:col-span-4 space-y-6 lg:sticky lg:top-8">
             {/* Reward Section */}
-            <section className=" rounded-3xl p-6 border border-[#DFDED6] shadow-primary/5">
+            <SectionCard icon={FiAward} title="Ödül Türü Seçiniz">
 
 
               <div className="space-y-6">
                 <div>
-                  <label className="block text-[10px] font-bold text-slate-400 uppercase mb-3 tracking-widest text-center">Ödül Türü Seçiniz</label>
                   <div className="grid grid-cols-3 gap-2">
                     {(["money", "internship", "certificate"] as const).map((type) => (
                       <button
@@ -591,14 +577,13 @@ export default function NewTaskPage() {
                   )}
                 </div>
               </div>
-            </section>
+            </SectionCard>
 
             {/* AI Matching Indicator Card */}
-            <section className="bg-white/60 backdrop-blur-xl rounded-3xl p-6 border border-[#DFDED6] relative overflow-hidden group">
+            <SectionCard icon={FiZap} title="AI Eşleşme Analizi" className="relative overflow-hidden group">
               <div className="absolute -right-4 -top-4 opacity-5 group-hover:opacity-10 transition-opacity">
                 <FiZap className="w-24 h-24 text-primary" />
               </div>
-              <h3 className="text-xs font-bold mb-4 text-slate-400 uppercase tracking-widest">AI Eşleşme Analizi</h3>
               <div className="flex items-center gap-4">
                 <div className="relative w-16 h-16 flex items-center justify-center">
                   <svg className="w-full h-full transform -rotate-90">
@@ -612,7 +597,7 @@ export default function NewTaskPage() {
                   <p className="text-[10px] text-slate-400 mt-1">Kriterler girildiğinde AI analizi <span className="text-primary font-bold">canlı</span> olarak güncellenir.</p>
                 </div>
               </div>
-            </section>
+            </SectionCard>
           </aside>
         </form>
       </main>

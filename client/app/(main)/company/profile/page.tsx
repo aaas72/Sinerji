@@ -5,6 +5,7 @@ import Link from "next/link";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import PrimaryButton from "@/components/ui/PrimaryButton";
+import SectionCard from "@/components/ui/cards/SectionCard";
 import StatCard from "@/components/ui/cards/StatCard";
 import CompanyApplicationCard from "@/components/ui/cards/CompanyApplicationCard";
 import StatusBadge from "@/components/ui/badges/StatusBadge";
@@ -49,25 +50,7 @@ interface DashboardStats {
 
 // ─── helpers ───────────────────────────────────────────────────────────────────
 
-function SectionCard({
-  icon: Icon,
-  title,
-  children,
-}: {
-  icon: React.ElementType;
-  title: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <div className="rounded-2xl border border-[#dfded6] bg-white p-6">
-      <div className="mb-5 flex items-center gap-2">
-        <Icon className="text-[#004d40]" size={20} />
-        <h3 className="text-base font-bold text-[#00342b] tracking-wide break-words">{title}</h3>
-      </div>
-      <div className="bg-transparent">{children}</div>
-    </div>
-  );
-}
+
 
 function InfoRow({
   icon: Icon,
@@ -340,20 +323,15 @@ export default function CompanyProfilePage() {
           {/* Stats Detail */}
           {stats && (
             <SectionCard icon={FiTrendingUp} title="Performans">
-              <div className="space-y-1">
+              <div>
                 {[
-                  { icon: FiBriefcase, label: "Toplam Görev", value: stats.totalTasks },
-                  { icon: FiCheckCircle, label: "Aktif Görevler", value: stats.activeTasks },
-                  { icon: FiUsers, label: "Toplam Başvuru", value: stats.totalApplications },
-                  { icon: FiClock, label: "Bekleyen Başvuru", value: stats.pendingApplications },
-                  { icon: FiAward, label: "İşe Alınanlar", value: stats.hiredStudents },
-                ].map(({ icon: Icon, label, value }) => (
-                  <div key={label} className="flex items-center justify-between py-3 border-b border-[#f1f0ea] last:border-0 hover:bg-gray-50/50 px-2 rounded-lg transition-colors">
-                    <div className="flex items-center gap-3 text-xs font-bold text-gray-600">
-                      <Icon size={16} className="text-[#004d40]" /> {label}
-                    </div>
-                    <span className="text-sm font-black text-gray-900 bg-gray-100 px-3 py-1 rounded-full">{value}</span>
-                  </div>
+                  { icon: FiBriefcase, value: `${stats.totalTasks} Toplam Görev` },
+                  { icon: FiCheckCircle, value: `${stats.activeTasks} Aktif Görev` },
+                  { icon: FiUsers, value: `${stats.totalApplications} Toplam Başvuru` },
+                  { icon: FiClock, value: `${stats.pendingApplications} Bekleyen Başvuru` },
+                  { icon: FiAward, value: `${stats.hiredStudents} İşe Alınan` },
+                ].map((item, idx) => (
+                  <InfoRow key={idx} icon={item.icon} label="" value={item.value} />
                 ))}
               </div>
             </SectionCard>

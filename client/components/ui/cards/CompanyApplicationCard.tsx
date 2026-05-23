@@ -20,7 +20,7 @@ export default function CompanyApplicationCard({
   return (
     <div 
       onClick={onClick}
-      className={`group flex flex-col p-5 rounded-2xl border border-[#f1f0ea] bg-white transition-all duration-300 ease-out hover:scale-[1.02] hover:bg-gradient-to-br hover:from-[#004d40]/[0.045] hover:to-[#ffd54f]/[0.075] hover:border-[#004d40]/50 hover:shadow-md ${onClick ? 'cursor-pointer' : ''}`}
+      className={`group flex flex-col p-5 rounded-2xl border border-[#f1f0ea] bg-white hover-card-effect ${onClick ? 'cursor-pointer' : ''}`}
     >
       <div className="flex items-center justify-between mb-3">
         <div className="flex items-center gap-3 min-w-0">

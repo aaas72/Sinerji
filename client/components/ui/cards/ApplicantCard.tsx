@@ -41,7 +41,7 @@ export default function ApplicantCard({ submission, onClick }: ApplicantCardProp
   return (
     <div
       onClick={onClick}
-      className="bg-transparent border border-[#dfded6] rounded-2xl overflow-hidden transition-all duration-300 ease-out relative hover:scale-[1.02] hover:bg-white hover:bg-gradient-to-br hover:from-[#004d40]/[0.045] hover:to-[#ffd54f]/[0.075] hover:border-[#004d40]/50 hover:rounded-none hover:shadow-md hover:z-10 group cursor-pointer flex flex-col justify-between"
+      className="bg-transparent border border-[#dfded6] rounded-2xl overflow-hidden hover:rounded-none relative group cursor-pointer flex flex-col justify-between hover-card-effect"
     >
       {/* ── Top Progress Bar Header ── */}
       {formattedScore !== null && (

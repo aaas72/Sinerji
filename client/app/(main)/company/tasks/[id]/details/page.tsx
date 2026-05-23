@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import MainSection from "@/components/ui/layouts/MainSection";
 import Button from "@/components/ui/Button";
+import SectionCard from "@/components/ui/cards/SectionCard";
 import Breadcrumb from "@/components/ui/Breadcrumb";
 import { taskService } from "@/services/task.service";
 import { Task } from "@/types/task";
@@ -36,25 +37,7 @@ const STATUS_MAP: Record<string, { label: string; color: string; dot: string }> 
 
 // ── Sub-components ─────────────────────────────────────────────────────────────
 
-function SectionCard({
-  icon: Icon,
-  title,
-  children,
-}: {
-  icon: React.ElementType;
-  title: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <div className="rounded-2xl border border-[#dfded6] bg-white/60 backdrop-blur-xs p-6 transition-all duration-300">
-      <div className="flex items-center gap-2.5 mb-4">
-        <Icon size={20} className="text-[#004d40] shrink-0" />
-        <h3 className="text-base font-bold text-[#00342b] tracking-wide break-words">{title}</h3>
-      </div>
-      <div className="bg-transparent text-sm text-gray-600 leading-relaxed space-y-3">{children}</div>
-    </div>
-  );
-}
+
 
 function InfoRow({ icon: Icon, label, value }: { icon: React.ElementType; label: string; value: string }) {
   return (
@@ -90,7 +73,7 @@ function RewardRow({
 
 function StatBadge({ value, label, subtext }: { value: string | number; label: string; subtext: string }) {
   return (
-    <div className="flex flex-col justify-between rounded-2xl border border-[#dfded6] bg-white/60 backdrop-blur-xs p-5 min-w-[160px] flex-1 transition-all duration-300">
+    <div className="flex flex-col justify-between rounded-2xl border border-[#DFDED6] bg-[#F1F0EA] p-5 min-w-[160px] flex-1 transition-all duration-300">
       <span className="text-[10px] uppercase tracking-wider font-extrabold text-[#565e74]">{label}</span>
       <div className="flex items-baseline gap-2 mt-1">
         <span className="text-[32px] font-bold text-[#00342b] leading-none">{value}</span>
@@ -210,7 +193,7 @@ export default function TaskDetailsPage() {
             label="Positions" 
             subtext="Pozisyon" 
           />
-          <div className="flex flex-col justify-between rounded-2xl border border-[#dfded6] bg-white/60 backdrop-blur-xs p-5 min-w-[160px] flex-1 transition-all duration-300">
+          <div className="flex flex-col justify-between rounded-2xl border border-[#DFDED6] bg-[#F1F0EA] p-5 min-w-[160px] flex-1 transition-all duration-300">
             <span className="text-[10px] uppercase tracking-wider font-extrabold text-[#565e74]">Deadline</span>
             <div className="flex items-baseline gap-2 mt-1">
               <span className="text-[24px] md:text-[26px] font-bold text-[#00342b] leading-none shrink-0">
@@ -259,8 +242,7 @@ export default function TaskDetailsPage() {
 
             {/* Required Skills */}
             {task.requiredSkills && task.requiredSkills.length > 0 && (
-              <div className="bg-white/60 backdrop-blur-xs border border-[#dfded6] rounded-2xl p-6 transition-all duration-300">
-                <h3 className="text-base font-bold text-[#00342b] mb-4">Required Skills</h3>
+              <SectionCard icon={FiHash} title="Required Skills">
                 <div className="flex flex-wrap gap-2">
                   {task.requiredSkills.map((ts) => (
                     <span
@@ -271,7 +253,7 @@ export default function TaskDetailsPage() {
                     </span>
                   ))}
                 </div>
-              </div>
+              </SectionCard>
             )}
           </div>
 

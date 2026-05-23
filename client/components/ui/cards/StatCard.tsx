@@ -26,9 +26,9 @@ export default function StatCard({
   return (
     <div
       className={cn(
-        "p-6 flex flex-col justify-between transition-all duration-300 ease-out w-full h-full cursor-pointer hover:z-10",
+        "p-6 flex flex-col justify-between w-full h-full cursor-pointer",
         borderless
-          ? `bg-transparent border border-transparent ${isGlass ? 'hover:bg-white/10 hover:backdrop-blur-md hover:border-white/20 hover:rounded-2xl' : 'hover:bg-white hover:bg-gradient-to-br hover:from-[#004d40]/[0.045] hover:to-[#ffd54f]/[0.075] hover:border-[#004d40]/50 hover:shadow-md hover:rounded-none'} hover:scale-[1.05]`
+          ? `bg-transparent border border-transparent ${isGlass ? 'transition-all duration-300 ease-out hover:z-10 hover:bg-white/10 hover:backdrop-blur-md hover:border-white/20 hover:rounded-2xl' : 'hover:rounded-none hover-card-effect'} hover:scale-[1.05]`
           : cn(
             "rounded-xl border hover:scale-[1.03] hover:shadow-md",
             isGlass ? "border-white/20 hover:border-white/40" : (variant === "pending" ? "border-[#e28743] hover:border-[#004d40]/50" : "border-[#dfded6] hover:border-[#004d40]/50")

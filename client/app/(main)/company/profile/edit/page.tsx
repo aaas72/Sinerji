@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import PrimaryButton from "@/components/ui/PrimaryButton";
+import SectionCard from "@/components/ui/cards/SectionCard";
 import { companyService } from "@/services/company.service";
 import { CompanyProfile } from "@/types/company";
 import { useToast } from "@/context/ToastContext";
@@ -17,6 +18,7 @@ import {
   FiX,
   FiSave,
   FiImage,
+  FiCheck,
 } from "react-icons/fi";
 import Input from "@/components/ui/Input";
 
@@ -24,25 +26,7 @@ import Input from "@/components/ui/Input";
 const heroInputCls = "px-3 py-1 bg-white/10 text-white font-semibold text-sm placeholder:text-white/50 placeholder:font-normal border border-white/20 focus:border-white/50 focus:bg-white/20 focus:ring-0 transition-all rounded-lg outline-none";
 const bodyInputCls = "px-4 py-2.5 text-[#004d40] bg-gray-50 border border-gray-200 focus:border-[#004d40] focus:ring-[#004d40] font-medium placeholder:text-gray-400 placeholder:font-normal text-sm rounded-xl transition-all outline-none";
 
-function SectionCard({
-  icon: Icon,
-  title,
-  children,
-}: {
-  icon: React.ElementType;
-  title: string;
-  children: React.ReactNode;
-}) {
-  return (
-    <div className="rounded-2xl border border-[#dfded6] bg-white p-6">
-      <div className="mb-5 flex items-center gap-2">
-        <Icon className="text-[#004d40]" size={20} />
-        <h3 className="text-base font-bold text-[#00342b] tracking-wide break-words">{title}</h3>
-      </div>
-      <div className="bg-transparent">{children}</div>
-    </div>
-  );
-}
+
 
 function InfoRow({
   icon: Icon,
@@ -167,8 +151,8 @@ export default function EditCompanyProfilePage() {
           <button onClick={cancelEdit} className="w-8 h-8 flex items-center justify-center rounded-full bg-white/10 hover:bg-white/20 border border-white/20 backdrop-blur-sm text-white transition-all hover:scale-105" title="İptal">
             <FiX size={15} />
           </button>
-          <button onClick={handleSave} disabled={isSaving} className="w-8 h-8 flex items-center justify-center px-4 rounded-full bg-white text-[#004d40] hover:bg-white/90 transition-all shadow-md hover:scale-105 disabled:opacity-50 text-sm font-bold gap-2" title="Kaydet">
-            {isSaving ? <div className="w-3.5 h-3.5 border-2 border-[#004d40]/30 border-t-[#004d40] rounded-full animate-spin" /> : <><FiSave size={15} /> Kaydet</>}
+          <button onClick={handleSave} disabled={isSaving} className="w-8 h-8 flex items-center justify-center rounded-full bg-white text-[#004d40] hover:bg-white/90 transition-all shadow-md hover:scale-105 disabled:opacity-50" title="Kaydet">
+            {isSaving ? <div className="w-3.5 h-3.5 border-2 border-[#004d40]/30 border-t-[#004d40] rounded-full animate-spin" /> : <FiCheck size={16} />}
           </button>
         </div>
 

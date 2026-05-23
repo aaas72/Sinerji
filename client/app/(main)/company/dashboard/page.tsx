@@ -158,10 +158,10 @@ export default function CompanyDashboardPage() {
         <section className="lg:col-span-8">
           <div className="flex justify-between items-center mb-6">
             <h2 className="text-[20px] font-semibold leading-[28px] text-[#0b1c30]">Recent Applications</h2>
-            <Link href="/company/tasks" className="text-[14px] tracking-[0.01em] font-medium leading-[20px] text-[#00342b] flex items-center gap-1 hover:underline cursor-pointer">
-              Tümünü Gör
-              <FiArrowRight className="w-[18px] h-[18px]" />
-            </Link>
+              <Link href="/company/tasks" className="text-[14px] tracking-[0.01em] font-medium leading-[20px] text-[#00342b] flex items-center gap-1 hover:underline cursor-pointer">
+                Tümünü Gör
+                <FiArrowRight className="w-[18px] h-[18px]" />
+              </Link>
           </div>
 
           <div className="border border-[#dfded6] rounded-2xl divide-y divide-[#dfded6] relative">
@@ -180,7 +180,7 @@ export default function CompanyDashboardPage() {
                   .slice(0, 2);
 
                 return (
-                  <div key={app.id} className="p-4 flex items-center group transition-all duration-300 ease-out cursor-pointer hover:z-10 hover:scale-[1.02] bg-transparent border border-transparent hover:border-[#00342b]/50 hover:rounded-none hover:shadow-md hover:bg-white hover:bg-gradient-to-br hover:from-[#00342b]/[0.045] hover:to-[#ffd54f]/[0.075]">
+                  <div key={app.id} className="p-4 flex items-center group cursor-pointer bg-transparent border border-transparent hover:rounded-none hover-card-effect">
                     <div className="flex items-center gap-4 min-w-0 flex-1">
                       {/* Avatar with fallback initials */}
                       <div className="w-12 h-12 rounded-full bg-[#00342b]/5 border border-[#dfded6] flex items-center justify-center text-[#00342b] font-bold text-sm shrink-0">

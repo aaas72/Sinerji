@@ -1,7 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import Button from "@/components/ui/Button";
+import PrimaryButton from "@/components/ui/PrimaryButton";
+import SectionCard from "@/components/ui/cards/SectionCard";
 import {
   FiLock,
   FiBell,
@@ -10,6 +11,8 @@ import {
   FiEye,
   FiEyeOff,
   FiLogOut,
+  FiUser,
+  FiMail,
 } from "react-icons/fi";
 import { useToast } from "@/context/ToastContext";
 import { useAuthStore } from "@/hooks/useAuth";
@@ -17,54 +20,10 @@ import { useRouter } from "next/navigation";
 import { authService } from "@/services/auth.service";
 import Input from "@/components/ui/Input";
 
-/* ─── küçük yardımcı bileşenler ─── */
+// ─── shared styles ────────────────────────────────────────────────────────
+const bodyInputCls = "px-4 py-2.5 text-[#004d40] bg-gray-50 border border-gray-200 focus:border-[#004d40] focus:ring-[#004d40] font-medium placeholder:text-gray-400 placeholder:font-normal text-sm rounded-xl transition-all outline-none w-full";
 
-function SettingCard({
-  icon: Icon,
-  title,
-  description,
-  accent = false,
-  children,
-}: {
-  icon: React.ComponentType<{ className?: string }>;
-  title: string;
-  description: string;
-  accent?: boolean;
-  children: React.ReactNode;
-}) {
-  return (
-    <div className={`bg-white rounded-3xl border p-6 md:p-8 transition-all ${accent ? "border-red-200 bg-red-50/10" : "border-[#DFDED6]"}`}>
-      <div className="flex flex-col md:flex-row gap-6">
-        <div
-          className={`shrink-0 w-12 h-12 rounded-xl flex items-center justify-center ${
-            accent
-              ? "bg-red-50 text-red-600"
-              : "bg-[#004d40]/5 text-[#004d40]"
-          }`}
-        >
-          <Icon className="w-6 h-6" />
-        </div>
-        <div className="flex-1 min-w-0">
-          <h3
-            className={`text-lg font-bold font-heading mb-1 ${
-              accent ? "text-red-700" : "text-gray-900"
-            }`}
-          >
-            {title}
-          </h3>
-          <p
-            className={`text-sm mb-6 ${
-              accent ? "text-red-400" : "text-[#565e74] font-medium"
-            }`}
-          >
-            {description}
-          </p>
-          {children}
-        </div>
-      </div>
-    </div>
-  );
-}
+
 
 function Toggle({
   checked,
@@ -76,8 +35,8 @@ function Toggle({
   label: string;
 }) {
   return (
-    <label className="flex items-center justify-between cursor-pointer py-4 border-b border-gray-100 last:border-0 hover:bg-gray-50/30 px-2 rounded-xl transition-all select-none">
-      <span className="text-sm text-gray-700 font-medium">{label}</span>
+    <label className="flex items-center justify-between cursor-pointer py-3.5 border-b border-[#f1f0ea] last:border-0 hover:bg-gray-50/50 px-4 -mx-4 rounded-xl transition-colors select-none group">
+      <span className="text-[14px] font-medium text-[#0b1c30] group-hover:text-[#004d40] transition-colors">{label}</span>
       <button
         type="button"
         onClick={onChange}
@@ -94,11 +53,6 @@ function Toggle({
     </label>
   );
 }
-
-/* ─── ana sayfa ─── */
-
-const inputCls =
-  "px-4 py-3 text-[#004d40] font-medium placeholder:text-gray-400 placeholder:font-normal text-sm";
 
 export default function CompanySettingsPage() {
   const { showToast } = useToast();
@@ -154,144 +108,127 @@ export default function CompanySettingsPage() {
   };
 
   return (
-    <div className="w-full max-w-[1280px] mx-auto px-6 md:px-16 py-16 flex flex-col gap-8">
+    <div className="w-full max-w-[1200px] mx-auto px-4 md:px-8 py-10 flex flex-col gap-8 min-h-screen font-sans">
       
       {/* ── Page Header ── */}
-      <header className="relative overflow-hidden rounded-3xl border border-[#DFDED6] bg-white p-6 md:p-8">
-        <div className="absolute inset-0 bg-gradient-to-br from-[#eff4ff] to-transparent opacity-50 pointer-events-none" />
-        <div className="relative z-10 flex items-center gap-4">
-          <div className="w-12 h-12 bg-[#004d40]/5 rounded-xl flex items-center justify-center text-[#004d40] shrink-0">
-            <FiShield className="w-6 h-6 animate-pulse" />
-          </div>
-          <div>
-            <h1 className="text-[28px] md:text-[36px] font-extrabold leading-tight text-[#00342b] font-heading">
-              Ayarlar
-            </h1>
-            <p className="text-sm text-[#565e74] font-medium mt-0.5">
-              Hesap bilgilerinizi, güvenlik ayarlarınızı ve bildirim tercihlerinizi yönetin
+      <div className="mb-2">
+        <h1 className="text-3xl font-bold text-[#00342b] tracking-tight mb-2">Ayarlar</h1>
+        <p className="text-[#565e74] font-medium text-sm">
+          Hesap bilgilerinizi, güvenlik ayarlarınızı ve bildirim tercihlerinizi buradan yönetebilirsiniz.
+        </p>
+      </div>
+
+      <div className="w-full space-y-8">
+          
+        {/* ① Hesap Bilgileri */}
+        <SectionCard
+          icon={FiUser}
+          title="Hesap Bilgileri"
+          description="Hesabınıza ait temel profil ve iletişim bilgileri."
+        >
+          <div className="space-y-4">
+            <div className="flex items-center gap-4 py-3.5 border-b border-[#f1f0ea] -mx-4 px-4 bg-gray-50/50 rounded-xl">
+              <FiMail className="text-[#004d40] shrink-0" size={18} />
+              <div className="flex-1 min-w-0">
+                <p className="text-xs text-gray-500 font-bold uppercase tracking-wider mb-0.5">E-posta Adresi</p>
+                <p className="text-[14px] font-medium text-[#0b1c30] truncate">{user?.email ?? "—"}</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-4 py-3.5 border-b border-[#f1f0ea] -mx-4 px-4 bg-gray-50/50 rounded-xl">
+              <FiShield className="text-[#004d40] shrink-0" size={18} />
+              <div className="flex-1 min-w-0 flex justify-between items-center">
+                <div>
+                  <p className="text-xs text-gray-500 font-bold uppercase tracking-wider mb-0.5">Hesap Türü</p>
+                  <p className="text-[14px] font-medium text-[#0b1c30] truncate">Şirket Yetkilisi</p>
+                </div>
+                <span className="text-[10px] font-bold bg-[#004d40]/10 text-[#004d40] px-2.5 py-1 rounded-full uppercase tracking-wider">Aktif</span>
+              </div>
+            </div>
+            <p className="text-xs text-gray-400 font-medium mt-3 italic">
+              * Giriş e-posta adresinizi güncellemek isterseniz lütfen destek ekibiyle iletişime geçin.
             </p>
           </div>
-        </div>
-      </header>
-
-      {/* ── Settings Sections ── */}
-      <div className="space-y-6">
-
-        {/* ① Hesap Bilgileri */}
-        <SettingCard
-          icon={FiShield}
-          title="Hesap Bilgileri"
-          description="Hesabınıza ait temel profil bilgileri."
-        >
-          <div className="bg-gray-50 rounded-3xl p-6 space-y-4 max-w-xl border border-[#DFDED6]">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
-              <span className="text-sm text-[#565e74] font-medium">E-posta Adresi</span>
-              <span className="text-sm font-bold text-gray-800">
-                {user?.email ?? "—"}
-              </span>
-            </div>
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-t border-gray-200/60 pt-4">
-              <span className="text-sm text-[#565e74] font-medium">Hesap Türü</span>
-              <span className="self-start text-xs font-semibold bg-[#004d40]/5 text-[#004d40] px-3 py-1 rounded-full">
-                Şirket Yetkilisi
-              </span>
-            </div>
-          </div>
-          <p className="text-xs text-gray-400 font-medium mt-3">
-            Giriş e-posta adresinizi güncellemek isterseniz lütfen destek ekibiyle iletişime geçin.
-          </p>
-        </SettingCard>
+        </SectionCard>
 
         {/* ② Şifre Değiştir */}
-        <SettingCard
+        <SectionCard
           icon={FiLock}
-          title="Şifre Değiştir"
+          title="Güvenlik ve Şifre"
           description="Hesabınızı güvende tutmak için şifrenizi düzenli aralıklarla güncelleyin."
         >
-          <form
-            onSubmit={handlePasswordChange}
-            className="space-y-5 max-w-xl"
-          >
-            {/* mevcut şifre */}
+          <form onSubmit={handlePasswordChange} className="space-y-5">
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-2">
+              <label className="block text-xs font-bold uppercase tracking-wider text-[#00342b] mb-2">
                 Mevcut Şifre
               </label>
               <div className="relative">
                 <Input
                   type={showCurrent ? "text" : "password"}
                   {...pwField("current")}
-                  className={`${inputCls} pr-12`}
+                  className={`${bodyInputCls} pr-12`}
                   placeholder="••••••••"
                   autoComplete="current-password"
                 />
                 <button
                   type="button"
                   onClick={() => setShowCurrent((v) => !v)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#004d40] transition-colors"
                 >
                   {showCurrent ? <FiEyeOff size={18} /> : <FiEye size={18} />}
                 </button>
               </div>
             </div>
 
-            {/* yeni şifre */}
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-2">
+              <label className="block text-xs font-bold uppercase tracking-wider text-[#00342b] mb-2">
                 Yeni Şifre
               </label>
               <div className="relative">
                 <Input
                   type={showNew ? "text" : "password"}
                   {...pwField("next")}
-                  className={`${inputCls} pr-12`}
+                  className={`${bodyInputCls} pr-12`}
                   placeholder="••••••••"
                   autoComplete="new-password"
                 />
                 <button
                   type="button"
                   onClick={() => setShowNew((v) => !v)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#004d40] transition-colors"
                 >
                   {showNew ? <FiEyeOff size={18} /> : <FiEye size={18} />}
                 </button>
               </div>
             </div>
 
-            {/* tekrar */}
             <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-gray-700 mb-2">
+              <label className="block text-xs font-bold uppercase tracking-wider text-[#00342b] mb-2">
                 Yeni Şifre (Tekrar)
               </label>
               <Input
                 type="password"
                 {...pwField("confirm")}
-                className={inputCls}
+                className={bodyInputCls}
                 placeholder="••••••••"
                 autoComplete="new-password"
               />
             </div>
 
-            <div className="pt-2">
-              <Button
-                type="submit"
-                variant="primary"
-                disabled={pwLoading}
-                className="px-6 py-2.5 rounded-[50px] bg-[#004d40] hover:bg-[#00342b] text-white text-sm font-semibold transition-all"
-              >
-                {pwLoading ? "Kaydediliyor..." : "Şifreyi Güncelle"}
-              </Button>
+            <div className="pt-3 flex justify-start">
+              <PrimaryButton type="submit" isLoading={pwLoading} className="px-8">
+                Şifreyi Güncelle
+              </PrimaryButton>
             </div>
           </form>
-        </SettingCard>
+        </SectionCard>
 
         {/* ③ Bildirim Tercihleri */}
-        <SettingCard
+        <SectionCard
           icon={FiBell}
           title="Bildirim Tercihleri"
           description="E-posta ve sistem üzerinden hangi güncellemeleri almak istediğinizi özelleştirin."
         >
-          <div className="max-w-xl border border-[#DFDED6] rounded-3xl overflow-hidden p-4 bg-gray-50/20">
+          <div className="border border-[#f1f0ea] rounded-xl overflow-hidden bg-gray-50/30">
             <Toggle
               checked={notifs.newApplication}
               onChange={() => toggle("newApplication")}
@@ -313,43 +250,40 @@ export default function CompanySettingsPage() {
               label="Haftalık performans ve özet raporunu e-posta ile gönder"
             />
           </div>
-        </SettingCard>
+        </SectionCard>
 
-        {/* ④ Oturum Yönetimi */}
-        <SettingCard
-          icon={FiLogOut}
-          title="Oturum"
-          description="Aktif hesabınızdan güvenli bir şekilde çıkış yapın."
-        >
-          <Button
-            variant="outline"
-            icon={FiLogOut}
-            onClick={handleLogout}
-            className="px-6 py-2.5 rounded-[50px] border border-gray-200 text-gray-700 hover:bg-gray-50 hover:text-gray-900 transition-all font-semibold"
-          >
-            Çıkış Yap
-          </Button>
-        </SettingCard>
-
-        {/* ⑤ Tehlike Bölgesi */}
-        <SettingCard
+        {/* ④ Oturum Yönetimi & Tehlike Bölgesi */}
+        <SectionCard
           icon={FiAlertTriangle}
-          title="Tehlike Bölgesi"
-          description="Bu işlemler geri alınamaz ve hesabınızın tamamen silinmesine yol açabilir."
+          title="Hesap İşlemleri"
+          description="Oturumunuzu sonlandırabilir veya hesabınızı kalıcı olarak silebilirsiniz."
           accent
         >
-          <Button
-            variant="outline"
-            className="px-6 py-2.5 rounded-[50px] border border-red-200 text-red-600 hover:bg-red-50/50 hover:text-red-700 transition-all font-semibold"
-            onClick={() =>
-              showToast("Hesap silme özelliği yakında kullanılabilir olacaktır.", "error")
-            }
-          >
-            Hesabı Kalıcı Olarak Sil
-          </Button>
-        </SettingCard>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between p-4 rounded-xl border border-red-100 bg-red-50/50">
+              <div>
+                <h4 className="text-sm font-bold text-red-700">Oturumu Kapat</h4>
+                <p className="text-xs font-medium text-red-500 mt-0.5">Aktif hesabınızdan güvenli bir şekilde çıkış yapın.</p>
+              </div>
+              <PrimaryButton icon={FiLogOut} className="bg-white text-red-600 border border-red-200 hover:bg-red-50" onClick={handleLogout}>
+                Çıkış Yap
+              </PrimaryButton>
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-4 items-center justify-between p-4 rounded-xl border border-red-200 bg-red-50">
+              <div>
+                <h4 className="text-sm font-bold text-red-700">Hesabı Sil</h4>
+                <p className="text-xs font-medium text-red-500 mt-0.5">Bu işlem geri alınamaz ve tüm verileriniz silinir.</p>
+              </div>
+              <PrimaryButton icon={FiAlertTriangle} className="bg-red-600 text-white hover:bg-red-700 border-none shrink-0" onClick={() => showToast("Hesap silme özelliği yakında kullanılabilir olacaktır.", "error")}>
+                Hesabı Kalıcı Olarak Sil
+              </PrimaryButton>
+            </div>
+          </div>
+        </SectionCard>
 
       </div>
+
     </div>
   );
 }

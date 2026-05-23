@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 import Button from "@/components/ui/Button";
-import Tabs from "@/components/ui/Tabs";
 import StatusBadge from "@/components/ui/badges/StatusBadge";
 import { FiFileText, FiCalendar, FiSearch, FiChevronDown, FiX, FiClock, FiCheckCircle, FiXCircle } from "react-icons/fi";
+import Tabs from "@/components/ui/Tabs";
 
 // Mock Data for Applications
 const MOCK_APPLICATIONS = [
@@ -122,10 +122,10 @@ export default function ApplicationsPage() {
       </div>
 
       {/* Applications List */}
-      <div className="border border-[#dfded6] rounded-2xl divide-y divide-[#dfded6] relative bg-transparent mt-4">
+      <section className="border border-[#dfded6] rounded-2xl divide-y divide-[#dfded6] relative bg-white/50 mt-4">
         {filteredApps.length > 0 ? (
           filteredApps.map((app) => (
-            <div key={app.id} className="p-4 flex items-center group transition-all duration-300 ease-out cursor-pointer hover:z-10 hover:scale-[1.02] bg-transparent border border-transparent hover:border-[#00342b]/50 hover:rounded-none hover:shadow-md hover:bg-white hover:bg-gradient-to-br hover:from-[#00342b]/[0.045] hover:to-[#ffd54f]/[0.075]">
+            <div key={app.id} className="p-4 flex items-center group cursor-pointer bg-transparent border border-transparent hover:rounded-none hover-card-effect">
               <div className="flex items-center gap-4 min-w-0 flex-1">
                 <div className="w-12 h-12 rounded-full bg-[#00342b]/5 border border-[#dfded6] flex items-center justify-center text-[#00342b] font-bold text-sm shrink-0">
                   {app.studentInitials}
@@ -159,7 +159,7 @@ export default function ApplicationsPage() {
             </p>
           </div>
         )}
-      </div>
+      </section>
     </div>
   );
 }

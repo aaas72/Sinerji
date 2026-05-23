@@ -21,10 +21,10 @@ export default function StudentExploreCard({ student, className = "", variant = 
   const isGlass = variant === "glass";
 
   return (
-    <div className={`rounded-3xl p-6 transition-all duration-300 ease-out relative group flex flex-col h-full cursor-pointer 
+    <div className={`rounded-3xl p-6 relative group flex flex-col h-full cursor-pointer 
       ${isGlass 
-        ? "bg-white/10 backdrop-blur-xl border border-white/20 text-white hover:bg-white/15 shadow-[0_8px_30px_rgb(0,0,0,0.12)]" 
-        : "bg-white border border-[#dfded6] hover:scale-[1.02] hover:bg-gradient-to-br hover:from-[#004d40]/[0.045] hover:to-[#ffd54f]/[0.075] hover:border-[#004d40]/50 hover:shadow-md"
+        ? "transition-all duration-300 ease-out bg-white/10 backdrop-blur-xl border border-white/20 text-white hover:bg-white/15 shadow-[0_8px_30px_rgb(0,0,0,0.12)]" 
+        : "bg-white border border-[#dfded6] hover-card-effect"
       } ${className}`}>
       
       <div className="flex items-start gap-4 mb-4">
