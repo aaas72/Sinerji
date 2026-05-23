@@ -73,8 +73,10 @@ const studentNavbarLinks = [
 ];
 
 const companyNavbarLinks = [
-  { href: "/company/dashboard", label: "Kontrol Paneli" },
+  { href: "/company/dashboard", label: "Özet" },
   { href: "/company/tasks", label: "Görevlerim" },
+  { href: "/company/applications", label: "Başvurular" },
+  { href: "/company/explore", label: "Keşfet" },
 ];
 
 type NavbarProps = {
@@ -149,12 +151,12 @@ export default function Navbar({ authenticated, userName, role }: NavbarProps) {
         "w-full z-50 transition-all duration-300",
         isLanding
           ? "absolute top-0 left-0 right-0 bg-transparent"
-          : "bg-white/80 backdrop-blur-md border-b border-[#dfded6]/30 shadow-sm shadow-[#00342b]/5 sticky top-0"
+          : "bg-white/85 backdrop-blur-md border-b border-[#dfded6]/30 shadow-sm shadow-[#00342b]/5 sticky top-0"
       )}
     >
-      <nav className="mx-auto max-w-6xl px-6 py-3.5 flex items-center justify-between">
+      <nav className="mx-auto max-w-6xl px-6 h-[64px] flex items-center justify-between">
         {/* Left: Brand logo & Navigation links */}
-        <div className="flex items-center gap-8 lg:gap-12">
+        <div className="flex items-center gap-8 lg:gap-12 h-full">
           <Link
             href={homeLink}
             className={cn(
@@ -166,7 +168,7 @@ export default function Navbar({ authenticated, userName, role }: NavbarProps) {
           </Link>
           
           {isAuth && (
-            <div className="hidden md:flex items-center gap-6 lg:gap-8">
+            <div className="hidden md:flex items-center gap-0 h-full">
               {navbarLinks.map((link) => {
                 const isActive = pathname === link.href;
                 return (
@@ -174,10 +176,10 @@ export default function Navbar({ authenticated, userName, role }: NavbarProps) {
                     key={link.href}
                     href={link.href}
                     className={cn(
-                      "text-[13px] font-medium transition-all relative py-1",
+                      "text-[14px] transition-all h-full flex items-center justify-center border-b-2 w-[90px]",
                       isActive
-                        ? "text-gray-900 font-semibold border-b-2 border-[#004d40] pb-[5px]"
-                        : "text-gray-500 hover:text-gray-900"
+                        ? "text-[#004d40] font-bold border-[#004d40]"
+                        : "text-gray-500 hover:text-gray-900 font-medium border-transparent"
                     )}
                   >
                     {link.label}

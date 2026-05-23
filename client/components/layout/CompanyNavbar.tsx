@@ -17,7 +17,7 @@ import {
 } from "react-icons/fi";
 
 const navLinks = [
-  { href: "/company/dashboard", label: "Kontrol Paneli" },
+  { href: "/company/dashboard", label: "Özet" },
   { href: "/company/tasks", label: "Görevlerim" },
   { href: "/company/applications", label: "Başvurular" },
   { href: "/company/explore", label: "Keşfet" },
@@ -58,11 +58,11 @@ export default function CompanyNavbar() {
   };
 
   return (
-    <header className="w-full z-50 bg-white/95 backdrop-blur-md border-b border-[#f1f0ea] sticky top-0 transition-all duration-300">
-      <nav className="mx-auto max-w-6xl px-6 py-3.5 flex items-center justify-between">
+    <header className="w-full z-50 bg-white/85 backdrop-blur-md border-b border-[#f1f0ea] sticky top-0 transition-all duration-300">
+      <nav className="mx-auto max-w-6xl px-6 h-[64px] flex items-center justify-between">
         
         {/* Left: Brand logo & Navigation links */}
-        <div className="flex items-center gap-8 lg:gap-12">
+        <div className="flex items-center gap-8 lg:gap-12 h-full">
           <Link
             href="/company/dashboard"
             className="font-bold text-lg tracking-tight transition-opacity hover:opacity-90 text-[#004d40]"
@@ -71,7 +71,7 @@ export default function CompanyNavbar() {
           </Link>
 
           {/* Desktop Navigation Links */}
-          <div className="hidden md:flex items-center gap-6 lg:gap-8">
+          <div className="hidden md:flex items-center gap-0 h-full">
             {navLinks.map((link) => {
               const isActive = pathname === link.href;
               return (
@@ -79,10 +79,10 @@ export default function CompanyNavbar() {
                   key={link.href}
                   href={link.href}
                   className={cn(
-                    "text-[13px] font-medium transition-all relative py-1",
+                    "text-[14px] transition-all h-full flex items-center justify-center border-b-2 w-[90px]",
                     isActive
-                      ? "text-gray-900 font-semibold border-b-2 border-[#004d40] pb-[5px]"
-                      : "text-gray-500 hover:text-gray-900"
+                      ? "text-[#004d40] font-bold border-[#004d40]"
+                      : "text-gray-500 hover:text-gray-900 font-medium border-transparent"
                   )}
                 >
                   {link.label}
