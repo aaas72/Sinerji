@@ -13,6 +13,8 @@ import {
   FiFileText,
 } from "react-icons/fi";
 import { submissionService } from "@/services/submission.service";
+import Tabs from "@/components/ui/Tabs";
+import SectionCard from "@/components/ui/cards/SectionCard";
 
 type Application = {
   id: number;
@@ -98,10 +100,9 @@ export default function ApplicationsPage() {
         </p>
       </div>
 
-      <div className="rounded-2xl overflow-hidden">
-        <div className="flex border-b border-[#f1f0ea] px-4 select-none">
-          {tabs.map((tab) => {
-            const isActive = activeTab === tab.key;
+      <div className="flex flex-col gap-6">
+        <Tabs 
+          tabs={tabs.map(tab => {
             const count = applications.filter((app) => {
               if (tab.key === "Beklemede")
                 return app.status === "Bekliyor" || app.status === "İnceleniyor";
@@ -109,38 +110,21 @@ export default function ApplicationsPage() {
               if (tab.key === "Tamamlanan") return app.status === "Reddedildi";
               return false;
             }).length;
-
-            return (
-              <button
-                key={tab.key}
-                type="button"
-                onClick={() => setActiveTab(tab.key)}
-                className={`flex items-center gap-2 px-5 py-4 text-xs font-bold transition-all relative uppercase tracking-wider cursor-pointer ${isActive
-                  ? "text-[#004d40]"
-                  : "text-gray-400 hover:text-gray-600"
-                  }`}
-              >
-                <tab.icon className="w-3.5 h-3.5" />
-                {tab.label}
-                {count > 0 && (
-                  <span
-                    className={`text-[10px] px-2 py-0.5 rounded-full font-bold border transition-all ${isActive
-                      ? "bg-[#004d40]/15 border-[#004d40]/30 text-[#004d40]"
-                      : "bg-transparent border-gray-200 text-gray-400"
-                      }`}
-                  >
-                    {count}
-                  </span>
-                )}
-                {isActive && (
-                  <span className="absolute bottom-0 left-0 w-full h-0.5 bg-[#004d40] rounded-t-full" />
-                )}
-              </button>
-            );
+            
+            return {
+              id: tab.key,
+              label: `${tab.label} ${count > 0 ? `(${count})` : ''}`
+            };
           })}
-        </div>
+          activeTab={activeTab} 
+          onTabChange={setActiveTab} 
+        />
 
-        <div className="p-8">
+        <SectionCard 
+          icon={tabs.find(t => t.key === activeTab)?.icon || FiInbox} 
+          title={`${activeTab} Başvurular`}
+          className="bg-white border-[#f1f0ea] shadow-2xs"
+        >
           {filteredApplications.length > 0 ? (
             <div className="space-y-4">
               {filteredApplications.map((app) => (
@@ -165,7 +149,7 @@ export default function ApplicationsPage() {
               </p>
             </div>
           )}
-        </div>
+        </SectionCard>
       </div>
     </div>
   );

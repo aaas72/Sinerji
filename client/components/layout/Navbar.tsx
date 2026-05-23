@@ -13,7 +13,7 @@ import {
   FiPlusSquare,
   FiList,
 } from "react-icons/fi";
-import Button from "@/components/ui/Button";
+import PrimaryButton from "@/components/ui/PrimaryButton";
 import { useEffect, useRef, useState } from "react";
 import { IconType } from "react-icons";
 import { useAuthStore } from "@/hooks/useAuth";
@@ -217,13 +217,13 @@ export default function Navbar({ authenticated, userName, role }: NavbarProps) {
                   >
                     Giriş Yap
                   </button>
-                  <Button
+                  <PrimaryButton
                     variant="primary"
                     className="bg-[#004d40] hover:bg-[#003d33] text-white px-5 py-2 rounded-full font-bold text-xs shadow-xs"
                     onClick={openRegister}
                   >
                     Kayıt Ol
-                  </Button>
+                  </PrimaryButton>
                 </>
               )}
             </div>
@@ -238,7 +238,7 @@ export default function Navbar({ authenticated, userName, role }: NavbarProps) {
 
                 {/* Settings Gear */}
                 <Link
-                  href={userRole === "company" ? "/company/settings" : "/student/profile"}
+                  href={userRole === "company" ? "/company/settings" : `/students/${user?.id}`}
                   className="text-gray-400 hover:text-gray-900 transition-colors p-1 rounded-full hover:bg-gray-50 hidden sm:inline-block"
                 >
                   <FiSettings size={18} />
@@ -275,7 +275,7 @@ export default function Navbar({ authenticated, userName, role }: NavbarProps) {
                         </button>
                       ) : (
                         <Link
-                          href={item.href}
+                          href={item.href === "/student/profile" ? `/students/${user?.id}` : item.href === "/company/profile" ? `/companies/${user?.id}` : item.href}
                           className="flex items-center gap-2 px-4 py-2 text-xs font-semibold text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors"
                           onClick={() => setMenuOpen(false)}
                         >

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import ReactMarkdown from "react-markdown";
-import Button from "@/components/ui/Button";
+import PrimaryButton from "@/components/ui/PrimaryButton";
 import SkillBadge from "@/components/ui/SkillBadge";
 import {
   FiBookmark,
@@ -230,13 +230,13 @@ export default function TaskDetail({ task }: TaskDetailProps) {
             <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Bu Göreve Başvur</p>
             <p className="text-xs text-gray-500 mt-0.5">Sinerji ile kariyerinde fark yarat.</p>
           </div>
-          <Button
+          <PrimaryButton
             className="bg-[#004d40] hover:bg-[#003d33] text-white px-8 py-3.5 rounded-full font-bold text-xs whitespace-nowrap transition-all shadow-xs flex items-center gap-1.5 active:scale-98"
             onClick={() => router.push(`/student/tasks/${task.id}/apply`)}
           >
             Görevi Al
             <FiShare2 className="w-3.5 h-3.5" />
-          </Button>
+          </PrimaryButton>
         </div>
       </div>
     </div>

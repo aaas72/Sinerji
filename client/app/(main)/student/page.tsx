@@ -7,7 +7,7 @@ import { taskService } from "@/services/task.service";
 import { studentService } from "@/services/student.service";
 import { useAuthStore } from "@/hooks/useAuth";
 import { cn } from "@/utils/cn";
-import Button from "@/components/ui/Button";
+import PrimaryButton from "@/components/ui/PrimaryButton";
 import {
   FiCheckCircle,
   FiRefreshCw,

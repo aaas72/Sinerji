@@ -9,7 +9,7 @@ import { submissionService } from "@/services/submission.service";
 import { taskService } from "@/services/task.service";
 import { Submission } from "@/types/submission";
 import { Task } from "@/types/task";
-import Button from "@/components/ui/Button";
+import PrimaryButton from "@/components/ui/PrimaryButton";
 import ApplicantCard from "@/components/ui/cards/ApplicantCard";
 import ApplicantsSearchFilter from "@/components/ui/sections/ApplicantsSearchFilter";
 import { useToast } from "@/context/ToastContext";

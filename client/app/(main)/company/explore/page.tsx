@@ -1,73 +1,58 @@
 "use client";
 
-import { useState } from "react";
-import Button from "@/components/ui/Button";
-import { FiCompass, FiSearch, FiFilter, FiMapPin, FiBriefcase, FiUserPlus, FiChevronDown, FiX, FiStar } from "react-icons/fi";
-import StudentExploreCard from "@/components/ui/cards/StudentExploreCard";
-
-const MOCK_STUDENTS = [
-  {
-    id: 1,
-    name: "Emre Can",
-    initials: "EC",
-    headline: "Frontend Developer | React & Next.js",
-    university: "Boğaziçi Üniversitesi",
-    skills: ["React", "TypeScript", "Tailwind CSS"],
-    location: "İstanbul, Türkiye",
-  },
-  {
-    id: 2,
-    name: "Zeynep Çelik",
-    initials: "ZÇ",
-    headline: "UI/UX Designer | Figma Explorer",
-    university: "ODTÜ",
-    skills: ["Figma", "UI Design", "Prototyping"],
-    location: "Ankara, Türkiye",
-  },
-  {
-    id: 3,
-    name: "Burak Kaya",
-    initials: "BK",
-    headline: "Backend Developer Stajyeri",
-    university: "İTÜ",
-    skills: ["Node.js", "Python", "MongoDB"],
-    location: "İstanbul, Türkiye",
-  },
-  {
-    id: 4,
-    name: "Elif Demir",
-    initials: "ED",
-    headline: "Marketing Intern | SEO Specialist",
-    university: "Bilkent Üniversitesi",
-    skills: ["SEO", "Content Writing", "Social Media"],
-    location: "Ankara, Türkiye",
-  },
-  {
-    id: 5,
-    name: "Caner Yıldız",
-    initials: "CY",
-    headline: "Mobile App Developer | Flutter",
-    university: "Yıldız Teknik Üniversitesi",
-    skills: ["Flutter", "Dart", "Firebase"],
-    location: "İstanbul, Türkiye",
-  },
-  {
-    id: 6,
-    name: "Seda Nur",
-    initials: "SN",
-    headline: "Veri Bilimi Stajyeri",
-    university: "Hacettepe Üniversitesi",
-    skills: ["Python", "Machine Learning", "SQL"],
-    location: "Ankara, Türkiye",
-  },
-];
+import { useState, useEffect } from "react";
+import PrimaryButton from "@/components/ui/PrimaryButton";
+import { FiCompass, FiSearch, FiFilter, FiMapPin, FiBriefcase, FiUserPlus, FiChevronDown, FiX, FiStar, FiLoader, FiAlertCircle } from "react-icons/fi";
+import StudentExploreCard, { StudentType } from "@/components/ui/cards/StudentExploreCard";
+import StudentProfileDrawer from "@/components/ui/StudentProfileDrawer";
+import { studentService } from "@/services/student.service";
 
 export default function ExplorePage() {
   const [searchTerm, setSearchTerm] = useState("");
   const [category, setCategory] = useState("all");
   const [sortBy, setSortBy] = useState("best_match");
+  
+  const [students, setStudents] = useState<StudentType[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
+  
+  const [selectedStudent, setSelectedStudent] = useState<StudentType | null>(null);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
-  const filteredStudents = MOCK_STUDENTS.filter(student => {
+  const handleStudentClick = (student: StudentType) => {
+    setSelectedStudent(student);
+    setIsDrawerOpen(true);
+  };
+
+  useEffect(() => {
+    (async () => {
+      try {
+        const rawStudents = await studentService.getAllStudents();
+        const formatted: StudentType[] = rawStudents.map((s) => ({
+          id: s.user_id,
+          name: s.full_name || "Bilinmeyen",
+          initials: (s.full_name || "B Ö")
+            .split(" ")
+            .map((n) => n[0])
+            .join("")
+            .toUpperCase()
+            .slice(0, 2),
+          headline: s.major || s.bio || "Öğrenci",
+          university: s.university || "Bilinmeyen Üniversite",
+          skills: s.skills?.map((sk) => sk.skill?.name || "Yetenek") || [],
+          location: "Türkiye",
+        }));
+        setStudents(formatted);
+      } catch (err) {
+        console.error("Failed to fetch students", err);
+        setError(true);
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, []);
+
+  const filteredStudents = students.filter((student) => {
     const matchesSearch = student.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
                           student.skills.some(skill => skill.toLowerCase().includes(searchTerm.toLowerCase()));
     const matchesCategory = category === "all" || 
@@ -75,8 +60,8 @@ export default function ExplorePage() {
                             student.headline.toLowerCase().includes(category.toLowerCase());
     return matchesSearch && matchesCategory;
   }).sort((a, b) => {
-    if (sortBy === "newest") return b.id - a.id;
-    return a.id - b.id;
+    if (sortBy === "newest") return Number(b.id) - Number(a.id);
+    return Number(a.id) - Number(b.id);
   });
 
   const handleClearFilters = () => {
@@ -102,11 +87,23 @@ export default function ExplorePage() {
         
         {/* Horizontal Slider */}
         <div className="flex overflow-x-auto gap-6 pb-2 pt-2 snap-x snap-mandatory relative z-10 [scrollbar-width:none] [-ms-overflow-style:none] [&::-webkit-scrollbar]:hidden">
-          {MOCK_STUDENTS.map((student) => (
-            <div key={`pop-${student.id}`} className="snap-start shrink-0 w-[85vw] sm:w-[320px] lg:w-[350px]">
-              <StudentExploreCard student={student} variant="glass" />
+          {loading ? (
+            <div className="flex justify-center items-center py-10 w-full">
+              <FiLoader className="w-8 h-8 text-white animate-spin" />
             </div>
-          ))}
+          ) : students.length > 0 ? (
+            students.slice(0, 6).map((student) => (
+              <div key={`pop-${student.id}`} className="snap-start shrink-0 w-[85vw] sm:w-[320px] lg:w-[350px]">
+                <StudentExploreCard 
+                  student={student} 
+                  variant="glass" 
+                  onClick={() => handleStudentClick(student)}
+                />
+              </div>
+            ))
+          ) : (
+             <div className="text-white/70 py-10">Öğrenci bulunamadı.</div>
+          )}
         </div>
       </section>
 
@@ -174,10 +171,23 @@ export default function ExplorePage() {
       </div>
 
       {/* Grid */}
-      {filteredStudents.length > 0 ? (
+      {loading ? (
+        <div className="flex justify-center items-center py-20">
+          <FiLoader className="w-8 h-8 text-[#00342b] animate-spin" />
+        </div>
+      ) : error ? (
+        <div className="flex flex-col items-center gap-3 py-20 text-[#565e74]">
+          <FiAlertCircle className="w-8 h-8 text-red-400" />
+          <p>Veriler yüklenemedi. Lütfen sayfayı yenileyin.</p>
+        </div>
+      ) : filteredStudents.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {filteredStudents.map((student) => (
-            <StudentExploreCard key={student.id} student={student} />
+            <StudentExploreCard 
+              key={student.id} 
+              student={student} 
+              onClick={() => handleStudentClick(student)}
+            />
           ))}
         </div>
       ) : (
@@ -193,6 +203,11 @@ export default function ExplorePage() {
       )}
       </section>
 
+      <StudentProfileDrawer 
+        isOpen={isDrawerOpen} 
+        onClose={() => setIsDrawerOpen(false)} 
+        student={selectedStudent} 
+      />
     </div>
   );
 }

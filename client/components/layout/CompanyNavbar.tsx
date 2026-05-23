@@ -146,7 +146,7 @@ export default function CompanyNavbar() {
                 </div>
                 <div>
                   <Link
-                    href="/company/profile"
+                    href={`/companies/${user?.id}`}
                     className="flex items-center gap-2 px-4 py-2 text-xs font-semibold text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors"
                     onClick={() => setIsDropdownOpen(false)}
                   >

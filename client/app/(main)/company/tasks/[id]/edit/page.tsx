@@ -25,7 +25,6 @@ import Breadcrumb from "@/components/ui/Breadcrumb";
 import ToggleSwitch from "@/components/ui/ToggleSwitch";
 import Input from "@/components/ui/Input";
 import Select from "@/components/ui/Select";
-import Button from "@/components/ui/Button";
 import PrimaryButton from "@/components/ui/PrimaryButton";
 import SectionCard from "@/components/ui/cards/SectionCard";
 import { cn } from "@/utils/cn";
@@ -707,14 +706,14 @@ export default function EditTaskPage() {
       {/* Floating Action Bar */}
       <div className="fixed bottom-8 left-1/2 -translate-x-1/2 w-max z-50">
         <div className="bg-white/40 backdrop-blur-md rounded-[50px] p-2 shadow-2xl border border-[#DFDED6] flex items-center gap-2">
-          <Button
+          <PrimaryButton
             type="button"
             variant="outline"
             onClick={() => router.back()}
             className="px-6 py-3 rounded-[50px] font-bold border-transparent hover:bg-white/50 transition-colors"
           >
             İptal
-          </Button>
+          </PrimaryButton>
           <PrimaryButton
             type="submit"
             isLoading={isLoading}

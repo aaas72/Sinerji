@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import Button from "@/components/ui/Button";
+import PrimaryButton from "@/components/ui/PrimaryButton";
 import { studentService } from "@/services/student.service";
 import {
   FiSave,
@@ -26,6 +26,8 @@ import { StudentProfile, StudentSkill } from "@/types/student";
 import { authService } from "@/services/auth.service";
 import Input from "@/components/ui/Input";
 import Select from "@/components/ui/Select";
+import Tabs from "@/components/ui/Tabs";
+import SectionCard from "@/components/ui/cards/SectionCard";
 
 
 
@@ -252,32 +254,18 @@ export default function StudentSettingsPage() {
       </header>
 
       {/* ── Section Tabs + Content Card ── */}
-      <div className="bg-white rounded-2xl border border-[#f1f0ea] shadow-2xs overflow-hidden">
-        <div className="flex border-b border-[#f1f0ea] px-4 bg-white select-none">
-          {sectionTabs.map((tab) => {
-            const isActive = activeSection === tab.key;
-            return (
-              <button
-                key={tab.key}
-                type="button"
-                onClick={() => setActiveSection(tab.key)}
-                className={`flex items-center gap-2 px-5 py-4 text-xs font-bold transition-all relative uppercase tracking-wider cursor-pointer ${
-                  isActive
-                    ? "text-[#004d40]"
-                    : "text-gray-400 hover:text-gray-600"
-                }`}
-              >
-                <tab.icon className="w-3.5 h-3.5" />
-                {tab.label}
-                {isActive && (
-                  <span className="absolute bottom-0 left-0 w-full h-0.5 bg-[#004d40] rounded-t-full" />
-                )}
-              </button>
-            );
-          })}
-        </div>
+      <div className="flex flex-col gap-6">
+        <Tabs 
+          tabs={sectionTabs.map(t => ({ id: t.key, label: t.label }))}
+          activeTab={activeSection}
+          onTabChange={(id) => setActiveSection(id as any)}
+        />
 
-        <div className="p-8">
+        <SectionCard 
+          icon={sectionTabs.find(t => t.key === activeSection)?.icon || FiSettings}
+          title={sectionTabs.find(t => t.key === activeSection)?.label || "Ayarlar"}
+          className="bg-white border-[#f1f0ea] shadow-2xs"
+        >
 
           {activeSection === "profile" && (
             <form
@@ -482,7 +470,7 @@ export default function StudentSettingsPage() {
               </div>
 
               <div className="flex justify-end pt-6 border-t border-gray-100">
-                <Button
+                <PrimaryButton
                   type="submit"
                   variant="primary"
                   className="min-w-40 rounded-xl py-3 cursor-pointer"
@@ -490,7 +478,7 @@ export default function StudentSettingsPage() {
                   icon={FiSave}
                 >
                   Kaydet
-                </Button>
+                </PrimaryButton>
               </div>
             </form>
           )}
@@ -623,7 +611,7 @@ export default function StudentSettingsPage() {
                       })()}
                     </div>
 
-                    <Button
+                    <PrimaryButton
                       type="submit"
                       variant="primary"
                       className="w-full rounded-xl py-3 cursor-pointer"
@@ -631,7 +619,7 @@ export default function StudentSettingsPage() {
                       icon={FiPlus}
                     >
                       Ekle
-                    </Button>
+                    </PrimaryButton>
                   </form>
                 </div>
               </div>
@@ -653,7 +641,7 @@ export default function StudentSettingsPage() {
                         return acc;
                       }, {} as Record<string, StudentSkill[]>)
                     ).map(([category, skills]) => (
-                      <div key={category} className="bg-transparent rounded-xl p-5 border border-[#f1f0ea]">
+                      <div key={category} className="bg-transparent rounded-xl p-5 border border-[#f1f0ea] hover:border-[#004d40]/30 hover:bg-[#004d40]/5 transition-all">
                         <h4 className="text-[10px] font-bold text-[#004d40] mb-3 uppercase tracking-widest">
                           {category}
                         </h4>
@@ -673,7 +661,7 @@ export default function StudentSettingsPage() {
                             return (
                               <div
                                 key={skill.skill.id}
-                                className="flex items-center gap-2 bg-transparent border border-[#f1f0ea] px-3 py-2 rounded-xl transition-all group"
+                                className="flex items-center gap-2 bg-white border border-[#f1f0ea] px-3 py-2 rounded-xl transition-all group hover:border-[#004d40]/30 shadow-sm"
                               >
                                 <span className="text-sm font-semibold text-gray-705">
                                   {skill.skill.name}
@@ -773,14 +761,14 @@ export default function StudentSettingsPage() {
                     required
                   />
                 </div>
-                <Button
+                <PrimaryButton
                   type="submit"
                   variant="primary"
                   className="w-full py-3 mt-4 cursor-pointer"
                   isLoading={pwLoading}
                 >
                   Şifreyi Güncelle
-                </Button>
+                </PrimaryButton>
               </form>
 
               <div className="pt-8 border-t border-[#f1f0ea]">
@@ -798,7 +786,7 @@ export default function StudentSettingsPage() {
               </div>
             </div>
           )}
-        </div>
+        </SectionCard>
       </div>
     </div>
   );

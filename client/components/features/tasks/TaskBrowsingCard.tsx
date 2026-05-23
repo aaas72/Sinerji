@@ -22,10 +22,10 @@ export default function TaskBrowsingCard({
     <div
       onClick={onClick}
       className={cn(
-        "cursor-pointer bg-white border rounded-xl p-5 transition-all duration-300 relative select-none",
+        "cursor-pointer border rounded-2xl p-5 transition-all duration-300 relative select-none group",
         selected
-          ? "active-card border-[#004d40]/30 shadow-md shadow-[#004d40]/6 bg-gradient-to-br from-[#004d40]/8 via-[#004d40]/2 to-white z-10 relative"
-          : "border-gray-200/60 hover:shadow-md hover:shadow-gray-200/50 hover:border-gray-300 bg-white"
+          ? "active-card border-[#004d40] shadow-lg !rounded-none scale-[1.02] bg-white bg-gradient-to-br from-[#004d40]/12 via-transparent to-[#e28743]/15 z-10 relative"
+          : "bg-transparent border-[#dfded6] hover:shadow-md hover:border-[#004d40]/30"
       )}
     >
 
@@ -49,7 +49,10 @@ export default function TaskBrowsingCard({
             </span>
           </div>
           <div className="min-w-0 flex-1">
-            <h3 className="font-bold text-base text-gray-900 leading-snug mb-1 pr-6 hover:text-emerald-800 transition-colors truncate">
+            <h3 className={cn(
+              "font-bold text-base leading-snug mb-1 pr-6 transition-colors truncate",
+              selected ? "text-[#004d40]" : "text-gray-900 hover:text-[#004d40]"
+            )}>
               {task.title}
             </h3>
             <p className="text-xs text-gray-500 font-medium truncate mb-1">

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Button from "@/components/ui/Button";
+import PrimaryButton from "@/components/ui/PrimaryButton";
 import { FiSend, FiMessageSquare, FiClock, FiHelpCircle, FiLifeBuoy } from "react-icons/fi";
 import { useToast } from "@/context/ToastContext";
 import { supportService, SupportTicket } from "@/services/support.service";
@@ -127,7 +127,7 @@ export default function SupportPage() {
               </div>
 
               <div className="pt-2">
-                <Button
+                <PrimaryButton
                   type="submit"
                   variant="primary"
                   isLoading={isLoading}
@@ -135,7 +135,7 @@ export default function SupportPage() {
                   className="w-full md:w-auto px-8 py-3 rounded-xl bg-[#004d40] hover:bg-[#00342b] text-white text-sm font-semibold transition-all shadow-xs"
                 >
                   Gönder
-                </Button>
+                </PrimaryButton>
               </div>
             </form>
           </div>
@@ -200,9 +200,9 @@ export default function SupportPage() {
               <p className="text-xs text-white/80 leading-relaxed mb-4 font-normal">
                 Sıkça sorulan sorular (SSS) sayfamıza göz atarak sorularınıza daha hızlı yanıt bulabilirsiniz.
               </p>
-              <Button variant="outline" className="w-full text-xs py-2.5 bg-white/10 border-white/20 hover:bg-white/20 text-white transition-all rounded-xl font-semibold">
+              <PrimaryButton variant="outline" className="w-full text-xs py-2.5 bg-white/10 border-white/20 hover:bg-white/20 text-white transition-all rounded-xl font-semibold">
                 SSS Görüntüle
-              </Button>
+              </PrimaryButton>
             </div>
           </div>
 

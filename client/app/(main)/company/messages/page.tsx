@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import Button from "@/components/ui/Button";
+import PrimaryButton from "@/components/ui/PrimaryButton";
 import { FiMessageSquare, FiSend, FiSearch, FiMoreVertical, FiPaperclip, FiCheck, FiCornerUpLeft, FiCopy, FiTrash2, FiArrowDown } from "react-icons/fi";
 
 const MOCK_CONTACTS = [
@@ -165,9 +165,9 @@ export default function MessagesPage() {
                     onChange={(e) => setNewMessage(e.target.value)}
                     className="flex-1 h-12 px-5 rounded-[50px] bg-white border border-[#DFDED6] text-sm focus:border-[#00342b] focus:ring-1 focus:ring-[#00342b] outline-none transition-all"
                   />
-                  <Button variant="primary" className="h-12 w-12 rounded-xl flex items-center justify-center p-0 shrink-0 bg-[#00342b] hover:bg-[#002620] border-none text-white">
+                  <PrimaryButton variant="primary" className="h-12 w-12 rounded-xl flex items-center justify-center p-0 shrink-0 bg-[#00342b] hover:bg-[#002620] border-none text-white">
                     <FiSend size={18} className="ml-0.5" />
-                  </Button>
+                  </PrimaryButton>
                 </div>
               </div>
             </>

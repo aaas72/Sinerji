@@ -1,7 +1,6 @@
 "use client";
 
 import { useState } from "react";
-import PrimaryButton from "@/components/ui/PrimaryButton";
 import SectionCard from "@/components/ui/cards/SectionCard";
 import {
   FiLock,
@@ -18,12 +17,9 @@ import { useToast } from "@/context/ToastContext";
 import { useAuthStore } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
 import { authService } from "@/services/auth.service";
-import Input from "@/components/ui/Input";
+import { FormInput, FormButton } from "@/components/ui/form";
 
 // ─── shared styles ────────────────────────────────────────────────────────
-const bodyInputCls = "px-4 py-2.5 text-[#004d40] bg-gray-50 border border-gray-200 focus:border-[#004d40] focus:ring-[#004d40] font-medium placeholder:text-gray-400 placeholder:font-normal text-sm rounded-xl transition-all outline-none w-full";
-
-
 
 function Toggle({
   checked,
@@ -126,28 +122,37 @@ export default function CompanySettingsPage() {
           title="Hesap Bilgileri"
           description="Hesabınıza ait temel profil ve iletişim bilgileri."
         >
-          <div className="space-y-4">
-            <div className="flex items-center gap-4 py-3.5 border-b border-[#f1f0ea] -mx-4 px-4 bg-gray-50/50 rounded-xl">
-              <FiMail className="text-[#004d40] shrink-0" size={18} />
-              <div className="flex-1 min-w-0">
-                <p className="text-xs text-gray-500 font-bold uppercase tracking-wider mb-0.5">E-posta Adresi</p>
-                <p className="text-[14px] font-medium text-[#0b1c30] truncate">{user?.email ?? "—"}</p>
-              </div>
+          <form className="space-y-5 max-w-lg" onSubmit={(e) => { e.preventDefault(); showToast("Bilgileriniz güncellendi.", "success"); }}>
+            <div>
+              <FormInput
+                label="Ad Soyad / Yetkili"
+                type="text"
+                defaultValue="Şirket Yetkilisi"
+                className="!rounded-full px-5"
+                icon={FiUser}
+              />
             </div>
-            <div className="flex items-center gap-4 py-3.5 border-b border-[#f1f0ea] -mx-4 px-4 bg-gray-50/50 rounded-xl">
-              <FiShield className="text-[#004d40] shrink-0" size={18} />
-              <div className="flex-1 min-w-0 flex justify-between items-center">
-                <div>
-                  <p className="text-xs text-gray-500 font-bold uppercase tracking-wider mb-0.5">Hesap Türü</p>
-                  <p className="text-[14px] font-medium text-[#0b1c30] truncate">Şirket Yetkilisi</p>
-                </div>
-                <span className="text-[10px] font-bold bg-[#004d40]/10 text-[#004d40] px-2.5 py-1 rounded-full uppercase tracking-wider">Aktif</span>
-              </div>
+            
+            <div>
+              <FormInput
+                label="E-posta Adresi"
+                type="email"
+                defaultValue={user?.email ?? ""}
+                className="!rounded-full px-5"
+                icon={FiMail}
+              />
             </div>
+
+            <div className="pt-2 flex justify-start">
+              <FormButton type="submit" className="!rounded-full px-8">
+                Değişiklikleri Kaydet
+              </FormButton>
+            </div>
+            
             <p className="text-xs text-gray-400 font-medium mt-3 italic">
-              * Giriş e-posta adresinizi güncellemek isterseniz lütfen destek ekibiyle iletişime geçin.
+              * E-posta adresinizi değiştirmeniz durumunda onaylamanız gerekebilir.
             </p>
-          </div>
+          </form>
         </SectionCard>
 
         {/* ② Şifre Değiştir */}
@@ -156,68 +161,58 @@ export default function CompanySettingsPage() {
           title="Güvenlik ve Şifre"
           description="Hesabınızı güvende tutmak için şifrenizi düzenli aralıklarla güncelleyin."
         >
-          <form onSubmit={handlePasswordChange} className="space-y-5">
-            <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-[#00342b] mb-2">
-                Mevcut Şifre
-              </label>
-              <div className="relative">
-                <Input
-                  type={showCurrent ? "text" : "password"}
-                  {...pwField("current")}
-                  className={`${bodyInputCls} pr-12`}
-                  placeholder="••••••••"
-                  autoComplete="current-password"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowCurrent((v) => !v)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#004d40] transition-colors"
-                >
-                  {showCurrent ? <FiEyeOff size={18} /> : <FiEye size={18} />}
-                </button>
-              </div>
+          <form onSubmit={handlePasswordChange} className="space-y-5 max-w-lg">
+            <div className="relative">
+              <FormInput
+                label="Mevcut Şifre"
+                type={showCurrent ? "text" : "password"}
+                {...pwField("current")}
+                className="pr-12 !rounded-full pl-5"
+                placeholder="••••••••"
+                autoComplete="current-password"
+              />
+              <button
+                type="button"
+                onClick={() => setShowCurrent((v) => !v)}
+                className="absolute right-4 bottom-3 text-gray-400 hover:text-[#004d40] transition-colors"
+              >
+                {showCurrent ? <FiEyeOff size={18} /> : <FiEye size={18} />}
+              </button>
             </div>
 
-            <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-[#00342b] mb-2">
-                Yeni Şifre
-              </label>
-              <div className="relative">
-                <Input
-                  type={showNew ? "text" : "password"}
-                  {...pwField("next")}
-                  className={`${bodyInputCls} pr-12`}
-                  placeholder="••••••••"
-                  autoComplete="new-password"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowNew((v) => !v)}
-                  className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400 hover:text-[#004d40] transition-colors"
-                >
-                  {showNew ? <FiEyeOff size={18} /> : <FiEye size={18} />}
-                </button>
-              </div>
-            </div>
-
-            <div>
-              <label className="block text-xs font-bold uppercase tracking-wider text-[#00342b] mb-2">
-                Yeni Şifre (Tekrar)
-              </label>
-              <Input
-                type="password"
-                {...pwField("confirm")}
-                className={bodyInputCls}
+            <div className="relative">
+              <FormInput
+                label="Yeni Şifre"
+                type={showNew ? "text" : "password"}
+                {...pwField("next")}
+                className="pr-12 !rounded-full pl-5"
                 placeholder="••••••••"
                 autoComplete="new-password"
+              />
+              <button
+                type="button"
+                onClick={() => setShowNew((v) => !v)}
+                className="absolute right-4 bottom-3 text-gray-400 hover:text-[#004d40] transition-colors"
+              >
+                {showNew ? <FiEyeOff size={18} /> : <FiEye size={18} />}
+              </button>
+            </div>
+
+            <div>
+              <FormInput
+                label="Yeni Şifre (Tekrar)"
+                type="password"
+                {...pwField("confirm")}
+                placeholder="••••••••"
+                autoComplete="new-password"
+                className="!rounded-full pl-5"
               />
             </div>
 
             <div className="pt-3 flex justify-start">
-              <PrimaryButton type="submit" isLoading={pwLoading} className="px-8">
+              <FormButton type="submit" isLoading={pwLoading} className="!rounded-full px-8">
                 Şifreyi Güncelle
-              </PrimaryButton>
+              </FormButton>
             </div>
           </form>
         </SectionCard>
@@ -228,7 +223,7 @@ export default function CompanySettingsPage() {
           title="Bildirim Tercihleri"
           description="E-posta ve sistem üzerinden hangi güncellemeleri almak istediğinizi özelleştirin."
         >
-          <div className="border border-[#f1f0ea] rounded-xl overflow-hidden bg-gray-50/30">
+          <div className="border border-[#f1f0ea] rounded-xl overflow-hidden">
             <Toggle
               checked={notifs.newApplication}
               onChange={() => toggle("newApplication")}
@@ -265,9 +260,9 @@ export default function CompanySettingsPage() {
                 <h4 className="text-sm font-bold text-red-700">Oturumu Kapat</h4>
                 <p className="text-xs font-medium text-red-500 mt-0.5">Aktif hesabınızdan güvenli bir şekilde çıkış yapın.</p>
               </div>
-              <PrimaryButton icon={FiLogOut} className="bg-white text-red-600 border border-red-200 hover:bg-red-50" onClick={handleLogout}>
+              <FormButton variant="outline" icon={FiLogOut} className="text-red-600 border-red-200 hover:bg-red-50 bg-white" onClick={handleLogout}>
                 Çıkış Yap
-              </PrimaryButton>
+              </FormButton>
             </div>
 
             <div className="flex flex-col sm:flex-row gap-4 items-center justify-between p-4 rounded-xl border border-red-200 bg-red-50">
@@ -275,9 +270,9 @@ export default function CompanySettingsPage() {
                 <h4 className="text-sm font-bold text-red-700">Hesabı Sil</h4>
                 <p className="text-xs font-medium text-red-500 mt-0.5">Bu işlem geri alınamaz ve tüm verileriniz silinir.</p>
               </div>
-              <PrimaryButton icon={FiAlertTriangle} className="bg-red-600 text-white hover:bg-red-700 border-none shrink-0" onClick={() => showToast("Hesap silme özelliği yakında kullanılabilir olacaktır.", "error")}>
+              <FormButton variant="danger" icon={FiAlertTriangle} className="shrink-0" onClick={() => showToast("Hesap silme özelliği yakında kullanılabilir olacaktır.", "error")}>
                 Hesabı Kalıcı Olarak Sil
-              </PrimaryButton>
+              </FormButton>
             </div>
           </div>
         </SectionCard>

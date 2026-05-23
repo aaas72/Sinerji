@@ -3,7 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import MainSection from "@/components/ui/layouts/MainSection";
-import Button from "@/components/ui/Button";
+import PrimaryButton from "@/components/ui/PrimaryButton";
 import SectionCard from "@/components/ui/cards/SectionCard";
 import Breadcrumb from "@/components/ui/Breadcrumb";
 import { taskService } from "@/services/task.service";
@@ -113,7 +113,7 @@ export default function TaskDetailsPage() {
     return (
       <div className="min-h-screen p-0 mx-auto flex flex-col justify-center items-center gap-4 text-gray-500">
         <p>Görev bulunamadı.</p>
-        <Button variant="outline" className="rounded-full px-5 py-2 border-[#dfded6]" onClick={() => router.back()}>Geri Dön</Button>
+        <PrimaryButton variant="outline" className="rounded-full px-5 py-2 border-[#dfded6]" onClick={() => router.back()}>Geri Dön</PrimaryButton>
       </div>
     );
   }

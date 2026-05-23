@@ -11,17 +11,17 @@ import FormField from "@/components/ui/form/FormField";
 import FormInput from "@/components/ui/form/FormInput";
 import FormButton from "@/components/ui/form/FormButton";
 import RichTextEditor from "@/components/ui/form/RichTextEditor";
-import MainSection from "@/components/ui/layouts/MainSection";
+import SectionCard from "@/components/ui/cards/SectionCard";
 import Input from "@/components/ui/Input";
 import Breadcrumb from "@/components/ui/Breadcrumb";
-import Button from "@/components/ui/Button";
+import PrimaryButton from "@/components/ui/PrimaryButton";
 import { taskService } from "@/services/task.service";
 import { submissionService } from "@/services/submission.service";
 import { studentService } from "@/services/student.service";
 import { Task } from "@/types/task";
 import { StudentProfile } from "@/types/student";
 import { useToast } from "@/context/ToastContext";
-import { FiBriefcase, FiMapPin } from "react-icons/fi";
+import { FiBriefcase, FiMapPin, FiFileText, FiCheckCircle } from "react-icons/fi";
 
 const applySchema = z.object({
   coverLetter: z.string().min(50, "Lütfen en az 50 karakterlik bir başvuru yazısı girin."),
@@ -127,8 +127,8 @@ export default function ApplyPage() {
             Yapay zeka (AI) eşleştirme algoritmasının düzgün çalışabilmesi ve şirketlerin size güvenebilmesi için profilinizdeki zorunlu alanları (Bölüm, Mezuniyet Yılı, Yetenekler ve Portfolyo/GitHub bağlantısı) doldurmanız gerekmektedir.
           </p>
           <div className="pt-4 flex justify-center gap-4">
-            <Button variant="outline" onClick={() => router.back()}>Geri Dön</Button>
-            <Button variant="primary" onClick={() => router.push('/student/settings')}>Profilimi Tamamla</Button>
+            <PrimaryButton variant="outline" onClick={() => router.back()}>Geri Dön</PrimaryButton>
+            <PrimaryButton variant="primary" onClick={() => router.push('/student/settings')}>Profilimi Tamamla</PrimaryButton>
           </div>
         </div>
       </div>
@@ -165,12 +165,15 @@ export default function ApplyPage() {
           )}
       </div>
 
-      <div className="bg-white rounded-3xl border border-[#f1f0ea] shadow-2xs p-6 lg:p-10">
+      <div className="space-y-6">
         <form onSubmit={handleSubmit(onSubmit as any)} className="space-y-8">
           
-
-          <MainSection title={`${sectionIndex++}. Başvuru Mektubu (Zorunlu)`} hideHeader={false}>
-            <p className="text-sm text-gray-500 mb-5 font-medium leading-relaxed">Bu göreve neden uygun olduğunuzu, varsa tecrübelerinizi ve görevi nasıl yapmayı planladığınızı detaylıca açıklayın.</p>
+          <SectionCard 
+            icon={FiFileText} 
+            title="1. Başvuru Mektubu (Zorunlu)" 
+            description="Bu göreve neden uygun olduğunuzu, varsa tecrübelerinizi ve görevi nasıl yapmayı planladığınızı detaylıca açıklayın."
+            className="bg-white border-[#f1f0ea] shadow-2xs"
+          >
             <FormField error={errors.coverLetter?.message}>
               <Controller
                 control={control}
@@ -184,49 +187,45 @@ export default function ApplyPage() {
                 )}
               />
             </FormField>
-          </MainSection>
+          </SectionCard>
 
           {isProjectTask && (
-            <MainSection title={`${sectionIndex++}. Teklifiniz ${isMoneyTask ? "(Opsiyonel)" : ""}`} hideHeader={false}>
-              <p className="text-sm text-gray-500 mb-6 font-medium leading-relaxed">Şirketin değerlendirebilmesi için {isMoneyTask ? "talep ettiğiniz bütçeyi ve " : ""}teslim süresini belirtin.</p>
+            <SectionCard 
+              icon={FiBriefcase} 
+              title={`2. Teklifiniz ${isMoneyTask ? "(Opsiyonel)" : ""}`} 
+              description={`Şirketin değerlendirebilmesi için ${isMoneyTask ? "talep ettiğiniz bütçeyi ve " : ""}teslim süresini belirtin.`}
+              className="bg-white border-[#f1f0ea] shadow-2xs"
+            >
               <FormRow>
                 {isMoneyTask && (
-                  <FormField label="Talep Edilen Bütçe ($ - İsteğe Bağlı)" error={errors.proposed_budget?.message}>
-                    <div className="relative">
-                      <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 select-none">
-                        <span className="font-bold text-sm">$</span>
-                      </div>
-                      <Input
-                        {...register("proposed_budget")}
-                        type="number"
-                        className="pl-8 pr-4 py-3 rounded-xl hover:border-gray-300 text-[#004d40] font-medium placeholder:text-gray-400"
-                        placeholder="Örn: 150"
-                        error={!!errors.proposed_budget}
-                      />
-                    </div>
-                  </FormField>
+                  <FormInput
+                    label="Talep Edilen Bütçe ($ - İsteğe Bağlı)"
+                    type="number"
+                    {...register("proposed_budget")}
+                    placeholder="Örn: 150"
+                    error={errors.proposed_budget?.message}
+                    icon={FiBriefcase}
+                  />
                 )}
                 
-                <FormField label="Tahmini Teslim Süresi (Gün - Zorunlu)" error={errors.estimated_delivery_days?.message}>
-                  <div className="relative">
-                    <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none text-gray-400 select-none">
-                      <FiBriefcase className="w-4 h-4 text-[#004d40]" />
-                    </div>
-                    <Input
-                      {...register("estimated_delivery_days")}
-                      type="number"
-                      required={isProjectTask}
-                      className="pl-10 pr-4 py-3 rounded-xl hover:border-gray-300 text-[#004d40] font-medium placeholder:text-gray-400"
-                      placeholder="Örn: 3"
-                      error={!!errors.estimated_delivery_days}
-                    />
-                  </div>
-                </FormField>
+                <FormInput
+                  label="Tahmini Teslim Süresi (Gün - Zorunlu)"
+                  type="number"
+                  required={isProjectTask}
+                  {...register("estimated_delivery_days")}
+                  placeholder="Örn: 3"
+                  error={errors.estimated_delivery_days?.message}
+                  icon={FiBriefcase}
+                />
               </FormRow>
-            </MainSection>
+            </SectionCard>
           )}
 
-          <MainSection title={`${sectionIndex++}. Gereksinim Onayı`} hideHeader={false}>
+          <SectionCard 
+            icon={FiCheckCircle} 
+            title="3. Gereksinim Onayı"
+            className="bg-white border-[#f1f0ea] shadow-2xs"
+          >
              <div className="bg-transparent border border-[#f1f0ea] p-5 rounded-2xl mb-4 select-none">
                 <p className="text-xs font-bold text-gray-450 uppercase tracking-wider mb-3">Bu görev için aranan temel yetenekler:</p>
                 <div className="flex flex-wrap gap-2">
@@ -256,25 +255,25 @@ export default function ApplyPage() {
               {errors.agreesToRequirements?.message && (
                 <p className="mt-2 text-xs text-red-500 font-medium">{errors.agreesToRequirements.message}</p>
               )}
-          </MainSection>
+          </SectionCard>
 
           <div className="flex items-center justify-end gap-3 pt-6 border-t border-[#f1f0ea] select-none">
-            <Button
+            <PrimaryButton
               type="button"
               variant="outline"
               onClick={() => router.back()}
               className="px-6 py-3 cursor-pointer rounded-xl"
             >
               İptal
-            </Button>
-            <Button
+            </PrimaryButton>
+            <PrimaryButton
               type="submit"
               variant="primary"
               className="px-8 py-3 bg-[#004d40] hover:bg-[#00332a] text-white border-transparent cursor-pointer rounded-xl"
               disabled={isSubmitting}
             >
               {isSubmitting ? "Gönderiliyor..." : "Başvurumu Tamamla"}
-            </Button>
+            </PrimaryButton>
           </div>
         </form>
       </div>

@@ -1,61 +1,86 @@
 "use client";
 
-import { useState } from "react";
-import Button from "@/components/ui/Button";
+import { useState, useEffect } from "react";
+import PrimaryButton from "@/components/ui/PrimaryButton";
 import StatusBadge from "@/components/ui/badges/StatusBadge";
-import { FiFileText, FiCalendar, FiSearch, FiChevronDown, FiX, FiClock, FiCheckCircle, FiXCircle } from "react-icons/fi";
+import { FiFileText, FiCalendar, FiSearch, FiChevronDown, FiX, FiClock, FiCheckCircle, FiXCircle, FiLoader, FiAlertCircle } from "react-icons/fi";
 import Tabs from "@/components/ui/Tabs";
+import { taskService } from "@/services/task.service";
+import { submissionService } from "@/services/submission.service";
 
-// Mock Data for Applications
-const MOCK_APPLICATIONS = [
-  {
-    id: 1,
-    studentName: "Ahmet Yılmaz",
-    studentInitials: "AY",
-    taskName: "Frontend Developer Stajyeri",
-    date: "12 Mayıs 2026",
-    status: "pending",
-  },
-  {
-    id: 2,
-    studentName: "Ayşe Kaya",
-    studentInitials: "AK",
-    taskName: "Grafik Tasarım Projesi",
-    date: "10 Mayıs 2026",
-    status: "accepted",
-  },
-  {
-    id: 3,
-    studentName: "Mehmet Demir",
-    studentInitials: "MD",
-    taskName: "Sosyal Medya Yönetimi",
-    date: "08 Mayıs 2026",
-    status: "rejected",
-  },
-  {
-    id: 4,
-    studentName: "Zeynep Çelik",
-    studentInitials: "ZÇ",
-    taskName: "Frontend Developer Stajyeri",
-    date: "07 Mayıs 2026",
-    status: "pending",
-  },
-];
+interface ApplicationData {
+  id: number;
+  studentName: string;
+  studentInitials: string;
+  taskName: string;
+  date: string;
+  status: string;
+  rawDate: string;
+}
 
 export default function ApplicationsPage() {
   const [activeTab, setActiveTab] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("newest");
+  const [applications, setApplications] = useState<ApplicationData[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(false);
 
-  const filteredApps = MOCK_APPLICATIONS.filter((app) => {
+  useEffect(() => {
+    (async () => {
+      try {
+        const tasks = await taskService.getCompanyTasks();
+        const allSubs = await Promise.all(
+          tasks.map(async (t) => {
+            const subs = await submissionService.getTaskSubmissions(t.id).catch(() => []);
+            return subs.map((s) => ({
+              id: s.id,
+              studentName: s.student?.full_name || "Bilinmeyen Öğrenci",
+              studentInitials: (s.student?.full_name || "B Ö")
+                .split(" ")
+                .map((n) => n[0])
+                .join("")
+                .toUpperCase()
+                .slice(0, 2),
+              taskName: t.title,
+              date: new Date(s.submitted_at).toLocaleDateString("tr-TR", {
+                day: "2-digit",
+                month: "short",
+                year: "numeric",
+              }),
+              status: s.status || "pending",
+              rawDate: s.submitted_at,
+            }));
+          })
+        );
+        setApplications(allSubs.flat());
+      } catch (err) {
+        console.error(err);
+        setError(true);
+      } finally {
+        setLoading(false);
+      }
+    })();
+  }, []);
+
+  const filteredApps = applications.filter((app) => {
     const matchesTab = activeTab === "all" || app.status === activeTab;
     const matchesSearch = app.studentName.toLowerCase().includes(searchTerm.toLowerCase()) || 
                           app.taskName.toLowerCase().includes(searchTerm.toLowerCase());
     return matchesTab && matchesSearch;
   }).sort((a, b) => {
-    if (sortBy === "newest") return b.id - a.id;
-    return a.id - b.id;
+    const tA = new Date(a.rawDate).getTime();
+    const tB = new Date(b.rawDate).getTime();
+    if (sortBy === "newest") return tB - tA;
+    return tA - tB;
   });
+
+  const stats = {
+    all: applications.length,
+    pending: applications.filter(a => a.status === 'pending').length,
+    accepted: applications.filter(a => a.status === 'approved' || a.status === 'accepted').length,
+    rejected: applications.filter(a => a.status === 'rejected').length,
+  };
 
   const handleClearFilters = () => {
     setSearchTerm("");
@@ -71,10 +96,10 @@ export default function ApplicationsPage() {
       {/* Tabs */}
       <Tabs
         tabs={[
-          { id: "all", label: "Tümü (4)" },
-          { id: "pending", label: "Bekleyenler (2)" },
-          { id: "accepted", label: "Kabul Edilenler (1)" },
-          { id: "rejected", label: "Reddedilenler (1)" },
+          { id: "all", label: `Tümü (${stats.all})` },
+          { id: "pending", label: `Bekleyenler (${stats.pending})` },
+          { id: "approved", label: `Kabul Edilenler (${stats.accepted})` },
+          { id: "rejected", label: `Reddedilenler (${stats.rejected})` },
         ]}
         activeTab={activeTab}
         onTabChange={setActiveTab}
@@ -123,7 +148,16 @@ export default function ApplicationsPage() {
 
       {/* Applications List */}
       <section className="border border-[#dfded6] rounded-2xl divide-y divide-[#dfded6] relative bg-white/50 mt-4">
-        {filteredApps.length > 0 ? (
+        {loading ? (
+          <div className="flex justify-center items-center py-20">
+            <FiLoader className="w-8 h-8 text-[#00342b] animate-spin" />
+          </div>
+        ) : error ? (
+          <div className="flex flex-col items-center gap-3 py-20 text-[#565e74]">
+            <FiAlertCircle className="w-8 h-8 text-red-400" />
+            <p>Veriler yüklenemedi. Lütfen sayfayı yenileyin.</p>
+          </div>
+        ) : filteredApps.length > 0 ? (
           filteredApps.map((app) => (
             <div key={app.id} className="p-4 flex items-center group cursor-pointer bg-transparent border border-transparent hover:rounded-none hover-card-effect">
               <div className="flex items-center gap-4 min-w-0 flex-1">

@@ -7,21 +7,25 @@ export interface StudentType {
   initials: string;
   headline: string;
   university: string;
-  skills: string[];
+  skills: any[];
   location: string;
+  bio?: string;
 }
 
 interface StudentExploreCardProps {
   student: StudentType;
   className?: string;
   variant?: "default" | "glass";
+  onClick?: () => void;
 }
 
-export default function StudentExploreCard({ student, className = "", variant = "default" }: StudentExploreCardProps) {
+export default function StudentExploreCard({ student, className = "", variant = "default", onClick }: StudentExploreCardProps) {
   const isGlass = variant === "glass";
 
   return (
-    <div className={`rounded-3xl p-6 relative group flex flex-col h-full cursor-pointer 
+    <div 
+      onClick={onClick}
+      className={`rounded-3xl p-6 relative group flex flex-col h-full ${onClick ? 'cursor-pointer' : ''} 
       ${isGlass 
         ? "transition-all duration-300 ease-out bg-white/10 backdrop-blur-xl border border-white/20 text-white hover:bg-white/15 shadow-[0_8px_30px_rgb(0,0,0,0.12)]" 
         : "bg-white border border-[#dfded6] hover-card-effect"
@@ -50,7 +54,14 @@ export default function StudentExploreCard({ student, className = "", variant = 
       </div>
 
       <div className={`mt-auto pt-4 border-t flex items-center gap-3 ${isGlass ? "border-white/20" : "border-[#dfded6]/50"}`}>
-        <PrimaryButton icon={FiUserPlus} className={`w-full rounded-full py-2 ${isGlass ? "!bg-white !text-[#00342b] hover:!bg-white/90" : ""}`}>
+        <PrimaryButton 
+          icon={FiUserPlus} 
+          className={`w-full rounded-full py-2 ${isGlass ? "!bg-white !text-[#00342b] hover:!bg-white/90" : ""}`}
+          onClick={(e) => {
+             e.stopPropagation();
+             // Davet et logic here if needed
+          }}
+        >
           Davet Et
         </PrimaryButton>
       </div>

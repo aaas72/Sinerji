@@ -18,6 +18,17 @@ interface StatsData {
 }
 
 export const studentService = {
+  async getAllStudents(): Promise<StudentProfile[]> {
+    // Falls back to empty array if the endpoint is not yet implemented on backend
+    const response = await api.get<ApiResponse<{ students: StudentProfile[] }>>('/students').catch(() => ({ data: { data: { students: [] } } }));
+    return response.data?.data?.students || [];
+  },
+
+  async getStudentById(id: number): Promise<StudentProfile> {
+    const response = await api.get<ApiResponse<ProfileData>>(`/students/${id}`);
+    return response.data.data.profile;
+  },
+
   async getProfile(): Promise<StudentProfile> {
     const response = await api.get<ApiResponse<ProfileData>>('/students/me');
     return response.data.data.profile;

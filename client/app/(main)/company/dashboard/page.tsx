@@ -19,7 +19,7 @@ import {
 } from "react-icons/fi";
 import { companyService } from "@/services/company.service";
 import { CompanyProfile } from "@/types/company";
-import Button from "@/components/ui/Button";
+import PrimaryButton from "@/components/ui/PrimaryButton";
 import StatCard from "@/components/ui/cards/StatCard";
 import ActiveTaskCard from "@/components/ui/cards/ActiveTaskCard";
 import CompanyWelcomeHero from "@/components/ui/sections/CompanyWelcomeHero";

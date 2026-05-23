@@ -244,7 +244,7 @@ export default function TasksBoard({
           )}
 
           {/* Scrollable list */}
-          <div className="flex-1 overflow-y-auto overflow-x-hidden space-y-4 no-scrollbar pr-1 pb-8">
+          <div className="flex-1 overflow-y-auto space-y-4 no-scrollbar px-2 -mx-2 pb-8 pt-1">
             {filteredTasks.length === 0 ? (
               <div className="bg-gray-50/50 rounded-xl border border-dashed border-gray-200 p-8 text-center mt-4">
                 <p className="text-gray-400 text-xs font-semibold">

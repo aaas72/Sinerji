@@ -6,12 +6,14 @@ import { IconType } from "react-icons";
 import { FiLoader } from "react-icons/fi";
 
 type PrimaryButtonProps = {
+  variant?: "primary" | "secondary" | "special" | "default" | "outline" | "ghost";
   isLoading?: boolean;
   icon?: IconType;
   href?: string;
 } & React.ButtonHTMLAttributes<HTMLButtonElement>;
 
 export default function PrimaryButton({
+  variant = "primary",
   className,
   isLoading,
   icon: Icon,
@@ -20,8 +22,26 @@ export default function PrimaryButton({
   href,
   ...props
 }: PrimaryButtonProps) {
+  const baseStyles = "inline-flex items-center justify-center rounded-full text-sm font-semibold px-6 py-2.5 transition-all duration-300 disabled:opacity-50 disabled:pointer-events-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-2";
+  
+  const variants: Record<Required<PrimaryButtonProps>["variant"], string> = {
+    primary:
+      "bg-[#004d40] hover:bg-[#00342b] text-white shadow-xs hover:shadow-md focus:ring-[#004d40]",
+    secondary:
+      "bg-secondary text-white hover:opacity-90 focus:ring-[var(--color-secondary)]",
+    special:
+      "bg-special text-black hover:opacity-90 focus:ring-[var(--color-special)]",
+    default:
+      "bg-section text-primary hover:opacity-90 focus:ring-[var(--color-primary)]",
+    outline:
+      "border border-gray-300 bg-transparent hover:bg-gray-50 text-gray-700 focus:ring-gray-500",
+    ghost:
+      "bg-transparent hover:bg-gray-100 text-gray-700 focus:ring-gray-500",
+  };
+
   const styles = cn(
-    "inline-flex items-center justify-center bg-[#004d40] hover:bg-[#00342b] text-white text-sm font-semibold rounded-full px-6 py-2.5 transition-all duration-300 shadow-xs hover:shadow-md disabled:opacity-50 disabled:pointer-events-none cursor-pointer focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-[#004d40]",
+    baseStyles,
+    variants[variant],
     className
   );
 

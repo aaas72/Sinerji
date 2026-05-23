@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import Button from "@/components/ui/Button";
+import PrimaryButton from "@/components/ui/PrimaryButton";
 import {
   FiSend,
   FiMessageSquare,
@@ -11,7 +11,8 @@ import {
 } from "react-icons/fi";
 import { useToast } from "@/context/ToastContext";
 import { supportService, SupportTicket } from "@/services/support.service";
-import Input from "@/components/ui/Input";
+import FormInput from "@/components/ui/form/FormInput";
+import SectionCard from "@/components/ui/cards/SectionCard";
 
 export default function StudentSupportPage() {
   const { showToast } = useToast();
@@ -89,22 +90,14 @@ export default function StudentSupportPage() {
 
         {/* ── Contact Form ── */}
         <div className="lg:col-span-2">
-          <div className="bg-white rounded-2xl border border-[#f1f0ea] shadow-2xs overflow-hidden">
-
-            {/* Card header */}
-            <div className="flex items-center gap-4 px-8 py-5 border-b border-[#f1f0ea]">
-              <div className="w-9 h-9 bg-[#004d40]/5 rounded-xl flex items-center justify-center text-[#004d40]">
-                <FiSend className="w-4 h-4" />
-              </div>
-              <div>
-                <h2 className="text-base font-bold text-gray-900">Bize Ulaş</h2>
-                <p className="text-xs text-gray-400 font-medium">Her türlü soru ve önerinizi bizimle paylaşın</p>
-              </div>
-            </div>
-
-            <div className="p-8">
+          <SectionCard 
+            icon={FiSend} 
+            title="Bize Ulaş" 
+            description="Her türlü soru ve önerinizi bizimle paylaşın"
+            className="bg-white border-[#f1f0ea] shadow-2xs"
+          >
               {/* Info banner */}
-              <div className="bg-transparent p-5 rounded-xl border border-[#f1f0ea] flex items-start gap-4 mb-6">
+              <div className="bg-transparent p-5 rounded-xl border border-[#f1f0ea] flex items-start gap-4 mb-6 mt-2">
                 <div className="w-10 h-10 rounded-xl bg-[#004d40]/5 flex items-center justify-center shrink-0 text-[#004d40]">
                   <FiHelpCircle size={20} />
                 </div>
@@ -118,59 +111,49 @@ export default function StudentSupportPage() {
               </div>
 
               <form onSubmit={handleSubmit} className="space-y-5">
-                <div>
-                  <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2 ml-1">
-                    Konu Başlığı
-                  </label>
-                  <Input
-                    type="text"
-                    value={subject}
-                    onChange={(e) => setSubject(e.target.value)}
-                    className={inputClass}
-                    placeholder="Örn: Profil doğrulaması hakkında"
-                  />
-                </div>
+                <FormInput
+                  label="Konu Başlığı"
+                  type="text"
+                  value={subject}
+                  onChange={(e) => setSubject(e.target.value)}
+                  placeholder="Örn: Profil doğrulaması hakkında"
+                />
 
                 <div>
-                  <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2 ml-1">
+                  <label className="block text-xs font-medium text-gray-700 mb-2">
                     Mesajın
                   </label>
                   <textarea
                     value={message}
                     onChange={(e) => setMessage(e.target.value)}
                     rows={6}
-                    className={`${inputClass} resize-none`}
+                    className="w-full rounded-lg border border-gray-200 bg-gray-100/80 px-4 py-3 text-sm text-gray-800 placeholder-gray-400 transition-all focus:border-[#004d40] focus:bg-white focus:outline-none focus:ring-2 focus:ring-[#004d40]/20 resize-none"
                     placeholder="Sana yardımcı olabilmemiz için detayları buraya yazabilirsin..."
                   />
                 </div>
 
-                <Button
+                <PrimaryButton
                   type="submit"
                   variant="primary"
                   isLoading={isLoading}
                   icon={FiSend}
-                  className="w-full py-3.5 text-xs font-extrabold uppercase tracking-wider rounded-xl shadow-none cursor-pointer"
+                  className="w-full py-3.5 mt-2"
                 >
                   Mesajı Gönder
-                </Button>
+                </PrimaryButton>
               </form>
-            </div>
-          </div>
+          </SectionCard>
         </div>
 
         {/* ── Sidebar ── */}
         <div className="space-y-6">
 
           {/* Previous tickets */}
-          <div className="bg-white rounded-2xl border border-[#f1f0ea] shadow-2xs overflow-hidden">
-            <div className="flex items-center gap-3 px-6 py-4 border-b border-[#f1f0ea]">
-              <span className="w-1.5 h-4 bg-[#e28743] rounded-full shrink-0" />
-              <h3 className="text-xs font-extrabold uppercase tracking-wider text-gray-900 select-none">
-                Önceki Mesajlarım
-              </h3>
-            </div>
-
-            <div className="p-6">
+          <SectionCard 
+            icon={FiMessageSquare} 
+            title="Önceki Mesajlarım"
+            className="bg-white border-[#f1f0ea] shadow-2xs"
+          >
               {isFetching ? (
                 <div className="flex justify-center py-8">
                   <div className="w-6 h-6 border-2 border-[#004d40] border-t-transparent rounded-full animate-spin" />
@@ -212,18 +195,16 @@ export default function StudentSupportPage() {
                   </p>
                 </div>
               )}
-            </div>
-          </div>
+          </SectionCard>
 
           {/* Quick Tips */}
-          <div className="bg-white rounded-2xl border border-[#f1f0ea] shadow-2xs overflow-hidden">
-            <div className="flex items-center gap-3 px-6 py-4 border-b border-[#e28743]/20 bg-[#e28743]/5">
-              <FiHelpCircle className="text-[#e28743] w-4 h-4 shrink-0" />
-              <h4 className="text-xs font-bold uppercase tracking-wider text-[#e28743] select-none">
-                Hızlı Bilgi
-              </h4>
-            </div>
-            <div className="p-6 space-y-4">
+          <SectionCard 
+            icon={FiHelpCircle} 
+            title="Hızlı Bilgi"
+            className="bg-white border-[#f1f0ea] shadow-2xs"
+            accent={true}
+          >
+            <div className="space-y-4">
               {[
                 "Profilim nasıl doğrulanır?",
                 "Ödemeler ne zaman yapılır?",
@@ -238,7 +219,7 @@ export default function StudentSupportPage() {
                 </button>
               ))}
             </div>
-          </div>
+          </SectionCard>
         </div>
       </div>
     </div>

@@ -2,7 +2,7 @@
 import { useState } from "react";
 import { cn } from "@/utils/cn";
 import CustomSelect from "@/components/ui/CustomSelect";
-import Button from "@/components/ui/Button";
+import PrimaryButton from "@/components/ui/PrimaryButton";
 import MainSection from "@/components/ui/layouts/MainSection";
 import { FiChevronDown, FiSearch, FiAward, FiFilter } from "react-icons/fi";
 
@@ -122,14 +122,14 @@ export default function SearchFilter({
 
         {/* زر البحث */}
         <div>
-          <Button
+          <PrimaryButton
             onClick={handleSearch}
             variant="primary"
             className="h-11 px-6 rounded-xl"
           >
             <FiSearch className="w-4 h-4 mr-2 text-[#004d40]" />
             Search
-          </Button>
+          </PrimaryButton>
         </div>
       </div>
     </div>

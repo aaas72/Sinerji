@@ -1,7 +1,9 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
+import { useAuthStore } from "@/hooks/useAuth";
 import {  
   FiEdit,
   FiAward,
@@ -102,6 +104,13 @@ function SidebarCard({ title, children }: { title: string; children: React.React
 // ── Page ─────────────────────────────────────────────────────────────────────
 
 export default function ProfilePage() {
+  const params = useParams();
+  const router = useRouter();
+  const { user } = useAuthStore();
+  
+  const studentId = Number(params.id);
+  const isOwner = user?.role === 'student' && user?.id === studentId;
+
   const [profile, setProfile] = useState<StudentProfile | null>(null);
   const [stats, setStats] = useState<StudentStats>({
     completedTasks: 0,
@@ -113,14 +122,17 @@ export default function ProfilePage() {
   const [error, setError] = useState("");
 
   useEffect(() => {
+    if (!studentId) return;
+    
     const fetchData = async () => {
       try {
-        const [profileData, statsData] = await Promise.all([
-          studentService.getProfile(),
-          studentService.getMyStats(),
-        ]);
+        const profileData = await studentService.getStudentById(studentId);
         setProfile(profileData);
-        setStats(statsData);
+        
+        if (isOwner) {
+          const statsData = await studentService.getMyStats();
+          setStats(statsData);
+        }
       } catch (err: any) {
         setError(err.message || "Profil yüklenirken bir hata oluştu.");
       } finally {
@@ -129,7 +141,7 @@ export default function ProfilePage() {
     };
 
     fetchData();
-  }, []);
+  }, [studentId, isOwner]);
 
   if (isLoading)
     return (
@@ -180,7 +192,17 @@ export default function ProfilePage() {
 
             {/* ── Name + Info ── */}
             <div>
-              <h1 className="text-[22px] md:text-[32px] leading-tight font-extrabold text-[#00342b] mb-1">{profile.full_name}</h1>
+              <div className="flex items-center gap-4 mb-1">
+                <h1 className="text-[22px] md:text-[32px] leading-tight font-extrabold text-[#00342b]">{profile.full_name}</h1>
+                {isOwner && (
+                  <button 
+                    onClick={() => router.push('/student/profile/edit')}
+                    className="px-3 py-1.5 bg-white border border-[#00342b]/20 hover:border-[#00342b] text-[#00342b] rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 shadow-sm"
+                  >
+                    <FiEdit size={14} /> Profili Düzenle
+                  </button>
+                )}
+              </div>
               <p className="text-[16px] font-semibold text-[#565e74]">{profile.major || "UX/UI Designer & Systems Thinker"}</p>
               
               <div className="flex items-center flex-wrap gap-4 mt-4">

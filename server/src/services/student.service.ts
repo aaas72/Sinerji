@@ -7,6 +7,26 @@ import { z } from 'zod';
 const prisma = new PrismaClient() as any;
 
 export class StudentService {
+  async getAllStudents() {
+    const students = await prisma.studentProfile.findMany({
+      include: {
+        skills: {
+          include: {
+            skill: true,
+          },
+        },
+        user: {
+          select: {
+            email: true,
+            role: true,
+            created_at: true,
+          },
+        },
+      },
+    });
+    return students;
+  }
+
   async getProfile(userId: number) {
     const profile = await prisma.studentProfile.findUnique({
       where: { user_id: userId },

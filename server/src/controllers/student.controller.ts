@@ -7,6 +7,37 @@ const studentService = new StudentService();
 import { MatchingService } from '../services/matching.service';
 const matchingService = new MatchingService();
 
+export const getAllStudents = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const students = await studentService.getAllStudents();
+    res.status(200).json({
+      status: 'success',
+      data: { students },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const getStudentProfile = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const studentId = parseInt(req.params.id);
+    if (isNaN(studentId)) {
+      return next(new AppError('Invalid student ID', 400));
+    }
+    const profile = await studentService.getProfile(studentId);
+    res.status(200).json({
+      status: 'success',
+      data: {
+        profile,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+
 export const getMyProfile = async (req: Request, res: Response, next: NextFunction) => {
   try {
     if (!req.user) {

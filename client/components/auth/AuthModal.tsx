@@ -8,7 +8,7 @@ import { loginSchema, registerSchema, LoginFormData, RegisterFormData, User } fr
 import { authService } from "@/services/auth.service";
 import { useAuthStore } from "@/hooks/useAuth";
 import { useAuthModal } from "@/hooks/useAuthModal";
-import Button from "@/components/ui/Button";
+import PrimaryButton from "@/components/ui/PrimaryButton";
 import {
   FiX,
   FiCheckCircle,
@@ -250,13 +250,13 @@ function LoginForm({
         )}
       </div>
 
-      <Button
+      <PrimaryButton
         type="submit"
         className="w-full bg-[#004d40] hover:bg-[#003830] text-white py-3 text-sm font-semibold rounded-xl transition-all duration-200 hover:shadow-lg hover:shadow-[#004d40]/20 mt-2"
         disabled={isLoading}
       >
         {isLoading ? "Giriş yapılıyor..." : "Giriş Yap"}
-      </Button>
+      </PrimaryButton>
     </form>
   );
 }
@@ -423,13 +423,13 @@ function RegisterForm({
         </>
       )}
 
-      <Button
+      <PrimaryButton
         type="submit"
         className="w-full bg-[#004d40] hover:bg-[#003830] text-white py-3 text-sm font-semibold rounded-xl transition-all duration-200 hover:shadow-lg hover:shadow-[#004d40]/20 mt-2"
         disabled={isLoading}
       >
         {isLoading ? "Hesap oluşturuluyor..." : "Hesap Oluştur"}
-      </Button>
+      </PrimaryButton>
     </form>
   );
 }
