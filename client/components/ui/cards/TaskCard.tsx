@@ -2,7 +2,6 @@
 
 import { useState, useRef, useEffect } from "react";
 import { FiMoreVertical, FiTrash2, FiEye } from "react-icons/fi";
-import StarRating from "../StarRating";
 import Link from "next/link";
 
 type TaskCardProps = {
@@ -96,7 +95,7 @@ export default function TaskCard({
       {/* Footer */}
       <div className="flex justify-between items-center pt-4 border-t border-[#dfded6]/50">
         <Link href={`/tasks/${id || index}`}>
-          <button className="border border-gray-200 text-xs font-bold uppercase tracking-wider text-gray-500 px-4 py-2 rounded-xl hover:bg-gray-50 hover:border-gray-300 transition-all cursor-pointer">
+          <button className="border border-gray-200 text-xs font-bold uppercase tracking-wider text-gray-500 px-4 py-2 rounded-full hover:bg-gray-50 hover:border-gray-300 transition-all cursor-pointer">
             Detayları
           </button>
         </Link>
@@ -114,7 +113,6 @@ export default function TaskCard({
           ) : (
             <span className="text-gray-500 font-medium text-sm">{companyName}</span>
           )}
-          <StarRating rating={rating} />
         </div>
       </div>
     </div>

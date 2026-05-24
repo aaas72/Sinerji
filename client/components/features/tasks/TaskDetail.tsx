@@ -19,6 +19,8 @@ import { Task, getRewardIcon } from "./types";
 import { useRouter } from "next/navigation";
 import { useToast } from "@/context/ToastContext";
 import { useState, useEffect } from "react";
+import { studentService } from "@/services/student.service";
+import { useAuthStore } from "@/hooks/useAuth";
 
 interface TaskDetailProps {
   task: Task;
@@ -30,21 +32,39 @@ export default function TaskDetail({ task }: TaskDetailProps) {
   const [isSaved, setIsSaved] = useState(false);
   const hasMatchPercentage = typeof task.matchPercentage === "number";
 
-  useEffect(() => {
-    const saved = localStorage.getItem(`saved_task_${task.id}`);
-    if (saved) setIsSaved(true);
-  }, [task.id]);
+  const { user } = useAuthStore();
 
-  const handleSave = (e: React.MouseEvent) => {
+  useEffect(() => {
+    if (user?.role === "student") {
+      studentService.getSavedTasks().then((tasks) => {
+        if (tasks.some((t: any) => t.id === task.id)) {
+          setIsSaved(true);
+        }
+      }).catch(console.error);
+    }
+  }, [task.id, user?.role]);
+
+  const handleSave = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    if (isSaved) {
-      localStorage.removeItem(`saved_task_${task.id}`);
-      setIsSaved(false);
-      showToast("Görev kaydedilenlerden çıkarıldı.", "success");
-    } else {
-      localStorage.setItem(`saved_task_${task.id}`, "true");
-      setIsSaved(true);
-      showToast("Görev başarıyla kaydedildi!", "success");
+    if (user?.role !== "student") {
+      showToast("Sadece öğrenciler görev kaydedebilir.", "error");
+      return;
+    }
+    
+    try {
+      const numericTaskId = Number(task.id);
+      
+      if (isSaved) {
+        await studentService.unsaveTask(numericTaskId);
+        setIsSaved(false);
+        showToast("Görev kaydedilenlerden çıkarıldı.", "success");
+      } else {
+        await studentService.saveTask(numericTaskId);
+        setIsSaved(true);
+        showToast("Görev başarıyla kaydedildi!", "success");
+      }
+    } catch (error) {
+      showToast("Bir hata oluştu.", "error");
     }
   };
 

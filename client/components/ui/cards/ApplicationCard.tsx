@@ -4,11 +4,7 @@ import { FiAward, FiBriefcase, FiStar, FiZap, FiPackage } from "react-icons/fi";
 import SkillBadge from "../SkillBadge";
 import StatusBadge from "@/components/ui/badges/StatusBadge";
 
-export type ApplicationStatus =
-  | "Bekliyor"
-  | "İnceleniyor"
-  | "Kabul Edildi"
-  | "Reddedildi";
+export type ApplicationStatus =| "Bekliyor"| "İnceleniyor"| "Kabul Edildi"| "Reddedildi";
 
 export type RewardType =
   | "Money"
@@ -18,7 +14,6 @@ export type RewardType =
   | "Experience"
   | "Product"
   | "Service";
-
 type ApplicationCardProps = {
   title: string;
   tags: string[];
@@ -75,10 +70,10 @@ export default function ApplicationCard({
   const reward = rewardType ? getRewardDetails(rewardType) : null;
 
   return (
-    <div className="bg-white rounded-2xl p-6 border border-[#f1f0ea] hover:border-gray-300 hover:shadow-2xs transition-all">
+    <div className="bg-transparent border border-[#dfded6] rounded-2xl p-6 hover:rounded-none relative group hover-card-effect transition-all">
       {/* Top Section: Title and Reward */}
       <div className="flex justify-between items-start mb-4 select-none">
-        <h3 className="font-semibold text-gray-900 text-base max-w-[80%] leading-snug">
+        <h3 className="text-xl font-bold tracking-tight text-[#00342b] group-hover:text-[#004d40] transition-colors leading-snug max-w-[80%]">
           {title}
         </h3>
         {reward && (
@@ -96,18 +91,18 @@ export default function ApplicationCard({
       {/* Tags Section */}
       <div className="flex flex-wrap gap-2 mb-6">
         {tags.map((tag, index) => (
-          <SkillBadge className="bg-transparent border border-[#f1f0ea] text-[#004d40] text-[9px] font-bold uppercase tracking-wider rounded-xl py-1" key={index} label={tag} />
+          <SkillBadge className="bg-[#faf9f6] border border-[#dfded6] text-[#004d40] text-[10px] font-bold uppercase tracking-widest rounded-xl py-1 px-3" key={index} label={tag} />
         ))}
       </div>
 
       {/* Bottom Section: Company, Status, Date */}
-      <div className="flex flex-col md:flex-row justify-between items-center text-xs font-bold uppercase tracking-wider text-gray-400 pt-4 border-t border-[#f1f0ea] select-none">
-        <div className="flex items-center gap-2 w-full md:w-auto mb-2 md:mb-0">
-          <div className="w-5 h-5 border-2 border-[#004d40] rounded-md shrink-0"></div>
-          <span className="text-gray-600">Şirket: <span className="font-bold text-gray-900">{companyName}</span></span>
+      <div className="flex flex-col md:flex-row justify-between items-center text-[10px] font-extrabold uppercase tracking-widest text-[#565e74] pt-5 border-t border-[#dfded6] select-none gap-4 md:gap-0">
+        <div className="flex items-center gap-2.5 w-full md:w-auto">
+          <div className="w-5 h-5 border-[1.5px] border-[#004d40] rounded flex shrink-0"></div>
+          <span className="text-gray-500">Şirket: <span className="text-[#00342b]">{companyName}</span></span>
         </div>
 
-        <div className="flex items-center justify-center w-full md:w-auto mb-2 md:mb-0">
+        <div className="flex items-center justify-center w-full md:w-auto">
           <StatusBadge status={status} />
         </div>
 

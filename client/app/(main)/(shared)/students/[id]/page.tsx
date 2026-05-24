@@ -31,6 +31,7 @@ import { StudentProfile, StudentSkill } from "@/types/student";
 import SkillBadge from "@/components/ui/SkillBadge";
 import TaskCard from "@/components/ui/cards/TaskCard";
 import RecommendationCard from "@/components/ui/cards/RecommendationCard";
+import SectionCard from "@/components/ui/cards/SectionCard";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -282,24 +283,15 @@ export default function ProfilePage() {
 
         {/* Hakkımda (About Me) */}
         {profile.bio && (
-          <section className="flex flex-col gap-4 relative mb-4">
-            <h2 className="text-[20px] font-semibold text-[#00342b] flex items-center gap-2">
-              <FiUser className="w-6 h-6" /> Hakkımda
-            </h2>
-            <div className="bg-transparent border border-[#f1f0ea] rounded-xl p-6 mt-2 transition-shadow bg-[#ffffff]/50 backdrop-blur-sm">
-              <p className="text-[#565e74] text-sm leading-relaxed whitespace-pre-wrap">
-                {profile.bio}
-              </p>
-            </div>
-          </section>
+          <SectionCard title="Hakkımda" icon={FiUser} className="mb-8 bg-white border-[#dfded6] shadow-2xs">
+            <p className="text-[#565e74] text-[15px] font-medium leading-relaxed whitespace-pre-wrap">
+              {profile.bio}
+            </p>
+          </SectionCard>
         )}
 
         {/* Experience & Education */}
-        <section className="flex flex-col gap-4 relative">
-          <h2 className="text-[20px] font-semibold text-[#00342b] flex items-center gap-2">
-            <FiBriefcase className="w-6 h-6" /> Experience & Education
-          </h2>
-          
+        <SectionCard title="Experience & Education" icon={FiBriefcase} className="mb-8 bg-white border-[#dfded6] shadow-2xs">
           <div className="relative pl-6 ml-2 mt-4">
             
             {/* Timeline Line */}
@@ -363,15 +355,12 @@ export default function ProfilePage() {
             </div>
 
           </div>
-        </section>
+        </SectionCard>
 
         {/* Recommendations Block */}
         {profile.recommendations && profile.recommendations.length > 0 && (
-          <section className="flex flex-col gap-4 relative mt-4">
-            <h2 className="text-[20px] font-semibold text-[#00342b] flex items-center gap-2">
-              <FiAward className="w-6 h-6" /> Tavsiyeler
-            </h2>
-            <div className="flex flex-col gap-4 mt-2">
+          <SectionCard title="Tavsiyeler" icon={FiAward} className="mb-8 bg-white border-[#dfded6] shadow-2xs">
+            <div className="flex flex-col gap-4">
               {profile.recommendations.map((rec: any, index: number) => (
                 <div key={rec.id} className="bg-transparent border border-[#f1f0ea] rounded-xl p-6 transition-shadow bg-[#ffffff]/50 backdrop-blur-sm">
                   <p className="text-[#565e74] text-sm italic mb-4 leading-relaxed">"{rec.content}"</p>
@@ -389,7 +378,7 @@ export default function ProfilePage() {
                 </div>
               ))}
             </div>
-          </section>
+          </SectionCard>
         )}
 
       </div>
