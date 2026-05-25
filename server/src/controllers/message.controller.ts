@@ -179,13 +179,16 @@ export const sendMessage = async (req: Request, res: Response, next: NextFunctio
       getIO().to(receiverSocket).emit('receive_message', message);
     }
 
+    const receiver = await prisma.user.findUnique({ where: { id: receiverIdInt } });
+    const notificationLink = receiver?.role === 'company' ? '/company/messages' : '/student/messages';
+
     // Send Notification
     await notificationService.createNotification(
       receiverIdInt,
       'Yeni Mesaj',
       `${senderName} size yeni bir mesaj gönderdi.`,
       'message',
-      '/student/messages' // You might dynamically build URL based on receiver role
+      notificationLink
     );
 
     res.status(201).json({
