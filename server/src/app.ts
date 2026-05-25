@@ -22,6 +22,7 @@ import skillRoutes from './routes/skill.routes';
 import publicRoutes from './routes/public.routes';
 import supportRoutes from './routes/support.routes';
 import messageRoutes from './routes/message.routes';
+import notificationRoutes from './routes/notification.routes';
 
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
@@ -64,6 +65,7 @@ app.use('/api/recommendations', recommendationRoutes);
 app.use('/api/skills', skillRoutes);
 app.use('/api/support', supportRoutes);
 app.use('/api/messages', messageRoutes);
+app.use('/api/notifications', notificationRoutes);
 app.get('/', (req, res) => {
     res.json({ message: 'Welcome to the Backend API' });
 });
@@ -97,13 +99,15 @@ process.on('unhandledRejection', (reason, promise) => {
     console.error('Unhandled Rejection at:', promise, 'reason:', reason);
 });
 
+import { initSocket } from './socket';
+
 const PORT = process.env.PORT || 5000;
 
 const server = app.listen(PORT, () => {
     logger.info(`Server running on port ${PORT}`);
 });
 
-// Keep process alive just in case
-// setInterval(() => {}, 10000);
+// Initialize Socket.io
+initSocket(server);
 
 export default app;

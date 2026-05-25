@@ -7,11 +7,13 @@ import { messageService, Contact, Message } from "@/services/message.service";
 import { companyService } from "@/services/company.service";
 import { useAuthStore } from "@/hooks/useAuth";
 import { useSearchParams } from "next/navigation";
+import { useSocket } from "@/context/SocketContext";
 
 function StudentMessagesContent() {
   const { user } = useAuthStore();
   const searchParams = useSearchParams();
   const preSelectedCompanyId = searchParams.get("companyId");
+  const { socket, connected } = useSocket();
 
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [activeContact, setActiveContact] = useState<Contact | null>(null);
@@ -73,6 +75,41 @@ function StudentMessagesContent() {
       fetchMessages();
     }
   }, [activeContact]);
+
+  useEffect(() => {
+    if (!socket || !connected) return;
+
+    const handleReceiveMessage = (newMessage: Message) => {
+      // If the message is from the active contact, append it
+      if (activeContact && (newMessage.sender_id === activeContact.id || newMessage.receiver_id === activeContact.id)) {
+        setMessages((prev) => [...prev, newMessage]);
+      }
+      
+      // Update contacts unread count or last message time
+      setContacts((prevContacts) => {
+        const newContacts = [...prevContacts];
+        const contactIndex = newContacts.findIndex(c => c.id === newMessage.sender_id || c.id === newMessage.receiver_id);
+        
+        if (contactIndex !== -1) {
+          const contact = newContacts[contactIndex];
+          contact.lastMessageTime = newMessage.created_at;
+          if (newMessage.sender_id !== user?.id && activeContact?.id !== newMessage.sender_id) {
+            contact.unread += 1;
+          }
+          // Move to top
+          newContacts.splice(contactIndex, 1);
+          newContacts.unshift(contact);
+        }
+        return newContacts;
+      });
+    };
+
+    socket.on('receive_message', handleReceiveMessage);
+
+    return () => {
+      socket.off('receive_message', handleReceiveMessage);
+    };
+  }, [socket, connected, activeContact, user?.id]);
 
   const handleSendMessage = async () => {
     if (!newMessage.trim() || !activeContact) return;

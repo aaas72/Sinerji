@@ -13,8 +13,11 @@ import {
   FiLogOut,
   FiMenu,
   FiX,
+  FiList,
   FiMessageSquare,
 } from "react-icons/fi";
+import PrimaryButton from "@/components/ui/PrimaryButton";
+import NotificationBell from "@/components/ui/NotificationBell";
 
 const navLinks = [
   { href: "/company/dashboard", label: "Özet" },
@@ -98,13 +101,7 @@ export default function CompanyNavbar() {
             <div className="flex items-center gap-4">
               
               {/* Notification Bell */}
-              <Link
-                href="/company/notifications"
-                className="text-gray-400 hover:text-gray-900 transition-colors relative p-1 rounded-full hover:bg-gray-50"
-              >
-                <FiBell size={18} />
-                <span className="absolute top-1 right-1 w-1.5 h-1.5 bg-[#e28743] rounded-full animate-ping" />
-              </Link>
+              <NotificationBell />
 
               {/* Messages */}
               <Link

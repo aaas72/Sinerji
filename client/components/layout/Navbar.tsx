@@ -15,6 +15,7 @@ import {
   FiMessageSquare,
 } from "react-icons/fi";
 import PrimaryButton from "@/components/ui/PrimaryButton";
+import NotificationBell from "@/components/ui/NotificationBell";
 import { useEffect, useRef, useState } from "react";
 import { IconType } from "react-icons";
 import { useAuthStore } from "@/hooks/useAuth";
@@ -238,10 +239,7 @@ export default function Navbar({ authenticated, userName, role }: NavbarProps) {
             <div className="relative" ref={menuRef}>
               <div className="flex items-center gap-4">
                 {/* Notification Bell */}
-                <button className="text-gray-400 hover:text-gray-900 transition-colors relative p-1 rounded-full hover:bg-gray-50">
-                  <FiBell size={18} />
-                  <span className="absolute top-1 right-1 w-1.5 h-1.5 bg-[#e28743] rounded-full animate-ping" />
-                </button>
+                <NotificationBell />
 
                 {/* Messages */}
                 <Link

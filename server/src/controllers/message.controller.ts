@@ -1,6 +1,8 @@
 import { Request, Response, NextFunction } from 'express';
 import { PrismaClient } from '@prisma/client';
 import { AppError } from '../utils/AppError';
+import { notificationService } from '../services/notification.service';
+import { getIO, userSockets } from '../socket';
 
 const prisma = new PrismaClient();
 
@@ -160,6 +162,31 @@ export const sendMessage = async (req: Request, res: Response, next: NextFunctio
         content
       }
     });
+
+    // Determine sender name
+    let senderName = 'Bir kullanıcı';
+    if (req.user.role === 'company') {
+      const company = await prisma.companyProfile.findUnique({ where: { user_id: sender_id } });
+      if (company) senderName = company.company_name;
+    } else {
+      const student = await prisma.studentProfile.findUnique({ where: { user_id: sender_id } });
+      if (student) senderName = student.full_name;
+    }
+
+    // Emit live message
+    const receiverSocket = userSockets.get(receiverIdInt);
+    if (receiverSocket) {
+      getIO().to(receiverSocket).emit('receive_message', message);
+    }
+
+    // Send Notification
+    await notificationService.createNotification(
+      receiverIdInt,
+      'Yeni Mesaj',
+      `${senderName} size yeni bir mesaj gönderdi.`,
+      'message',
+      '/student/messages' // You might dynamically build URL based on receiver role
+    );
 
     res.status(201).json({
       status: 'success',
