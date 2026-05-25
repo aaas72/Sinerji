@@ -1,7 +1,10 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import { authService } from "@/services/auth.service";
+import { studentService } from "@/services/student.service";
+import { uploadService } from "@/services/upload.service";
+import { StudentProfile } from "@/types/student";
 import { useAuthStore } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
 import {
@@ -11,6 +14,11 @@ import {
   FiEyeOff,
   FiLogOut,
   FiAlertTriangle,
+  FiFileText,
+  FiUser,
+  FiMail,
+  FiGithub,
+  FiLinkedin,
 } from "react-icons/fi";
 import { useToast } from "@/context/ToastContext";
 import SectionCard from "@/components/ui/cards/SectionCard";
@@ -49,7 +57,7 @@ function Toggle({
 
 export default function StudentSettingsPage() {
   const { showToast } = useToast();
-  const { logout } = useAuthStore();
+  const { user, logout } = useAuthStore();
   const router = useRouter();
 
   /* Password Form */
@@ -62,6 +70,54 @@ export default function StudentSettingsPage() {
     onChange: (e: React.ChangeEvent<HTMLInputElement>) =>
       setPw((p) => ({ ...p, [k]: e.target.value })),
   });
+
+  /* Profile Form */
+  const [profile, setProfile] = useState<Partial<StudentProfile>>({});
+  const [fetchingProfile, setFetchingProfile] = useState(true);
+  const [profileLoading, setProfileLoading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    studentService.getProfile().then((data) => {
+      setProfile(data);
+      setFetchingProfile(false);
+    }).catch((err) => {
+      console.error(err);
+      setFetchingProfile(false);
+    });
+  }, []);
+
+  const handleProfileUpdate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setProfileLoading(true);
+    try {
+      await studentService.updateProfile({
+        full_name: profile.full_name ?? undefined,
+        github_url: profile.github_url ?? undefined,
+        linkedin_url: profile.linkedin_url ?? undefined,
+        cv_url: profile.cv_url ?? undefined,
+        bio: profile.bio ?? undefined,
+      });
+      showToast("Bilgileriniz güncellendi.", "success");
+    } catch (err: any) {
+      showToast(err.response?.data?.message || "Bilgiler güncellenemedi.", "error");
+    } finally {
+      setProfileLoading(false);
+    }
+  };
+
+  const handleCVUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      try {
+        const file = e.target.files[0];
+        const res = await uploadService.uploadFile(file);
+        setProfile(prev => ({ ...prev, cv_url: res.url }));
+        showToast("Özgeçmiş başarıyla yüklendi. Kaydetmeyi unutmayın.", "success");
+      } catch (err) {
+        showToast("Özgeçmiş yüklenirken hata oluştu.", "error");
+      }
+    }
+  };
 
   /* Notification Preferences */
   const [notifs, setNotifs] = useState({
@@ -118,6 +174,97 @@ export default function StudentSettingsPage() {
       </div>
 
       <div className="w-full space-y-8">
+
+        {/* ⓪ Hesap ve Profil Bilgileri */}
+        <SectionCard
+          icon={FiUser}
+          title="Profil Bilgileri"
+          description="Kişisel bilgilerinizi, sosyal medya hesaplarınızı ve özgeçmişinizi yönetin."
+        >
+          {fetchingProfile ? (
+            <div className="py-4 text-sm text-gray-500 animate-pulse">Yükleniyor...</div>
+          ) : (
+            <form className="space-y-5 max-w-lg" onSubmit={handleProfileUpdate}>
+              <FormInput
+                label="Ad Soyad"
+                type="text"
+                value={profile.full_name || ""}
+                onChange={(e) => setProfile({ ...profile, full_name: e.target.value })}
+                className="!rounded-full px-5"
+                icon={FiUser}
+              />
+              <FormInput
+                label="E-posta Adresi (Oturum)"
+                type="email"
+                value={user?.email || ""}
+                className="!rounded-full px-5 opacity-70"
+                icon={FiMail}
+                disabled
+              />
+
+              <FormInput
+                label="GitHub Profil Linki"
+                type="url"
+                value={profile.github_url || ""}
+                onChange={(e) => setProfile({ ...profile, github_url: e.target.value })}
+                placeholder="https://github.com/kullaniciadi"
+                className="!rounded-full px-5"
+                icon={FiGithub}
+              />
+
+              <FormInput
+                label="LinkedIn Profil Linki"
+                type="url"
+                value={profile.linkedin_url || ""}
+                onChange={(e) => setProfile({ ...profile, linkedin_url: e.target.value })}
+                placeholder="https://linkedin.com/in/kullaniciadi"
+                className="!rounded-full px-5"
+                icon={FiLinkedin}
+              />
+
+              {/* CV Upload */}
+              <div className="mt-4">
+                <label className="block text-sm font-bold text-[#00342b] mb-2">Özgeçmiş (CV)</label>
+                <div className="flex items-center gap-4 p-4 border border-[#dfded6] rounded-2xl bg-[#fcfbf7]">
+                  <div className="w-12 h-12 bg-[#00342b]/10 rounded-full flex items-center justify-center shrink-0">
+                    <FiFileText className="w-6 h-6 text-[#00342b]" />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    {profile.cv_url ? (
+                      <div>
+                        <p className="text-sm font-bold text-[#0b1c30] truncate">Yüklü Özgeçmiş</p>
+                        <a href={profile.cv_url} target="_blank" rel="noreferrer" className="text-xs text-[#004d40] hover:underline truncate block">Görüntüle</a>
+                      </div>
+                    ) : (
+                      <p className="text-sm font-medium text-gray-500">Henüz CV yüklemediniz.</p>
+                    )}
+                  </div>
+                  <button 
+                    type="button" 
+                    onClick={() => fileInputRef.current?.click()}
+                    className="shrink-0 px-4 py-2 bg-white border border-[#dfded6] rounded-full text-xs font-bold text-[#0b1c30] hover:bg-gray-50"
+                  >
+                    Yükle/Değiştir
+                  </button>
+                  <input 
+                    type="file" 
+                    ref={fileInputRef} 
+                    className="hidden" 
+                    accept="application/pdf"
+                    onChange={handleCVUpload}
+                  />
+                </div>
+              </div>
+
+              <div className="pt-2 flex justify-start">
+                <FormButton type="submit" isLoading={profileLoading} className="!rounded-full px-8">
+                  Değişiklikleri Kaydet
+                </FormButton>
+              </div>
+            </form>
+          )}
+        </SectionCard>
+
         {/* ① Güvenlik ve Şifre */}
         <SectionCard
           icon={FiLock}

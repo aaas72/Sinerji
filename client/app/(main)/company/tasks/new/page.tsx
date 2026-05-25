@@ -85,7 +85,7 @@ export default function NewTaskPage() {
       positions: 1,
       currency: "TRY",
       reward_type: "money",
-      experience_level: "entry",
+      experience_level: "beginner",
       work_type: "remote"
     },
   });
@@ -149,13 +149,13 @@ export default function NewTaskPage() {
       const payload = {
         ...data,
         hardSkills: hardSkills.map(s => ({
-          name: s.skill,
+          skill: s.skill,
           level: s.level,
           isRequired: s.isRequired,
           yearsOfExperience: s.yearsOfExperience
         })),
         softSkills: softSkills,
-        budget: data.budget ? Number(data.budget) : undefined,
+        budget: data.budget ? String(data.budget) : undefined,
         positions: Number(data.positions),
         deadline: data.deadline ? new Date(data.deadline).toISOString() : undefined,
       };
@@ -293,10 +293,9 @@ export default function NewTaskPage() {
                       className="px-3 py-2 text-sm font-bold"
                       error={!!errors.experience_level}
                     >
-                      <option value="entry">Entry</option>
-                      <option value="junior">Junior</option>
-                      <option value="mid">Mid-Level</option>
-                      <option value="senior">Senior</option>
+                      <option value="beginner">Entry / Junior</option>
+                      <option value="intermediate">Mid-Level</option>
+                      <option value="advanced">Senior</option>
                     </Select>
                   </div>
                   <div>

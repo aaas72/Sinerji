@@ -33,6 +33,7 @@ model StudentProfile {
   phone                  String?
   twitter_url            String?
   website_url            String?
+  cv_url                 String?
   availability_status    String           @default("available")
   categories_of_interest String?
   graduation_year        Int?

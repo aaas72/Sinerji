@@ -23,6 +23,8 @@ import publicRoutes from './routes/public.routes';
 import supportRoutes from './routes/support.routes';
 import messageRoutes from './routes/message.routes';
 import notificationRoutes from './routes/notification.routes';
+import uploadRoutes from './routes/upload.routes';
+import path from 'path';
 
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
@@ -51,6 +53,11 @@ app.use(morgan('combined', { stream }));
 app.use(express.json());
 app.use(cookieParser());
 
+app.use(express.urlencoded({ extended: true }));
+
+// Serve uploaded files statically
+app.use('/uploads', express.static(path.join(process.cwd(), 'uploads')));
+
 // Routes
 app.use('/api/public', publicRoutes);
 app.use('/api/auth', authRoutes);
@@ -66,6 +73,7 @@ app.use('/api/skills', skillRoutes);
 app.use('/api/support', supportRoutes);
 app.use('/api/messages', messageRoutes);
 app.use('/api/notifications', notificationRoutes);
+app.use('/api/upload', uploadRoutes);
 app.get('/', (req, res) => {
     res.json({ message: 'Welcome to the Backend API' });
 });

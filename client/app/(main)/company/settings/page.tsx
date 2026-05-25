@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
 import SectionCard from "@/components/ui/cards/SectionCard";
 import {
   FiLock,
@@ -17,7 +17,11 @@ import { useToast } from "@/context/ToastContext";
 import { useAuthStore } from "@/hooks/useAuth";
 import { useRouter } from "next/navigation";
 import { authService } from "@/services/auth.service";
-import { FormInput, FormButton } from "@/components/ui/form";
+import { companyService } from "@/services/company.service";
+import { uploadService } from "@/services/upload.service";
+import { CompanyProfile } from "@/types/company";
+import { FormInput, FormButton, FormTextarea } from "@/components/ui/form";
+import { FiCamera } from "react-icons/fi";
 
 // ─── shared styles ────────────────────────────────────────────────────────
 
@@ -65,6 +69,48 @@ export default function CompanySettingsPage() {
     onChange: (e: React.ChangeEvent<HTMLInputElement>) =>
       setPw((p) => ({ ...p, [k]: e.target.value })),
   });
+
+  /* Company Profile State */
+  const [profile, setProfile] = useState<Partial<CompanyProfile>>({});
+  const [profileLoading, setProfileLoading] = useState(false);
+  const [fetching, setFetching] = useState(true);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    companyService.getMyProfile().then((data) => {
+      setProfile(data);
+      setFetching(false);
+    }).catch((err) => {
+      console.error(err);
+      setFetching(false);
+    });
+  }, []);
+
+  const handleProfileUpdate = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setProfileLoading(true);
+    try {
+      await companyService.updateMyProfile(profile);
+      showToast("Şirket bilgileriniz güncellendi.", "success");
+    } catch (err: any) {
+      showToast(err.response?.data?.message || "Bilgiler güncellenemedi.", "error");
+    } finally {
+      setProfileLoading(false);
+    }
+  };
+
+  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files[0]) {
+      try {
+        const file = e.target.files[0];
+        const res = await uploadService.uploadFile(file);
+        setProfile(prev => ({ ...prev, logo_url: res.url }));
+        showToast("Logo başarıyla yüklendi. Kaydetmeyi unutmayın.", "success");
+      } catch (err) {
+        showToast("Logo yüklenirken hata oluştu.", "error");
+      }
+    }
+  };
 
   /* bildirim tercihleri */
   const [notifs, setNotifs] = useState({
@@ -119,40 +165,99 @@ export default function CompanySettingsPage() {
         {/* ① Hesap Bilgileri */}
         <SectionCard
           icon={FiUser}
-          title="Hesap Bilgileri"
-          description="Hesabınıza ait temel profil ve iletişim bilgileri."
+          title="Şirket Bilgileri"
+          description="Şirketinize ait genel bilgileri ve iletişim adreslerini buradan güncelleyebilirsiniz."
         >
-          <form className="space-y-5 max-w-lg" onSubmit={(e) => { e.preventDefault(); showToast("Bilgileriniz güncellendi.", "success"); }}>
-            <div>
+          {fetching ? (
+            <div className="py-4 text-sm text-gray-500 animate-pulse">Yükleniyor...</div>
+          ) : (
+            <form className="space-y-5 max-w-lg" onSubmit={handleProfileUpdate}>
+              <div className="flex items-center gap-6 mb-6">
+                <div className="relative w-24 h-24 rounded-full bg-[#00342b]/5 border border-[#dfded6] flex flex-col items-center justify-center text-[#00342b] overflow-hidden group">
+                  {profile.logo_url ? (
+                    <img src={profile.logo_url} alt="Logo" className="w-full h-full object-cover" />
+                  ) : (
+                    <FiCamera className="w-8 h-8 opacity-50" />
+                  )}
+                  <div 
+                    className="absolute inset-0 bg-black/40 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity cursor-pointer"
+                    onClick={() => fileInputRef.current?.click()}
+                  >
+                    <span className="text-white text-xs font-bold">Değiştir</span>
+                  </div>
+                  <input 
+                    type="file" 
+                    ref={fileInputRef} 
+                    className="hidden" 
+                    accept="image/jpeg, image/png, image/jpg"
+                    onChange={handleLogoUpload}
+                  />
+                </div>
+                <div>
+                  <h4 className="text-sm font-bold text-[#0b1c30]">Şirket Logosu</h4>
+                  <p className="text-xs text-gray-500 mt-1">JPEG veya PNG. Max 5MB.</p>
+                </div>
+              </div>
+
               <FormInput
-                label="Ad Soyad / Yetkili"
+                label="Şirket Adı"
                 type="text"
-                defaultValue="Şirket Yetkilisi"
+                value={profile.company_name || ""}
+                onChange={(e) => setProfile({ ...profile, company_name: e.target.value })}
                 className="!rounded-full px-5"
                 icon={FiUser}
               />
-            </div>
-            
-            <div>
-              <FormInput
-                label="E-posta Adresi"
-                type="email"
-                defaultValue={user?.email ?? ""}
-                className="!rounded-full px-5"
-                icon={FiMail}
-              />
-            </div>
 
-            <div className="pt-2 flex justify-start">
-              <FormButton type="submit" className="!rounded-full px-8">
-                Değişiklikleri Kaydet
-              </FormButton>
-            </div>
-            
-            <p className="text-xs text-gray-400 font-medium mt-3 italic">
-              * E-posta adresinizi değiştirmeniz durumunda onaylamanız gerekebilir.
-            </p>
-          </form>
+              <FormInput
+                label="E-posta Adresi (Oturum)"
+                type="email"
+                value={user?.email ?? ""}
+                className="!rounded-full px-5 opacity-70"
+                icon={FiMail}
+                disabled
+              />
+
+              <FormTextarea
+                label="Şirket Hakkında (Açıklama)"
+                value={profile.description || ""}
+                onChange={(e) => setProfile({ ...profile, description: e.target.value })}
+                rows={4}
+                className="!rounded-2xl px-5 py-3"
+              />
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
+                <FormInput
+                  label="Endüstri / Sektör"
+                  type="text"
+                  value={profile.industry || ""}
+                  onChange={(e) => setProfile({ ...profile, industry: e.target.value })}
+                  className="!rounded-full px-5"
+                />
+                <FormInput
+                  label="Konum (Şehir/Ülke)"
+                  type="text"
+                  value={profile.location || ""}
+                  onChange={(e) => setProfile({ ...profile, location: e.target.value })}
+                  className="!rounded-full px-5"
+                />
+              </div>
+
+              <FormInput
+                label="Web Sitesi"
+                type="url"
+                value={profile.website_url || ""}
+                onChange={(e) => setProfile({ ...profile, website_url: e.target.value })}
+                placeholder="https://sirketiniz.com"
+                className="!rounded-full px-5"
+              />
+
+              <div className="pt-2 flex justify-start">
+                <FormButton type="submit" isLoading={profileLoading} className="!rounded-full px-8">
+                  Değişiklikleri Kaydet
+                </FormButton>
+              </div>
+            </form>
+          )}
         </SectionCard>
 
         {/* ② Şifre Değiştir */}

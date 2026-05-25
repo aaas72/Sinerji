@@ -38,6 +38,7 @@ export const updateStudentProfileSchema = z.object({
   github_url: z.string().url("Invalid URL format").optional().or(z.literal('')),
   twitter_url: z.string().url("Invalid URL format").optional().or(z.literal('')),
   website_url: z.string().url("Invalid URL format").optional().or(z.literal('')),
+  cv_url: z.string().url("Invalid URL format").optional().or(z.literal('')),
   major: z.string().optional(),
   graduation_year: z.number().int().optional(),
   availability_status: z.string().optional(),

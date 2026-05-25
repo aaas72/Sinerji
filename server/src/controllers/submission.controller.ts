@@ -2,6 +2,8 @@ import { Request, Response, NextFunction } from 'express';
 import { SubmissionService } from '../services/submission.service';
 import { createSubmissionSchema } from '../utils/validation';
 import { AppError } from '../utils/AppError';
+import { notificationService } from '../services/notification.service';
+import { getIO, userSockets } from '../socket';
 
 const submissionService = new SubmissionService();
 
@@ -101,6 +103,19 @@ export class SubmissionController {
               submissionId,
               companyUserId,
               status as 'approved' | 'rejected'
+          );
+
+          // Trigger Notification
+          const studentId = submission.student_user_id;
+          const statusText = status === 'approved' ? 'Kabul Edildi' : 'Reddedildi';
+          const notificationMessage = `"${submission.task.title}" görevi için başvurunuz ${statusText}.`;
+
+          await notificationService.createNotification(
+            studentId,
+            'Başvuru Durumu Güncellendi',
+            notificationMessage,
+            status === 'approved' ? 'application_accepted' : 'application_rejected',
+            '/student/applications'
           );
 
           res.status(200).json({
