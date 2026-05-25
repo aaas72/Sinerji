@@ -10,4 +10,9 @@ export interface CompanyProfile {
         email: string;
         created_at: string;
     };
+    stats?: {
+        hiringRate: number;
+        totalApplicationsCount: number;
+        hiredStudentsCount: number;
+    };
 }

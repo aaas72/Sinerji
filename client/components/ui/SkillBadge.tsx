@@ -10,7 +10,7 @@ export default function SkillBadge({ label, className }: SkillBadgeProps) {
   return (
     <span
       className={cn(
-        "bg-gray-100 text-secondary px-3 py-1 rounded-full text-sm",
+        "px-3.5 py-1.5 bg-[#f0f5ff] text-[#2c4b75] rounded-full text-[14px] font-medium select-none shrink-0",
         className
       )}
     >

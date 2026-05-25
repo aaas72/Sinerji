@@ -9,6 +9,8 @@ import { authService } from "@/services/auth.service";
 import { useAuthStore } from "@/hooks/useAuth";
 import { useAuthModal } from "@/hooks/useAuthModal";
 import PrimaryButton from "@/components/ui/PrimaryButton";
+import Input from "@/components/ui/Input";
+import Tabs from "@/components/ui/Tabs";
 import {
   FiX,
   FiCheckCircle,
@@ -63,11 +65,11 @@ export default function AuthModal() {
       onClick={handleOverlayClick}
       className="fixed inset-0 z-100 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-fadeIn"
     >
-      <div className="relative w-full max-w-4xl bg-white rounded-2xl shadow-2xl overflow-hidden animate-slideUp flex max-h-[90vh]">
+      <div className="relative w-full max-w-4xl bg-[#faf9f6] rounded-2xl shadow-2xl overflow-hidden animate-slideUp flex max-h-[90vh]">
         {/* ─── Left Panel ─── */}
         <div className="hidden lg:flex lg:w-[45%] bg-linear-to-br from-[#004d40] to-[#00695c] text-white p-10 flex-col justify-center relative overflow-hidden shrink-0">
           {/* Background decorations */}
-          <div className="absolute top-0 right-0 w-64 h-64 bg-[#fbb049]/10 rounded-full blur-3xl" />
+          <div className="absolute top-0 right-0 w-64 h-64 bg-[#e28743]/10 rounded-full blur-3xl" />
           <div className="absolute bottom-0 left-0 w-48 h-48 bg-white/5 rounded-full blur-2xl" />
 
           <div className="relative z-10">
@@ -90,8 +92,8 @@ export default function AuthModal() {
                 { icon: FiStar, text: "Sektör profesyonellerinden destek" },
               ].map((item) => (
                 <div key={item.text} className="flex items-center gap-3">
-                  <div className="w-8 h-8 bg-white/10 rounded-lg flex items-center justify-center shrink-0">
-                    <item.icon size={16} className="text-[#fbb049]" />
+                  <div className="flex items-center justify-center shrink-0">
+                    <item.icon size={20} className="text-[#e28743]" />
                   </div>
                   <span className="text-sm text-white/90">{item.text}</span>
                 </div>
@@ -224,11 +226,12 @@ function LoginForm({
         <label className="block text-sm font-medium text-gray-700 mb-1.5">
           E-posta
         </label>
-        <input
+        <Input
           type="email"
           {...register("email")}
-          className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#004d40]/20 focus:border-[#004d40] bg-gray-50/50 transition-all text-sm"
+          className="px-4 py-3 bg-gray-50/50 text-sm"
           placeholder="ornek@email.com"
+          error={!!errors.email}
         />
         {errors.email && (
           <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>
@@ -239,11 +242,12 @@ function LoginForm({
         <label className="block text-sm font-medium text-gray-700 mb-1.5">
           Şifre
         </label>
-        <input
+        <Input
           type="password"
           {...register("password")}
-          className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#004d40]/20 focus:border-[#004d40] bg-gray-50/50 transition-all text-sm"
+          className="px-4 py-3 bg-gray-50/50 text-sm"
           placeholder="••••••••"
+          error={!!errors.password}
         />
         {errors.password && (
           <p className="text-red-500 text-xs mt-1">{errors.password.message}</p>
@@ -252,7 +256,7 @@ function LoginForm({
 
       <PrimaryButton
         type="submit"
-        className="w-full bg-[#004d40] hover:bg-[#003830] text-white py-3 text-sm font-semibold rounded-xl transition-all duration-200 hover:shadow-lg hover:shadow-[#004d40]/20 mt-2"
+        className="w-full bg-[#004d40] hover:bg-[#003830] text-white py-3 text-sm font-semibold rounded-full transition-all duration-300 hover:-translate-y-0.5 mt-2"
         disabled={isLoading}
       >
         {isLoading ? "Giriş yapılıyor..." : "Giriş Yap"}
@@ -315,61 +319,35 @@ function RegisterForm({
       )}
 
       {/* Role Selector */}
-      <div className="grid grid-cols-2 gap-2 p-1 bg-gray-100 rounded-xl">
-        <button
-          type="button"
-          onClick={() => handleRoleChange("student")}
-          className={`py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
-            role === "student"
-              ? "bg-white text-[#004d40] shadow-sm"
-              : "text-gray-500 hover:text-gray-700"
-          }`}
-        >
-          <FiCheckCircle
-            size={14}
-            className={`inline mr-1.5 ${
-              role === "student" ? "text-[#004d40]" : "text-transparent"
-            }`}
-          />
-          Öğrenci
-        </button>
-        <button
-          type="button"
-          onClick={() => handleRoleChange("company")}
-          className={`py-2.5 rounded-lg text-sm font-medium transition-all duration-200 ${
-            role === "company"
-              ? "bg-white text-[#004d40] shadow-sm"
-              : "text-gray-500 hover:text-gray-700"
-          }`}
-        >
-          <FiCheckCircle
-            size={14}
-            className={`inline mr-1.5 ${
-              role === "company" ? "text-[#004d40]" : "text-transparent"
-            }`}
-          />
-          Şirket
-        </button>
-      </div>
+      <Tabs
+        tabs={[
+          { id: "student", label: "Öğrenci" },
+          { id: "company", label: "Şirket" },
+        ]}
+        activeTab={role}
+        onTabChange={(id) => handleRoleChange(id as "student" | "company")}
+      />
 
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1.5">E-posta</label>
-        <input
+        <Input
           type="email"
           {...register("email")}
-          className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#004d40]/20 focus:border-[#004d40] bg-gray-50/50 transition-all text-sm"
+          className="px-4 py-3 bg-gray-50/50 text-sm"
           placeholder="ornek@email.com"
+          error={!!errors.email}
         />
         {errors.email && <p className="text-red-500 text-xs mt-1">{errors.email.message}</p>}
       </div>
 
       <div>
         <label className="block text-sm font-medium text-gray-700 mb-1.5">Şifre</label>
-        <input
+        <Input
           type="password"
           {...register("password")}
-          className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#004d40]/20 focus:border-[#004d40] bg-gray-50/50 transition-all text-sm"
+          className="px-4 py-3 bg-gray-50/50 text-sm"
           placeholder="••••••••"
+          error={!!errors.password}
         />
         {errors.password && <p className="text-red-500 text-xs mt-1">{errors.password.message}</p>}
       </div>
@@ -378,21 +356,23 @@ function RegisterForm({
         <>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1.5">Ad Soyad</label>
-            <input
+            <Input
               type="text"
               {...register("full_name")}
-              className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#004d40]/20 focus:border-[#004d40] bg-gray-50/50 transition-all text-sm"
+              className="px-4 py-3 bg-gray-50/50 text-sm"
               placeholder="Ahmet Yılmaz"
+              error={!!errors.full_name}
             />
             {errors.full_name && <p className="text-red-500 text-xs mt-1">{errors.full_name.message}</p>}
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1.5">Üniversite (Opsiyonel)</label>
-            <input
+            <Input
               type="text"
               {...register("university")}
-              className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#004d40]/20 focus:border-[#004d40] bg-gray-50/50 transition-all text-sm"
+              className="px-4 py-3 bg-gray-50/50 text-sm"
               placeholder="Üniversite Adı"
+              error={!!errors.university}
             />
           </div>
         </>
@@ -402,21 +382,23 @@ function RegisterForm({
         <>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1.5">Şirket Adı</label>
-            <input
+            <Input
               type="text"
               {...register("company_name")}
-              className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#004d40]/20 focus:border-[#004d40] bg-gray-50/50 transition-all text-sm"
+              className="px-4 py-3 bg-gray-50/50 text-sm"
               placeholder="Tech Corp"
+              error={!!errors.company_name}
             />
             {errors.company_name && <p className="text-red-500 text-xs mt-1">{errors.company_name.message}</p>}
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700 mb-1.5">Web Sitesi (Opsiyonel)</label>
-            <input
+            <Input
               type="url"
               {...register("website_url")}
-              className="w-full px-4 py-3 border border-gray-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-[#004d40]/20 focus:border-[#004d40] bg-gray-50/50 transition-all text-sm"
+              className="px-4 py-3 bg-gray-50/50 text-sm"
               placeholder="https://example.com"
+              error={!!errors.website_url}
             />
             {errors.website_url && <p className="text-red-500 text-xs mt-1">{errors.website_url.message}</p>}
           </div>
@@ -425,7 +407,7 @@ function RegisterForm({
 
       <PrimaryButton
         type="submit"
-        className="w-full bg-[#004d40] hover:bg-[#003830] text-white py-3 text-sm font-semibold rounded-xl transition-all duration-200 hover:shadow-lg hover:shadow-[#004d40]/20 mt-2"
+        className="w-full bg-[#004d40] hover:bg-[#003830] text-white py-3 text-sm font-semibold rounded-full transition-all duration-300 hover:-translate-y-0.5 mt-2"
         disabled={isLoading}
       >
         {isLoading ? "Hesap oluşturuluyor..." : "Hesap Oluştur"}

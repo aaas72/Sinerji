@@ -50,3 +50,35 @@ export const getLatestTasks = async (req: Request, res: Response) => {
         res.status(500).json({ error: 'Failed to fetch tasks' });
     }
 };
+
+export const getTopCompanies = async (req: Request, res: Response) => {
+    try {
+        const companies = await prisma.companyProfile.findMany({
+            take: 4,
+            orderBy: {
+                tasks: {
+                    _count: 'desc'
+                }
+            },
+            select: {
+                company_name: true,
+                logo_url: true,
+                industry: true,
+                _count: {
+                    select: { tasks: true }
+                }
+            }
+        });
+
+        const formattedCompanies = companies.map(c => ({
+            name: c.company_name,
+            logo_url: c.logo_url,
+            industry: c.industry,
+            taskCount: c._count.tasks
+        }));
+
+        res.json(formattedCompanies);
+    } catch (error) {
+        res.status(500).json({ error: 'Failed to fetch top companies' });
+    }
+};

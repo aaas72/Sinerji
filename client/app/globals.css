@@ -229,4 +229,10 @@ h6 {
     background: radial-gradient(circle, rgba(226,135,67,0.4) 0%, transparent 60%);
     transform: rotate(-15deg);
     pointer-events: none;
+}
+
+@layer components {
+  .app-container {
+    @apply w-full max-w-[1100px] mx-auto;
+  }
 }

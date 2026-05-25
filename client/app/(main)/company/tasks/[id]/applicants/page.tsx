@@ -139,7 +139,7 @@ function ReviewModal({
       {/* backdrop */}
       <div className="absolute inset-0" onClick={onClose} />
 
-      <div className="relative bg-white rounded-3xl shadow-2xl max-w-5xl w-full max-h-[90vh] overflow-hidden flex flex-col md:flex-row z-10 animate-scaleUp">
+      <div className="relative bg-white rounded-3xl shadow-2xl app-container w-full max-h-[90vh] overflow-hidden flex flex-col md:flex-row z-10 animate-scaleUp">
         {/* close */}
         <button
           onClick={onClose}

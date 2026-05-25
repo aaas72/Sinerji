@@ -61,8 +61,8 @@ export default function CompanyNavbar() {
   };
 
   return (
-    <header className="w-full z-50 bg-white/85 backdrop-blur-md border-b border-[#f1f0ea] sticky top-0 transition-all duration-300">
-      <nav className="mx-auto max-w-6xl px-6 h-[64px] flex items-center justify-between">
+    <header className="w-full z-50 bg-white/85 backdrop-blur-md border-b border-[#dfded6]/30 shadow-sm shadow-[#00342b]/5 sticky top-0 transition-all duration-300">
+      <nav className="mx-auto app-container px-6 h-[64px] flex items-center justify-between">
         
         {/* Left: Brand logo & Navigation links */}
         <div className="flex items-center gap-8 lg:gap-12 h-full">
@@ -106,15 +106,14 @@ export default function CompanyNavbar() {
               {/* Messages */}
               <Link
                 href="/company/messages"
-                className="text-gray-400 hover:text-gray-900 transition-colors relative p-1 rounded-full hover:bg-gray-50"
+                className="w-10 h-10 rounded-full flex items-center justify-center text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-all relative"
               >
                 <FiMessageSquare size={18} />
               </Link>
 
-
               {/* Profile Circle Menu */}
               <div
-                className="w-8 h-8 rounded-full border border-gray-200 overflow-hidden flex items-center justify-center bg-gray-50 hover:border-[#004d40] transition-all cursor-pointer shadow-2xs select-none"
+                className="w-10 h-10 rounded-full border border-gray-200 flex items-center justify-center bg-white hover:bg-gray-100 transition-all cursor-pointer select-none"
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
               >
                 <span className="text-[10px] font-bold text-[#004d40]">

@@ -95,7 +95,6 @@ export default function TaskBrowsingCard({
             <SkillBadge 
               key={i} 
               label={t} 
-              className="text-[10px] px-2 py-0.5 border border-gray-100 bg-gray-50 text-gray-600 font-medium rounded-full" 
             />
           ))}
           {task.tags.length > 3 && (

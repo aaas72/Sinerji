@@ -90,7 +90,7 @@ export default function TasksBoard({
 
   return (
     <div className="w-full h-[calc(100vh-4.5rem)] bg-[#faf9f6] p-6 overflow-hidden flex items-center justify-center">
-      <div className="w-full max-w-6xl h-full bg-white rounded-2xl border border-[#f1f0ea] shadow-2xs overflow-hidden flex flex-col md:flex-row">
+      <div className="w-full app-container h-full bg-white rounded-2xl border border-[#f1f0ea] shadow-2xs overflow-hidden flex flex-col md:flex-row">
         {/* Left Column: Master Opportunity List */}
         <div className="w-full md:w-[450px] lg:w-[490px] h-full flex flex-col border-r border-[#f1f0ea] bg-white px-6 py-6 overflow-hidden shrink-0">
           

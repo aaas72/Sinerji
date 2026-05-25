@@ -127,12 +127,7 @@ export default function ProfilePage() {
 
   return (
     <div className="w-full max-w-[1280px] mx-auto px-6 md:px-16 py-16 flex flex-col gap-8">
-      <Breadcrumb
-        items={[
-          { label: "Öğrenciler", href: "/students" },
-          { label: profile.full_name, active: true },
-        ]}
-      />
+
 
       <MainSection hideHeader variant="transparent" bordered={false} padding="none">
         {/* ── Header Section ── */}
@@ -150,9 +145,7 @@ export default function ProfilePage() {
                   status={profile.availability_status === "available" ? "active" : "inactive"} 
                   customLabel={profile.availability_status === "available" ? "Müsait" : "Meşgul"}
                 />
-                <span className="bg-[#e28743]/10 text-[#e28743] px-3.5 py-1.5 rounded-full text-xs font-semibold border border-[#e28743]/20 select-none shrink-0">
-                  Sinerji Öğrencisi
-                </span>
+
               </div>
               <h1 className="text-[28px] md:text-[36px] font-bold leading-tight text-[#00342b] font-sans break-words tracking-tight">
                 {profile.full_name}
@@ -264,9 +257,40 @@ export default function ProfilePage() {
               </div>
             </SectionCard>
 
+            {/* Badges & Achievements */}
+            <SectionCard title="Rozetler ve Başarılar" icon={FiAward}>
+              {profile.submissions && profile.submissions.some((sub: any) => sub.review?.awardedBadges?.length > 0) ? (
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                  {Array.from(new Map(
+                    profile.submissions
+                      .flatMap((sub: any) => sub.review?.awardedBadges?.map((ab: any) => ab.badge) || [])
+                      .filter(Boolean)
+                      .map((badge: any) => [badge.id, badge])
+                  ).values()).map((badge: any) => (
+                    <div key={badge.id} className="flex flex-col items-center p-4 bg-transparent border border-[#f1f0ea] rounded-2xl hover:border-[#e28743]/40 hover:shadow-sm transition-all text-center">
+                      <div className="w-12 h-12 rounded-full bg-[#e28743]/10 text-[#e28743] flex items-center justify-center mb-3">
+                        {badge.icon_url ? (
+                           <img src={badge.icon_url} alt={badge.name} className="w-6 h-6 object-contain" />
+                        ) : (
+                           <FiAward className="w-6 h-6" />
+                        )}
+                      </div>
+                      <span className="text-xs font-bold text-[#00342b] leading-tight">
+                        {badge.name}
+                      </span>
+                    </div>
+                  ))}
+                </div>
+              ) : (
+                <div className="text-center py-8 text-[#565e74] border border-dashed border-[#f1f0ea] rounded-xl bg-gray-50/50">
+                  <p className="text-sm font-medium">Henüz bir rozet veya başarı kazanılmadı.</p>
+                </div>
+              )}
+            </SectionCard>
+
             {/* Recommendations Block */}
-            {profile.recommendations && profile.recommendations.length > 0 && (
-              <SectionCard title="Tavsiyeler" icon={FiStar}>
+            <SectionCard title="Tavsiyeler" icon={FiStar}>
+              {profile.recommendations && profile.recommendations.length > 0 ? (
                 <div className="flex flex-col gap-4">
                   {profile.recommendations.map((rec: any) => (
                     <div key={rec.id} className="bg-transparent border border-[#f1f0ea] rounded-xl p-6">
@@ -285,8 +309,12 @@ export default function ProfilePage() {
                     </div>
                   ))}
                 </div>
-              </SectionCard>
-            )}
+              ) : (
+                <div className="text-center py-8 text-[#565e74] border border-dashed border-[#f1f0ea] rounded-xl bg-gray-50/50">
+                  <p className="text-sm font-medium">Henüz bir tavsiye bulunmuyor.</p>
+                </div>
+              )}
+            </SectionCard>
           </div>
 
           {/* Sidebar (1/3) */}

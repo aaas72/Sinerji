@@ -132,7 +132,7 @@ export default function StudentDashboard() {
   return (
     <div className="w-full h-full bg-[#faf9f6]">
       {recommendedError && (
-        <div className="mx-auto max-w-6xl px-6 pt-4">
+        <div className="mx-auto app-container px-6 pt-4">
           <p className="rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-xs text-red-600">
             {recommendedError}
           </p>

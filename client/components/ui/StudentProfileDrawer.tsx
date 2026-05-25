@@ -3,6 +3,7 @@ import { FiX, FiMapPin, FiBriefcase, FiUserPlus, FiGithub, FiLinkedin, FiTwitter
 import { StudentType } from "@/components/ui/cards/StudentExploreCard";
 import PrimaryButton from "@/components/ui/PrimaryButton";
 import Link from "next/link";
+import SkillBadge from "@/components/ui/SkillBadge";
 
 interface StudentProfileDrawerProps {
   isOpen: boolean;
@@ -122,12 +123,10 @@ export default function StudentProfileDrawer({ isOpen, onClose, student }: Stude
                 <div className="flex flex-wrap gap-2">
                   {student.skills && student.skills.length > 0 ? (
                     student.skills.map((skill, idx) => (
-                      <span
+                      <SkillBadge
                         key={idx}
-                        className="px-4 py-1.5 bg-[#00342b]/5 text-[#00342b] border border-[#00342b]/10 rounded-full text-sm font-semibold"
-                      >
-                        {typeof skill === "string" ? skill : (skill as any).skill?.name || "Bilinmeyen Yetenek"}
-                      </span>
+                        label={typeof skill === "string" ? skill : (skill as any).skill?.name || "Bilinmeyen Yetenek"}
+                      />
                     ))
                   ) : (
                     <span className="text-sm text-gray-400">Yetenek eklenmemiş.</span>

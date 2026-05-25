@@ -22,6 +22,7 @@ import { Task } from "@/types/task";
 import { StudentProfile } from "@/types/student";
 import { useToast } from "@/context/ToastContext";
 import { FiBriefcase, FiMapPin, FiFileText, FiCheckCircle } from "react-icons/fi";
+import SkillBadge from "@/components/ui/SkillBadge";
 
 const applySchema = z.object({
   coverLetter: z.string().min(50, "Lütfen en az 50 karakterlik bir başvuru yazısı girin."),
@@ -142,7 +143,7 @@ export default function ApplyPage() {
   let sectionIndex = 1;
 
   return (
-    <div className="max-w-6xl mx-auto px-6 py-10 space-y-8">
+    <div className="app-container px-6 py-10 space-y-8">
 
       {/* Page Header Outside Box */}
       <div className="flex flex-col md:flex-row gap-6 items-start justify-between select-none">
@@ -231,9 +232,7 @@ export default function ApplyPage() {
                 <div className="flex flex-wrap gap-2">
                   {task.requiredSkills && task.requiredSkills.length > 0 ? (
                     task.requiredSkills.map((s: any, idx) => (
-                      <span key={idx} className="bg-[#004d40]/5 px-3 py-1.5 rounded-xl text-[10px] text-[#004d40] border border-[#004d40]/10 font-bold uppercase tracking-wider">
-                        {s.skill.name}
-                      </span>
+                      <SkillBadge key={idx} label={s.skill.name} />
                     ))
                   ) : <span className="text-xs text-gray-400 font-medium italic">Belirtilmemiş</span>}
                 </div>

@@ -74,7 +74,7 @@ const companyMenuItems: MenuItem[] = [
 ];
 
 const studentNavbarLinks = [
-  { href: "/student", label: "Görevleri İncele" },
+  { href: "/student", label: "Görevler" },
   { href: "/student/saved-tasks", label: "Mahfuzat" },
   { href: "/student/applications", label: "Başvurularım" },
   { href: "/student/explore", label: "Keşfet" },
@@ -144,7 +144,7 @@ export default function Navbar({ authenticated, userName, role }: NavbarProps) {
   if (!_hasHydrated) {
     return (
       <header className="w-full z-50 absolute top-0 left-0 right-0 bg-transparent">
-        <nav className="mx-auto max-w-6xl px-6 py-4 flex items-center justify-between">
+        <nav className="mx-auto app-container px-6 py-4 flex items-center justify-between">
           <span className="text-[#004d40] font-bold text-lg tracking-tight">
             Sinerji
           </span>
@@ -162,7 +162,7 @@ export default function Navbar({ authenticated, userName, role }: NavbarProps) {
           : "bg-white/85 backdrop-blur-md border-b border-[#dfded6]/30 shadow-sm shadow-[#00342b]/5 sticky top-0"
       )}
     >
-      <nav className="mx-auto max-w-6xl px-6 h-[64px] flex items-center justify-between">
+      <nav className="mx-auto app-container px-6 h-[64px] flex items-center justify-between">
         {/* Left: Brand logo & Navigation links */}
         <div className="flex items-center gap-8 lg:gap-12 h-full">
           <Link
@@ -244,14 +244,14 @@ export default function Navbar({ authenticated, userName, role }: NavbarProps) {
                 {/* Messages */}
                 <Link
                   href={userRole === "company" ? "/company/messages" : "/student/messages"}
-                  className="text-gray-400 hover:text-gray-900 transition-colors relative p-1 rounded-full hover:bg-gray-50"
+                  className="w-10 h-10 rounded-full flex items-center justify-center text-gray-600 hover:text-gray-900 hover:bg-gray-100 transition-all relative"
                 >
                   <FiMessageSquare size={18} />
                 </Link>
 
                 {/* Profile Circle Menu */}
                 <div
-                  className="w-8 h-8 rounded-full border border-gray-200 overflow-hidden flex items-center justify-center bg-gray-50 hover:border-[#004d40] transition-all cursor-pointer shadow-2xs select-none"
+                  className="w-10 h-10 rounded-full border border-gray-200 flex items-center justify-center bg-white hover:bg-gray-100 transition-all cursor-pointer select-none"
                   onClick={() => setMenuOpen(!menuOpen)}
                 >
                   <span className="text-[10px] font-bold text-[#004d40]">

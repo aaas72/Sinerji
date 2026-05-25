@@ -51,7 +51,15 @@ export class StudentService {
                 company: true,
               },
             },
-            review: true,
+            review: {
+              include: {
+                awardedBadges: {
+                  include: {
+                    badge: true
+                  }
+                }
+              }
+            },
           },
         },
         user: {

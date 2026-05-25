@@ -48,7 +48,7 @@ export default function CompanyProfilePage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen mt-12 container mx-auto flex justify-center items-center text-gray-500">
+      <div className="min-h-screen mt-12 app-container flex justify-center items-center text-gray-500">
         Yükleniyor...
       </div>
     );
@@ -56,14 +56,14 @@ export default function CompanyProfilePage() {
 
   if (!profile) {
     return (
-      <div className="min-h-screen mt-12 container mx-auto flex justify-center items-center text-gray-500">
+      <div className="min-h-screen mt-12 app-container flex justify-center items-center text-gray-500">
         Şirket bulunamadı.
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen mt-12 container mx-auto pb-12 px-4 max-w-[1200px]">
+    <div className="min-h-screen mt-12 app-container pb-12 px-4 app-container">
       {/* ── Premium Hero Card ─────────────────────────────────────────────────────── */}
       <div className="relative overflow-hidden rounded-[24px] bg-gradient-to-br from-[#004d40] to-[#0f172a] text-white mb-8 shadow-md">
         {/* Decorative elements */}
@@ -121,11 +121,15 @@ export default function CompanyProfilePage() {
                   4.8/5
                 </span>
                 
-                <span className="w-1 h-1 rounded-full bg-white/40" />
-                <span className="flex items-center gap-1.5 text-white/90">
-                  <FiTrendingUp className="text-green-400" size={14} />
-                  %92 İşe Alım Oranı
-                </span>
+                {profile.stats && profile.stats.totalApplicationsCount > 0 && (
+                  <>
+                    <span className="w-1 h-1 rounded-full bg-white/40" />
+                    <span className="flex items-center gap-1.5 text-white/90">
+                      <FiTrendingUp className="text-green-400" size={14} />
+                      %{profile.stats.hiringRate} İşe Alım Oranı
+                    </span>
+                  </>
+                )}
               </div>
             </div>
           </div>
@@ -178,29 +182,28 @@ export default function CompanyProfilePage() {
         {/* ── Right column (1/3) ─────────────────────── */}
         <div className="space-y-8">
           {/* Contact Info */}
-          <div className="bg-white border border-[#f1f0ea] rounded-[24px] p-6 shadow-2xs hover:shadow-sm transition-all">
-            <h3 className="text-[18px] font-semibold text-[#0b1c30] mb-5">İletişim Bilgileri</h3>
+          <SectionCard icon={FiMail} title="İletişim Bilgileri">
             <div className="space-y-1">
                {profile.website_url && (
-                 <div className="flex items-center gap-4 py-3.5 border-b border-[#f1f0ea] last:border-0 hover:bg-gray-50/50 transition-colors -mx-6 px-6">
+                 <div className="flex items-center gap-4 py-3.5 border-b border-[#dfded6]/40 last:border-0 transition-colors -mx-2 px-2 hover:bg-[#dfded6]/20 rounded-xl">
                    <FiGlobe className="text-[#004d40] shrink-0" size={18} />
                    <a href={profile.website_url} target="_blank" rel="noopener noreferrer" className="text-[14px] font-medium text-[#0b1c30] hover:text-[#004d40] transition-colors truncate">
                      {profile.website_url}
                    </a>
                  </div>
                )}
-               <div className="flex items-center gap-4 py-3.5 border-b border-[#f1f0ea] last:border-0 hover:bg-gray-50/50 transition-colors -mx-6 px-6">
+               <div className="flex items-center gap-4 py-3.5 border-b border-[#dfded6]/40 last:border-0 transition-colors -mx-2 px-2 hover:bg-[#dfded6]/20 rounded-xl">
                  <FiMail className="text-[#004d40] shrink-0" size={18} />
                  <span className="text-[14px] font-medium text-[#0b1c30] truncate">{profile.user.email}</span>
                </div>
                {profile.location && (
-                 <div className="flex items-center gap-4 py-3.5 border-b border-[#f1f0ea] last:border-0 hover:bg-gray-50/50 transition-colors -mx-6 px-6">
+                 <div className="flex items-center gap-4 py-3.5 border-b border-[#dfded6]/40 last:border-0 transition-colors -mx-2 px-2 hover:bg-[#dfded6]/20 rounded-xl">
                    <FiMapPin className="text-[#004d40] shrink-0" size={18} />
                    <span className="text-[14px] font-medium text-[#0b1c30] truncate">{profile.location}</span>
                  </div>
                )}
             </div>
-          </div>
+          </SectionCard>
         </div>
         
       </div>

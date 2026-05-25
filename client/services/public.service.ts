@@ -14,6 +14,13 @@ export interface PublicTask {
     skills: string[];
 }
 
+export interface PublicCompany {
+    name: string;
+    logo_url: string | null;
+    industry: string | null;
+    taskCount: number;
+}
+
 export const publicService = {
     getStats: async (): Promise<PublicStats> => {
         const response = await api.get('/public/stats');
@@ -21,6 +28,10 @@ export const publicService = {
     },
     getLatestTasks: async (): Promise<PublicTask[]> => {
         const response = await api.get('/public/tasks');
+        return response.data;
+    },
+    getTopCompanies: async (): Promise<PublicCompany[]> => {
+        const response = await api.get('/public/top-companies');
         return response.data;
     }
 };

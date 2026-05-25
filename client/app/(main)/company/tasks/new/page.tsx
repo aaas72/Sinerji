@@ -173,7 +173,7 @@ export default function NewTaskPage() {
 
   return (
     <div className="min-h-screen bg-[#FCFBF7] text-[#0b1c30] antialiased pb-32">
-      <main className="max-w-7xl mx-auto px-6 py-8">
+      <main className="app-container px-6 py-8">
         {/* Header & Breadcrumbs */}
         <div className="mb-8">
           <Breadcrumb

@@ -187,7 +187,7 @@ export default function StudentProfileEditPage() {
     );
 
   return (
-    <div className="w-full max-w-[1200px] mx-auto px-4 md:px-8 py-10 flex flex-col gap-8 min-h-screen font-sans">
+    <div className="w-full app-container px-4 md:px-8 py-10 flex flex-col gap-8 min-h-screen font-sans">
       <Breadcrumb
         items={[
           { label: "Öğrenci Profili", href: `/students/${profile?.user_id}` },

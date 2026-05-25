@@ -97,7 +97,7 @@ export default function ApplicationCard({
       {/* Tags Section */}
       <div className="flex flex-wrap gap-2 mb-6">
         {tags.map((tag, index) => (
-          <SkillBadge className="bg-[#faf9f6] border border-[#dfded6] text-[#004d40] text-[10px] font-bold uppercase tracking-widest rounded-xl py-1 px-3" key={index} label={tag} />
+          <SkillBadge key={index} label={tag} />
         ))}
       </div>
 

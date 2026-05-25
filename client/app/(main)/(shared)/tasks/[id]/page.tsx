@@ -5,6 +5,7 @@ import { useParams, useRouter } from "next/navigation";
 import MainSection from "@/components/ui/layouts/MainSection";
 import MainSectionTitle from "@/components/ui/MainSectionTitle";
 import PrimaryButton from "@/components/ui/PrimaryButton";
+import SkillBadge from "@/components/ui/SkillBadge";
 import Link from "next/link";
 import {
   FiCalendar,
@@ -18,7 +19,6 @@ import { Task } from "@/types/task";
 import { useAuthStore } from "@/hooks/useAuth";
 import StatusBadge from "@/components/ui/badges/StatusBadge";
 import SectionCard from "@/components/ui/cards/SectionCard";
-import Breadcrumb from "@/components/ui/Breadcrumb";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -72,7 +72,7 @@ export default function TaskDetailsPage() {
 
   if (loading) {
     return (
-      <div className="min-h-screen mt-12 container mx-auto flex justify-center items-center text-gray-500">
+      <div className="min-h-screen mt-12 app-container flex justify-center items-center text-gray-500">
         Yükleniyor...
       </div>
     );
@@ -80,7 +80,7 @@ export default function TaskDetailsPage() {
 
   if (!task) {
     return (
-      <div className="min-h-screen mt-12 container mx-auto flex justify-center items-center text-gray-500">
+      <div className="min-h-screen mt-12 app-container flex justify-center items-center text-gray-500">
         Görev bulunamadı.
       </div>
     );
@@ -100,12 +100,6 @@ export default function TaskDetailsPage() {
 
   return (
     <div className="w-full max-w-[1280px] mx-auto px-6 md:px-16 py-16 flex flex-col gap-8 font-sans">
-      <Breadcrumb items={[
-        { label: "Keşfet", href: "/student/explore" },
-        { label: "Görevler", href: "/student" },
-        { label: task.title, active: true },
-      ]} />
-
       <MainSection hideHeader variant="transparent" bordered={false} padding="none">
         {/* ── Header Section ── */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8">
@@ -115,8 +109,8 @@ export default function TaskDetailsPage() {
                 <StatusBadge status={task.status} />
               )}
               {task.category && (
-                <span className="bg-[#dce9ff] px-3.5 py-1.5 rounded-full text-xs font-semibold text-[#0b1c30] select-none shrink-0">
-                  {task.category}{task.subcategory ? ` › ${task.subcategory}` : ""}
+                <span className="text-sm font-medium text-[#565e74] select-none shrink-0">
+                  {task.category}
                 </span>
               )}
             </div>
@@ -149,13 +143,13 @@ export default function TaskDetailsPage() {
               <>
                 <button
                   onClick={() => router.push(`/company/tasks/${task.id}/applicants`)}
-                  className="px-4 py-2 border border-[#dfded6] hover:border-[#00342b] text-[#00342b] rounded-full text-xs font-semibold flex items-center gap-2 transition-all duration-300 cursor-pointer bg-white/60 hover:bg-[#004d40]/5"
+                  className="px-6 py-2.5 border border-[#dfded6] hover:border-[#00342b] text-[#00342b] rounded-full text-[14px] font-bold flex items-center gap-2 transition-all duration-300 cursor-pointer bg-white/60 hover:bg-[#004d40]/5"
                 >
                   <span>Başvurular</span>
                 </button>
                 <button
                   onClick={() => router.push(`/company/edit-task/${task.id}`)}
-                  className="px-4 py-2 bg-[#004d40] hover:bg-[#00342b] text-white rounded-full text-xs font-semibold transition-all duration-300 cursor-pointer shadow-sm"
+                  className="px-6 py-2.5 bg-[#004d40] hover:bg-[#00342b] text-white rounded-full text-[14px] font-bold transition-all duration-300 cursor-pointer shadow-sm hover:shadow-md hover:scale-[1.02] active:scale-[0.98]"
                 >
                   Düzenle
                 </button>
@@ -163,9 +157,9 @@ export default function TaskDetailsPage() {
             ) : null}
             <button
               onClick={() => router.push(`/companies/${task.company_user_id}`)}
-              className="px-4 py-2 border border-[#dfded6] hover:border-[#00342b] text-[#00342b] rounded-full text-xs font-semibold flex items-center gap-2 transition-all duration-300 cursor-pointer bg-white/60 hover:bg-[#004d40]/5"
+              className="px-6 py-2.5 border border-[#dfded6] hover:border-[#00342b] text-[#00342b] rounded-full text-[14px] font-bold flex items-center gap-2 transition-all duration-300 cursor-pointer bg-white/60 hover:bg-[#004d40]/5 hover:shadow-sm"
             >
-              <FiGlobe />
+              <FiGlobe size={16} />
               <span>Şirketi Gör</span>
             </button>
           </div>
@@ -220,12 +214,7 @@ export default function TaskDetailsPage() {
               <SectionCard icon={FiAward} title="Gerekli Yetenekler">
                 <div className="flex flex-wrap gap-2">
                   {task.requiredSkills.map((skillObj: any, index: number) => (
-                    <span
-                      key={index}
-                      className="bg-[#eff4ff] px-4 py-2 rounded-full text-xs font-semibold text-[#565e74] border border-[#dfded6] hover:border-[#004d40]/40 hover:bg-[#004d40]/5 hover:text-[#004d40] transition-colors cursor-pointer"
-                    >
-                      {skillObj.skill.name}
-                    </span>
+                    <SkillBadge key={index} label={skillObj.skill.name} />
                   ))}
                 </div>
               </SectionCard>

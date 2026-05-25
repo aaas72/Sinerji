@@ -25,6 +25,7 @@ import {
   FiLayers,
 } from "react-icons/fi";
 import StatusBadge from "@/components/ui/badges/StatusBadge";
+import SkillBadge from "@/components/ui/SkillBadge";
 
 // ── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -245,12 +246,7 @@ export default function TaskDetailsPage() {
               <SectionCard icon={FiHash} title="Required Skills">
                 <div className="flex flex-wrap gap-2">
                   {task.requiredSkills.map((ts) => (
-                    <span
-                      key={ts.skill_id}
-                      className="bg-[#eff4ff] px-4 py-2 rounded-full text-xs font-semibold text-[#565e74] border border-[#dfded6] hover:border-[#004d40]/40 hover:bg-[#004d40]/5 hover:text-[#004d40] transition-colors cursor-pointer"
-                    >
-                      {ts.skill.name}
-                    </span>
+                    <SkillBadge key={ts.skill_id} label={ts.skill.name} />
                   ))}
                 </div>
               </SectionCard>

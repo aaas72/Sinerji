@@ -215,7 +215,6 @@ export default function TaskDetail({ task }: TaskDetailProps) {
               <SkillBadge 
                 key={i} 
                 label={tag} 
-                className="px-3 py-1 bg-transparent text-gray-700 rounded-full text-xs font-semibold border border-gray-200"
               />
             ))}
           </div>

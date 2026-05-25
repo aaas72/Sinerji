@@ -24,7 +24,28 @@ export class CompanyService {
       throw new AppError('Company profile not found', 404);
     }
 
-    return profile;
+    const totalApplicationsCount = await prisma.submission.count({
+      where: {
+        task: {
+          company_user_id: userId,
+        },
+      },
+    });
+
+    const hiredStudentsCount = await prisma.submission.count({
+      where: {
+        task: {
+          company_user_id: userId,
+        },
+        status: 'approved',
+      },
+    });
+
+    const hiringRate = totalApplicationsCount > 0 
+      ? Math.round((hiredStudentsCount / totalApplicationsCount) * 100) 
+      : 0;
+
+    return { ...profile, stats: { hiringRate, totalApplicationsCount, hiredStudentsCount } };
   }
 
   async getAllCompanies() {

@@ -139,7 +139,7 @@ export default function EditCompanyProfilePage() {
   }
 
   return (
-    <div className="w-full max-w-[1200px] mx-auto px-4 md:px-8 py-10 md:py-14 flex flex-col gap-8 min-h-screen font-sans">
+    <div className="w-full app-container px-4 md:px-8 py-10 md:py-14 flex flex-col gap-8 min-h-screen font-sans">
       
       {/* ── Premium Hero Card ─────────────────────────────────────────────────────── */}
       <div className="relative overflow-hidden rounded-[24px] bg-gradient-to-br from-[#004d40] to-[#0f172a] text-white">
