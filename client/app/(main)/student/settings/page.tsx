@@ -1,195 +1,77 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import PrimaryButton from "@/components/ui/PrimaryButton";
-import { studentService } from "@/services/student.service";
+import { useState } from "react";
+import { authService } from "@/services/auth.service";
+import { useAuthStore } from "@/hooks/useAuth";
+import { useRouter } from "next/navigation";
 import {
-  FiSave,
-  FiUser,
-  FiBook,
-  FiFileText,
-  FiTrash2,
-  FiPlus,
-  FiPhone,
-  FiLinkedin,
-  FiTwitter,
-  FiGithub,
-  FiGlobe,
-  FiSettings,
-  FiBriefcase,
+  FiLock,
+  FiBell,
+  FiEye,
+  FiEyeOff,
+  FiLogOut,
+  FiAlertTriangle,
 } from "react-icons/fi";
 import { useToast } from "@/context/ToastContext";
-import { StudentProfile, StudentSkill } from "@/types/student";
-import { authService } from "@/services/auth.service";
-import Input from "@/components/ui/Input";
-import Select from "@/components/ui/Select";
-import Tabs from "@/components/ui/Tabs";
 import SectionCard from "@/components/ui/cards/SectionCard";
+import { FormInput, FormButton } from "@/components/ui/form";
+import Breadcrumb from "@/components/ui/Breadcrumb";
 
-
-
-const studentProfileSchema = z.object({
-  full_name: z.string().min(1, "Ad Soyad zorunludur"),
-  university: z.string().optional(),
-  bio: z
-    .string()
-    .max(2000, "Biyografi 2000 karakterden az olmalıdır")
-    .optional(),
-  phone: z.string().optional(),
-  linkedin_url: z
-    .string()
-    .url("Geçersiz URL formatı")
-    .optional()
-    .or(z.literal("")),
-  github_url: z
-    .string()
-    .url("Geçersiz URL formatı")
-    .optional()
-    .or(z.literal("")),
-  twitter_url: z
-    .string()
-    .url("Geçersiz URL formatı")
-    .optional()
-    .or(z.literal("")),
-  website_url: z
-    .string()
-    .url("Geçersiz URL formatı")
-    .optional()
-    .or(z.literal("")),
-  major: z.string().optional().or(z.literal("")),
-  graduation_year: z.coerce.number().optional(),
-  availability_status: z.string().optional(),
-  categories_of_interest: z.string().optional().or(z.literal("")),
-});
-
-
-
-const addSkillSchema = z.object({
-  skillName: z.string().min(1, "Yetenek adı zorunludur"),
-  category: z.string().min(1, "Kategori zorunludur"),
-  level: z.number().int().min(1).max(10),
-});
-
-type StudentProfileFormData = z.infer<typeof studentProfileSchema>;
-type AddSkillFormData = z.infer<typeof addSkillSchema>;
+// Shared Toggle component
+function Toggle({
+  checked,
+  onChange,
+  label,
+}: {
+  checked: boolean;
+  onChange: () => void;
+  label: string;
+}) {
+  return (
+    <label className="flex items-center justify-between cursor-pointer py-3.5 border-b border-[#f1f0ea] last:border-0 hover:bg-gray-50/50 px-4 -mx-4 rounded-xl transition-colors select-none group">
+      <span className="text-[14px] font-medium text-[#0b1c30] group-hover:text-[#004d40] transition-colors">{label}</span>
+      <button
+        type="button"
+        onClick={onChange}
+        className={`relative w-11 h-6 rounded-full transition-colors ${
+          checked ? "bg-[#004d40]" : "bg-gray-200"
+        }`}
+      >
+        <span
+          className={`absolute top-1 left-1 w-4 h-4 bg-white rounded-full shadow transition-transform ${
+            checked ? "translate-x-5" : "translate-x-0"
+          }`}
+        />
+      </button>
+    </label>
+  );
+}
 
 export default function StudentSettingsPage() {
-  const [profile, setProfile] = useState<StudentProfile | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isFetching, setIsFetching] = useState(true);
-  const [isAddingSkill, setIsAddingSkill] = useState(false);
-  const [activeSection, setActiveSection] = useState<"profile" | "skills" | "security">(
-    "profile"
-  );
-  const [pw, setPw] = useState({ current: "", next: "", confirm: "" });
-  const [pwLoading, setPwLoading] = useState(false);
-  const [skillLevel, setSkillLevel] = useState(5);
   const { showToast } = useToast();
+  const { logout } = useAuthStore();
+  const router = useRouter();
 
-  const {
-    register,
-    handleSubmit,
-    setValue,
-    formState: { errors },
-  } = useForm<StudentProfileFormData>({
-    resolver: zodResolver(studentProfileSchema) as any,
+  /* Password Form */
+  const [showCurrent, setShowCurrent] = useState(false);
+  const [showNew, setShowNew] = useState(false);
+  const [pwLoading, setPwLoading] = useState(false);
+  const [pw, setPw] = useState({ current: "", next: "", confirm: "" });
+  const pwField = (k: keyof typeof pw) => ({
+    value: pw[k],
+    onChange: (e: React.ChangeEvent<HTMLInputElement>) =>
+      setPw((p) => ({ ...p, [k]: e.target.value })),
   });
 
-  const {
-    register: registerSkill,
-    handleSubmit: handleSubmitSkill,
-    reset: resetSkill,
-    formState: { errors: skillErrors },
-  } = useForm<AddSkillFormData>({
-    resolver: zodResolver(addSkillSchema),
-    defaultValues: {
-      category: "General",
-      level: 5,
-    },
+  /* Notification Preferences */
+  const [notifs, setNotifs] = useState({
+    newApplication: true,
+    taskUpdate: true,
+    systemAnnouncement: false,
+    weeklyReport: false,
   });
-
-  const fetchProfile = async () => {
-    try {
-      const data = await studentService.getProfile();
-      setProfile(data);
-      setValue("full_name", data.full_name);
-      setValue("university", data.university || "");
-      setValue("bio", data.bio || "");
-      setValue("phone", data.phone || "");
-      setValue("linkedin_url", data.linkedin_url || "");
-      setValue("github_url", data.github_url || "");
-      setValue("twitter_url", data.twitter_url || "");
-      setValue("website_url", data.website_url || "");
-      setValue("major", data.major || "");
-      setValue("graduation_year", data.graduation_year || undefined);
-      setValue("availability_status", data.availability_status || "available");
-      setValue("categories_of_interest", data.categories_of_interest || "");
-    } catch (error) {
-      console.error("Failed to fetch profile", error);
-      showToast("Profil bilgileri yüklenemedi.", "error");
-    } finally {
-      setIsFetching(false);
-    }
-  };
-
-  useEffect(() => {
-    fetchProfile();
-  }, [setValue, showToast]);
-
-  const onProfileSubmit = async (data: StudentProfileFormData) => {
-    setIsLoading(true);
-    try {
-      await studentService.updateProfile(data);
-      showToast("Profil başarıyla güncellendi.", "success");
-      fetchProfile();
-    } catch (error: any) {
-      console.error("Profile update error:", error);
-      showToast(
-        error.response?.data?.message ||
-          "Profil güncellenirken bir hata oluştu.",
-        "error"
-      );
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const onAddSkill = async (data: AddSkillFormData) => {
-    setIsAddingSkill(true);
-    try {
-      await studentService.addSkill(data.skillName, data.category, skillLevel);
-      showToast("Yetenek başarıyla eklendi.", "success");
-      resetSkill();
-      setSkillLevel(5);
-      fetchProfile();
-    } catch (error: any) {
-      console.error("Add skill error:", error);
-      showToast(
-        error.response?.data?.message || "Yetenek eklenirken bir hata oluştu.",
-        "error"
-      );
-    } finally {
-      setIsAddingSkill(false);
-    }
-  };
-
-  const onRemoveSkill = async (skillId: number) => {
-    if (!confirm("Bu yeteneği silmek istediğinize emin misiniz?")) return;
-    try {
-      await studentService.removeSkill(skillId);
-      showToast("Yetenek başarıyla silindi.", "success");
-      fetchProfile();
-    } catch (error: any) {
-      console.error("Remove skill error:", error);
-      showToast(
-        error.response?.data?.message || "Yetenek silinirken bir hata oluştu.",
-        "error"
-      );
-    }
-  };
+  const toggle = (k: keyof typeof notifs) =>
+    setNotifs((n) => ({ ...n, [k]: !n[k] }));
 
   const handlePasswordChange = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -213,580 +95,135 @@ export default function StudentSettingsPage() {
     }
   };
 
-  if (isFetching)
-    return (
-      <div className="flex items-center justify-center min-h-[50vh]">
-        <div className="flex flex-col items-center gap-3">
-          <div className="w-10 h-10 border-3 border-[#004d40] border-t-transparent rounded-full animate-spin" />
-          <p className="text-gray-500 text-sm font-medium">Yükleniyor...</p>
-        </div>
-      </div>
-    );
-
-  const sectionTabs = [
-    { key: "profile" as const, label: "Kişisel Bilgiler", icon: FiUser },
-    { key: "skills" as const, label: "Yetenekler", icon: FiBriefcase },
-    { key: "security" as const, label: "Güvenlik", icon: FiSettings },
-  ];
-
-  const inputClass =
-    "px-4 py-3 text-[#004d40] font-medium placeholder:text-gray-400 placeholder:font-normal";
+  const handleLogout = () => {
+    logout();
+    router.push("/");
+  };
 
   return (
-    <div className="w-full max-w-[1280px] mx-auto px-6 md:px-16 py-16 flex flex-col gap-8">
-
+    <div className="w-full max-w-[1200px] mx-auto px-4 md:px-8 py-10 flex flex-col gap-8 min-h-screen font-sans">
+      <Breadcrumb
+        items={[
+          { label: "Öğrenci Paneli", href: `/student/tasks` },
+          { label: "Hesap Ayarları", active: true },
+        ]}
+      />
+      
       {/* ── Page Header ── */}
-      <header className="relative overflow-hidden rounded-xl border border-[#f1f0ea] bg-white p-6 md:p-8">
-        <div className="absolute inset-0 bg-gradient-to-br from-[#eff4ff] to-transparent opacity-50 pointer-events-none" />
-        <div className="relative z-10 flex items-center gap-4">
-          <div className="w-12 h-12 bg-[#004d40]/5 rounded-xl flex items-center justify-center text-[#004d40] shrink-0">
-            <FiSettings className="w-6 h-6" />
-          </div>
-          <div>
-            <h1 className="text-[28px] md:text-[36px] font-extrabold leading-tight text-[#00342b] font-heading">
-              Profil Ayarları
-            </h1>
-            <p className="text-sm text-[#565e74] font-medium mt-0.5">
-              Kişisel bilgilerinizi ve yeteneklerinizi yönetin
-            </p>
-          </div>
-        </div>
-      </header>
+      <div className="mb-2">
+        <h1 className="text-3xl font-bold text-[#00342b] tracking-tight mb-2">Hesap Ayarları</h1>
+        <p className="text-[#565e74] font-medium text-sm">
+          Güvenlik ayarlarınızı ve bildirim tercihlerinizi yönetin.
+        </p>
+      </div>
 
-      {/* ── Section Tabs + Content Card ── */}
-      <div className="flex flex-col gap-6">
-        <Tabs 
-          tabs={sectionTabs.map(t => ({ id: t.key, label: t.label }))}
-          activeTab={activeSection}
-          onTabChange={(id) => setActiveSection(id as any)}
-        />
-
-        <SectionCard 
-          icon={sectionTabs.find(t => t.key === activeSection)?.icon || FiSettings}
-          title={sectionTabs.find(t => t.key === activeSection)?.label || "Ayarlar"}
-          className="bg-white border-[#f1f0ea] shadow-2xs"
+      <div className="w-full space-y-8">
+        {/* ① Güvenlik ve Şifre */}
+        <SectionCard
+          icon={FiLock}
+          title="Güvenlik ve Şifre"
+          description="Hesabınızı güvende tutmak için şifrenizi düzenli aralıklarla güncelleyin."
         >
-
-          {activeSection === "profile" && (
-            <form
-              onSubmit={handleSubmit(onProfileSubmit as any)}
-              className="space-y-6 max-w-2xl"
-            >
-
-              <div className="group">
-                <label className="text-sm font-medium text-gray-700 mb-2 flex items-center gap-2 group-focus-within:text-[#004d40] transition-colors">
-                  <FiUser className="w-4 h-4" />
-                  Ad Soyad
-                </label>
-                <Input
-                  type="text"
-                  {...register("full_name")}
-                  className={inputClass}
-                  placeholder="Ad Soyad"
-                />
-                {errors.full_name && (
-                  <p className="text-red-500 text-sm mt-1">
-                    {errors.full_name.message}
-                  </p>
-                )}
-              </div>
-
-              <div className="group">
-                <label className="text-sm font-medium text-gray-700 mb-2 flex items-center gap-2 group-focus-within:text-[#004d40] transition-colors">
-                  <FiBook className="w-4 h-4" />
-                  Üniversite / Okul
-                </label>
-                <Input
-                  type="text"
-                  {...register("university")}
-                  className={inputClass}
-                  placeholder="Üniversite Adı"
-                />
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                <div className="group">
-                  <label className="text-sm font-medium text-gray-700 mb-2 flex items-center gap-2 group-focus-within:text-[#004d40] transition-colors">
-                    <FiBook className="w-4 h-4" />
-                    Bölüm / Uzmanlık
-                  </label>
-                  <Input
-                    type="text"
-                    {...register("major")}
-                    className={inputClass}
-                    placeholder="Örn: Yazılım Mühendisliği"
-                  />
-                </div>
-                <div className="group">
-                  <label className="text-sm font-medium text-gray-700 mb-2 flex items-center gap-2 group-focus-within:text-[#004d40] transition-colors">
-                    <FiBook className="w-4 h-4" />
-                    Mezuniyet Yılı
-                  </label>
-                  <Input
-                    type="number"
-                    {...register("graduation_year")}
-                    className={inputClass}
-                    placeholder="Örn: 2025"
-                  />
-                </div>
-              </div>
-
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                <div className="group">
-                  <label className="text-sm font-medium text-gray-700 mb-2 flex items-center gap-2 group-focus-within:text-[#004d40] transition-colors">
-                    <FiBriefcase className="w-4 h-4" />
-                    İlgi Alanları
-                  </label>
-                  <Input
-                    type="text"
-                    {...register("categories_of_interest")}
-                    className={inputClass}
-                    placeholder="Örn: Yazılım, Tasarım (Virgülle ayırın)"
-                  />
-                </div>
-                <div className="group">
-                  <label className="text-sm font-medium text-gray-700 mb-2 flex items-center gap-2 group-focus-within:text-[#004d40] transition-colors">
-                    <FiUser className="w-4 h-4" />
-                    Müsaitlik Durumu
-                  </label>
-                  <Select
-                    {...register("availability_status")}
-                    className={`${inputClass} bg-white`}
-                  >
-                    <option value="available">Müsaitim (İş/Görev arıyorum)</option>
-                    <option value="busy">Meşgulüm</option>
-                  </Select>
-                </div>
-              </div>
-
-              <div className="group">
-                <label className="text-sm font-medium text-gray-700 mb-2 flex items-center gap-2 group-focus-within:text-[#004d40] transition-colors">
-                  <FiFileText className="w-4 h-4" />
-                  Hakkımda
-                </label>
-                <textarea
-                  {...register("bio")}
-                  rows={4}
-                  className={`${inputClass} resize-none`}
-                  placeholder="Kendinizden bahsedin..."
-                />
-                {errors.bio && (
-                  <p className="text-red-500 text-sm mt-1">
-                    {errors.bio.message}
-                  </p>
-                )}
-              </div>
-
-              <div className="group">
-                <label className="text-sm font-medium text-gray-700 mb-2 flex items-center gap-2 group-focus-within:text-[#004d40] transition-colors">
-                  <FiPhone className="w-4 h-4" />
-                  Telefon Numarası
-                </label>
-                <Input
-                  type="text"
-                  {...register("phone")}
-                  className={inputClass}
-                  placeholder="05XX XXX XX XX"
-                />
-              </div>
-
-              <div className="pt-4 border-t border-gray-100">
-                <h3 className="text-sm font-semibold text-gray-800 mb-4">
-                  Sosyal Bağlantılar
-                </h3>
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
-                  <div className="group">
-                    <label className="text-sm font-medium text-gray-700 mb-2 flex items-center gap-2 group-focus-within:text-[#004d40] transition-colors">
-                      <FiLinkedin className="w-4 h-4" />
-                      LinkedIn
-                    </label>
-                    <Input
-                      type="text"
-                      {...register("linkedin_url")}
-                      className={inputClass}
-                      placeholder="https://linkedin.com/in/..."
-                    />
-                    {errors.linkedin_url && (
-                      <p className="text-red-500 text-sm mt-1">
-                        {errors.linkedin_url.message}
-                      </p>
-                    )}
-                  </div>
-
-                  <div className="group">
-                    <label className="text-sm font-medium text-gray-700 mb-2 flex items-center gap-2 group-focus-within:text-[#004d40] transition-colors">
-                      <FiGithub className="w-4 h-4" />
-                      GitHub
-                    </label>
-                    <Input
-                      type="text"
-                      {...register("github_url")}
-                      className={inputClass}
-                      placeholder="https://github.com/..."
-                    />
-                    {errors.github_url && (
-                      <p className="text-red-500 text-sm mt-1">
-                        {errors.github_url.message}
-                      </p>
-                    )}
-                  </div>
-
-                  <div className="group">
-                    <label className="text-sm font-medium text-gray-700 mb-2 flex items-center gap-2 group-focus-within:text-[#004d40] transition-colors">
-                      <FiTwitter className="w-4 h-4" />
-                      Twitter (X)
-                    </label>
-                    <Input
-                      type="text"
-                      {...register("twitter_url")}
-                      className={inputClass}
-                      placeholder="https://twitter.com/..."
-                    />
-                    {errors.twitter_url && (
-                      <p className="text-red-500 text-sm mt-1">
-                        {errors.twitter_url.message}
-                      </p>
-                    )}
-                  </div>
-
-                  <div className="group">
-                    <label className="text-sm font-medium text-gray-700 mb-2 flex items-center gap-2 group-focus-within:text-[#004d40] transition-colors">
-                      <FiGlobe className="w-4 h-4" />
-                      Web Sitesi
-                    </label>
-                    <Input
-                      type="text"
-                      {...register("website_url")}
-                      className={inputClass}
-                      placeholder="https://..."
-                    />
-                    {errors.website_url && (
-                      <p className="text-red-500 text-sm mt-1">
-                        {errors.website_url.message}
-                      </p>
-                    )}
-                  </div>
-                </div>
-              </div>
-
-              <div className="flex justify-end pt-6 border-t border-gray-100">
-                <PrimaryButton
-                  type="submit"
-                  variant="primary"
-                  className="min-w-40 rounded-xl py-3 cursor-pointer"
-                  isLoading={isLoading}
-                  icon={FiSave}
-                >
-                  Kaydet
-                </PrimaryButton>
-              </div>
-            </form>
-          )}
-
-          {activeSection === "skills" && (
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-10">
-              <div>
-                <div className="bg-transparent rounded-xl p-6 border border-[#f1f0ea]">
-                  <h3 className="font-semibold text-gray-900 mb-1">
-                    Yeni Yetenek Ekle
-                  </h3>
-                  <p className="text-xs text-gray-500 mb-5">
-                    Profilinize yeni yetenekler ekleyin
-                  </p>
-                  <form
-                    onSubmit={handleSubmitSkill(onAddSkill)}
-                    className="space-y-4"
-                  >
-                    <div>
-                      <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2 ml-1">
-                        Yetenek Adı
-                      </label>
-                      <Input
-                        type="text"
-                        {...registerSkill("skillName")}
-                        className={inputClass}
-                        placeholder="Örn: React, Photoshop"
-                      />
-                      {skillErrors.skillName && (
-                        <p className="text-red-500 text-xs mt-1">
-                          {skillErrors.skillName.message}
-                        </p>
-                      )}
-                    </div>
-
-                    <div>
-                      <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2 ml-1">
-                        Kategori
-                      </label>
-                      <Select
-                        {...registerSkill("category")}
-                        className={`${inputClass} bg-white`}
-                      >
-                        <option value="Yazılım">Yazılım</option>
-                        <option value="Tasarım">Tasarım</option>
-                        <option value="Pazarlama">Pazarlama</option>
-                        <option value="Dil">Dil</option>
-                        <option value="Diğer">Diğer</option>
-                      </Select>
-                      {skillErrors.category && (
-                        <p className="text-red-500 text-xs mt-1">
-                          {skillErrors.category.message}
-                        </p>
-                      )}
-                    </div>
-
-                    <div>
-                      <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2 ml-1">
-                        Seviye <span className="text-red-500">*</span>
-                      </label>
-                      {(() => {
-                        const r = 16;
-                        const circ = 2 * Math.PI * r;
-                        const progress = (skillLevel / 10) * circ;
-                        const levelColor =
-                          skillLevel <= 2
-                            ? "#ef4444"
-                            : skillLevel <= 4
-                            ? "#fb923c"
-                            : skillLevel <= 6
-                            ? "#facc15"
-                            : skillLevel <= 8
-                            ? "#e28743"
-                            : "#004d40";
-                        const levelLabel =
-                          skillLevel <= 2
-                            ? "Başlangıç"
-                            : skillLevel <= 4
-                            ? "Temel"
-                            : skillLevel <= 6
-                            ? "Orta"
-                            : skillLevel <= 8
-                            ? "İleri"
-                            : "Uzman";
-                        return (
-                          <div className="flex items-center gap-4 p-3 border border-[#f1f0ea] rounded-xl bg-transparent select-none">
-                            <button
-                              type="button"
-                              onClick={() => setSkillLevel(Math.max(1, skillLevel - 1))}
-                              className="w-8 h-8 flex items-center justify-center rounded-full border border-gray-200 hover:border-gray-450 bg-white text-gray-500 hover:text-gray-800 transition-all text-sm font-bold shadow-2xs cursor-pointer"
-                            >
-                              −
-                            </button>
-                            <div
-                              className="relative flex items-center justify-center"
-                              style={{ width: 52, height: 52 }}
-                            >
-                              <svg width="52" height="52" viewBox="0 0 44 44" className="-rotate-90">
-                                <circle cx="22" cy="22" r={r} fill="none" stroke="#e5e7eb" strokeWidth="3" />
-                                <circle
-                                  cx="22" cy="22" r={r} fill="none"
-                                  stroke={levelColor} strokeWidth="3"
-                                  strokeLinecap="round"
-                                  strokeDasharray={`${progress} ${circ}`}
-                                  style={{ transition: "stroke-dasharray 0.25s ease, stroke 0.25s ease" }}
-                                />
-                              </svg>
-                              <div className="absolute inset-0 flex items-center justify-center">
-                                <span className="text-[10px] font-bold text-gray-700 leading-none">
-                                  {skillLevel}
-                                  <span className="text-[8px] font-normal text-gray-400">/10</span>
-                                </span>
-                              </div>
-                            </div>
-                            <button
-                              type="button"
-                              onClick={() => setSkillLevel(Math.min(10, skillLevel + 1))}
-                              className="w-8 h-8 flex items-center justify-center rounded-full border border-gray-200 hover:border-gray-450 bg-white text-gray-500 hover:text-gray-800 transition-all text-sm font-bold shadow-2xs cursor-pointer"
-                            >
-                              +
-                            </button>
-                            <span
-                              className="text-xs font-bold uppercase tracking-wider"
-                              style={{ color: levelColor }}
-                            >
-                              {levelLabel}
-                            </span>
-                          </div>
-                        );
-                      })()}
-                    </div>
-
-                    <PrimaryButton
-                      type="submit"
-                      variant="primary"
-                      className="w-full rounded-xl py-3 cursor-pointer"
-                      isLoading={isAddingSkill}
-                      icon={FiPlus}
-                    >
-                      Ekle
-                    </PrimaryButton>
-                  </form>
-                </div>
-              </div>
-
-              <div>
-                <h3 className="font-semibold text-gray-900 mb-1">
-                  Yeteneklerim
-                </h3>
-                <p className="text-xs text-gray-500 mb-5">
-                  Mevcut yeteneklerinizi yönetin
-                </p>
-                {profile?.skills && profile.skills.length > 0 ? (
-                  <div className="space-y-5">
-                    {Object.entries(
-                      profile.skills.reduce((acc, skill) => {
-                        const cat = skill.category || "Diğer";
-                        if (!acc[cat]) acc[cat] = [];
-                        acc[cat].push(skill);
-                        return acc;
-                      }, {} as Record<string, StudentSkill[]>)
-                    ).map(([category, skills]) => (
-                      <div key={category} className="bg-transparent rounded-xl p-5 border border-[#f1f0ea] hover:border-[#004d40]/30 hover:bg-[#004d40]/5 transition-all">
-                        <h4 className="text-[10px] font-bold text-[#004d40] mb-3 uppercase tracking-widest">
-                          {category}
-                        </h4>
-                        <div className="flex flex-wrap gap-2">
-                          {skills.map((skill) => {
-                            const filled = Math.round((skill.level / 10) * 5);
-                            const color =
-                              skill.level <= 2
-                                ? "#ef4444"
-                                : skill.level <= 4
-                                ? "#fb923c"
-                                : skill.level <= 6
-                                ? "#facc15"
-                                : skill.level <= 8
-                                ? "#e28743"
-                                : "#004d40";
-                            return (
-                              <div
-                                key={skill.skill.id}
-                                className="flex items-center gap-2 bg-white border border-[#f1f0ea] px-3 py-2 rounded-xl transition-all group hover:border-[#004d40]/30 shadow-sm"
-                              >
-                                <span className="text-sm font-semibold text-gray-705">
-                                  {skill.skill.name}
-                                </span>
-                                <span className="flex items-end gap-0.5" title={`Seviye: ${skill.level}/10`}>
-                                  {[1, 2, 3, 4, 5].map((i) => (
-                                    <span
-                                      key={i}
-                                      style={{
-                                        width: 3,
-                                        height: 4 + i * 2,
-                                        borderRadius: 2,
-                                        backgroundColor: i <= filled ? color : "#e5e7eb",
-                                        display: "inline-block",
-                                        transition: "background-color 0.2s",
-                                      }}
-                                    />
-                                  ))}
-                                </span>
-                                <span className="text-[10px] text-gray-400 font-medium">
-                                  {skill.level}/10
-                                </span>
-                                <button
-                                  type="button"
-                                  onClick={() => onRemoveSkill(skill.skill.id)}
-                                  className="text-gray-305 hover:text-red-500 transition-colors cursor-pointer"
-                                  title="Sil"
-                                >
-                                  <FiTrash2 size={14} />
-                                </button>
-                              </div>
-                            );
-                          })}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                ) : (
-                  <div className="text-center py-12 text-gray-400 bg-transparent rounded-xl border border-dashed border-gray-200">
-                    <FiBriefcase className="w-8 h-8 mx-auto mb-3 text-gray-300" />
-                    <p className="font-semibold text-sm">Henüz yetenek eklenmemiş.</p>
-                    <p className="text-xs mt-1 font-medium">
-                      Sol taraftaki formu kullanarak yetenek ekleyin.
-                    </p>
-                  </div>
-                )}
-              </div>
+          <form onSubmit={handlePasswordChange} className="space-y-5 max-w-lg">
+            <div className="relative">
+              <FormInput
+                label="Mevcut Şifre"
+                type={showCurrent ? "text" : "password"}
+                {...pwField("current")}
+                className="pr-12 !rounded-full pl-5"
+                placeholder="••••••••"
+                autoComplete="current-password"
+              />
+              <button
+                type="button"
+                onClick={() => setShowCurrent((v) => !v)}
+                className="absolute right-4 bottom-3 text-gray-400 hover:text-[#004d40] transition-colors"
+              >
+                {showCurrent ? <FiEyeOff size={18} /> : <FiEye size={18} />}
+              </button>
             </div>
-          )}
 
-          {activeSection === "security" && (
-            <div className="max-w-md space-y-8">
-              <div>
-                <h3 className="text-lg font-bold text-gray-900 mb-1">Şifre Değiştir</h3>
-                <p className="text-sm text-gray-500">
-                  Güvenliğiniz için düzenli aralıklarla şifrenizi güncelleyin.
-                </p>
-              </div>
-
-              <form onSubmit={handlePasswordChange} className="space-y-4">
-                <div>
-                  <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2 ml-1">
-                    Mevcut Şifre
-                  </label>
-                  <Input
-                    type="password"
-                    value={pw.current}
-                    onChange={(e) => setPw({ ...pw, current: e.target.value })}
-                    className={inputClass}
-                    placeholder="••••••••"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2 ml-1">
-                    Yeni Şifre
-                  </label>
-                  <Input
-                    type="password"
-                    value={pw.next}
-                    onChange={(e) => setPw({ ...pw, next: e.target.value })}
-                    className={inputClass}
-                    placeholder="••••••••"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-[10px] font-bold text-gray-400 uppercase tracking-wider mb-2 ml-1">
-                    Yeni Şifre (Tekrar)
-                  </label>
-                  <Input
-                    type="password"
-                    value={pw.confirm}
-                    onChange={(e) => setPw({ ...pw, confirm: e.target.value })}
-                    className={inputClass}
-                    placeholder="••••••••"
-                    required
-                  />
-                </div>
-                <PrimaryButton
-                  type="submit"
-                  variant="primary"
-                  className="w-full py-3 mt-4 cursor-pointer"
-                  isLoading={pwLoading}
-                >
-                  Şifreyi Güncelle
-                </PrimaryButton>
-              </form>
-
-              <div className="pt-8 border-t border-[#f1f0ea]">
-                <h3 className="text-sm font-bold text-red-600 mb-2">Hesabı Devre Dışı Bırak</h3>
-                <p className="text-xs text-gray-500 mb-4">
-                  Hesabınızı devre dışı bıraktığınızda profiliniz şirketler tarafından görünmez hale gelir.
-                </p>
-                <button
-                  type="button"
-                  className="text-xs font-bold uppercase tracking-wider text-red-500 hover:text-red-700 transition-colors cursor-pointer"
-                  onClick={() => showToast("Bu özellik yakında eklenecektir.", "info")}
-                >
-                  Hesabımı Pasife Al
-                </button>
-              </div>
+            <div className="relative">
+              <FormInput
+                label="Yeni Şifre"
+                type={showNew ? "text" : "password"}
+                {...pwField("next")}
+                className="pr-12 !rounded-full pl-5"
+                placeholder="••••••••"
+                autoComplete="new-password"
+              />
+              <button
+                type="button"
+                onClick={() => setShowNew((v) => !v)}
+                className="absolute right-4 bottom-3 text-gray-400 hover:text-[#004d40] transition-colors"
+              >
+                {showNew ? <FiEyeOff size={18} /> : <FiEye size={18} />}
+              </button>
             </div>
-          )}
+
+            <div>
+              <FormInput
+                label="Yeni Şifre (Tekrar)"
+                type="password"
+                {...pwField("confirm")}
+                placeholder="••••••••"
+                autoComplete="new-password"
+                className="!rounded-full pl-5"
+              />
+            </div>
+
+            <div className="pt-3 flex justify-start">
+              <FormButton type="submit" isLoading={pwLoading} className="!rounded-full px-8">
+                Şifreyi Güncelle
+              </FormButton>
+            </div>
+          </form>
         </SectionCard>
+
+        {/* ② Bildirim Tercihleri */}
+        <SectionCard
+          icon={FiBell}
+          title="Bildirim Tercihleri"
+          description="E-posta ve sistem üzerinden hangi güncellemeleri almak istediğinizi özelleştirin."
+        >
+          <div className="border border-[#f1f0ea] rounded-xl overflow-hidden max-w-2xl">
+            <Toggle checked={notifs.newApplication} onChange={() => toggle("newApplication")} label="Başvurularım değerlendirildiğinde bildir" />
+            <Toggle checked={notifs.taskUpdate} onChange={() => toggle("taskUpdate")} label="Yeni uygun görevler eklendiğinde haber ver" />
+            <Toggle checked={notifs.systemAnnouncement} onChange={() => toggle("systemAnnouncement")} label="Sinerji sistem duyurularını ve güncellemelerini al" />
+            <Toggle checked={notifs.weeklyReport} onChange={() => toggle("weeklyReport")} label="Haftalık performans ve özet raporunu e-posta ile gönder" />
+          </div>
+        </SectionCard>
+
+        {/* ③ Oturum Yönetimi & Tehlike Bölgesi */}
+        <SectionCard
+          icon={FiAlertTriangle}
+          title="Hesap İşlemleri"
+          description="Oturumunuzu sonlandırabilir veya hesabınızı kalıcı olarak silebilirsiniz."
+          accent
+        >
+          <div className="space-y-4 max-w-2xl">
+            <div className="flex items-center justify-between p-4 rounded-xl border border-red-100 bg-red-50/50">
+              <div>
+                <h4 className="text-sm font-bold text-red-700">Oturumu Kapat</h4>
+                <p className="text-xs font-medium text-red-500 mt-0.5">Aktif hesabınızdan güvenli bir şekilde çıkış yapın.</p>
+              </div>
+              <FormButton variant="outline" icon={FiLogOut} className="text-red-600 border-red-200 hover:bg-red-50 bg-white !rounded-full" onClick={handleLogout}>
+                Çıkış Yap
+              </FormButton>
+            </div>
+
+            <div className="flex flex-col sm:flex-row gap-4 items-center justify-between p-4 rounded-xl border border-red-200 bg-red-50">
+              <div>
+                <h4 className="text-sm font-bold text-red-700">Hesabı Sil</h4>
+                <p className="text-xs font-medium text-red-500 mt-0.5">Bu işlem geri alınamaz ve tüm verileriniz silinir.</p>
+              </div>
+              <FormButton variant="danger" icon={FiAlertTriangle} className="shrink-0 !rounded-full" onClick={() => showToast("Hesap silme özelliği yakında kullanılabilir olacaktır.", "error")}>
+                Hesabı Kalıcı Olarak Sil
+              </FormButton>
+            </div>
+          </div>
+        </SectionCard>
+
       </div>
     </div>
   );

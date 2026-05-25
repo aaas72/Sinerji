@@ -52,14 +52,14 @@ const FormTextarea = forwardRef<HTMLTextAreaElement, FormTextareaProps>(
           id={inputId}
           rows={rows}
           className={cn(
-            "w-full rounded-lg border bg-gray-100/80 text-gray-800 placeholder-gray-400 px-4 py-3 text-sm",
+            "w-full rounded-lg border bg-transparent text-gray-800 placeholder-gray-400 px-4 py-3 text-sm",
             "transition-all duration-200 ease-in-out",
             "focus:outline-none focus:ring-2 focus:ring-(--color-primary)/20 focus:border-(--color-primary) focus:bg-white",
-            "hover:border-gray-300",
+            "hover:border-gray-400",
             "disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-100",
             error
               ? "border-red-300 focus:ring-red-200 focus:border-red-400"
-              : "border-gray-200",
+              : "border-gray-300",
             resizeClasses[resize],
             className
           )}

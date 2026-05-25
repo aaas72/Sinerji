@@ -12,3 +12,4 @@ export { default as FormButton } from "./FormButton";
 
 // Re-export types
 export type { FormSelectOption } from "./FormSelect";
+export { default as LevelSlider } from './LevelSlider';

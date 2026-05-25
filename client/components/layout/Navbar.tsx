@@ -12,6 +12,7 @@ import {
   FiBookmark,
   FiPlusSquare,
   FiList,
+  FiMessageSquare,
 } from "react-icons/fi";
 import PrimaryButton from "@/components/ui/PrimaryButton";
 import { useEffect, useRef, useState } from "react";
@@ -33,6 +34,11 @@ const studentMenuItems: MenuItem[] = [
     href: "/student/profile",
     label: "Profil",
     icon: FiUser,
+  },
+  {
+    href: "/student/settings",
+    label: "Ayarlar",
+    icon: FiSettings,
   },
   {
     href: "#",
@@ -70,6 +76,7 @@ const studentNavbarLinks = [
   { href: "/student", label: "Görevleri İncele" },
   { href: "/student/saved-tasks", label: "Mahfuzat" },
   { href: "/student/applications", label: "Başvurularım" },
+  { href: "/student/explore", label: "Keşfet" },
 ];
 
 const companyNavbarLinks = [
@@ -236,12 +243,12 @@ export default function Navbar({ authenticated, userName, role }: NavbarProps) {
                   <span className="absolute top-1 right-1 w-1.5 h-1.5 bg-[#e28743] rounded-full animate-ping" />
                 </button>
 
-                {/* Settings Gear */}
+                {/* Messages */}
                 <Link
-                  href={userRole === "company" ? "/company/settings" : `/students/${user?.id}`}
-                  className="text-gray-400 hover:text-gray-900 transition-colors p-1 rounded-full hover:bg-gray-50 hidden sm:inline-block"
+                  href={userRole === "company" ? "/company/messages" : "/student/messages"}
+                  className="text-gray-400 hover:text-gray-900 transition-colors relative p-1 rounded-full hover:bg-gray-50"
                 >
-                  <FiSettings size={18} />
+                  <FiMessageSquare size={18} />
                 </Link>
 
                 {/* Profile Circle Menu */}

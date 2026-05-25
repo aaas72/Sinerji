@@ -14,8 +14,8 @@ export type FormSelectOption = {
 type FormSelectProps = {
   options: FormSelectOption[];
   value?: string;
-  onChange?: (value: string) => void;
-  onBlur?: () => void;
+  onChange?: (event: any) => void;
+  onBlur?: (event?: any) => void;
   name?: string;
   label?: string;
   placeholder?: string;
@@ -65,12 +65,12 @@ export default function FormSelect({
         !containerRef.current.contains(e.target as Node)
       ) {
         setIsOpen(false);
-        onBlur?.();
+        onBlur?.({ target: { name, value } } as any);
       }
     };
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
-  }, [onBlur]);
+  }, [onBlur, name, value]);
 
   // Scroll highlighted item into view
   useEffect(() => {
@@ -82,11 +82,11 @@ export default function FormSelect({
 
   const handleSelect = useCallback(
     (val: string) => {
-      onChange?.(val);
+      onChange?.({ target: { name, value: val } } as any);
       setIsOpen(false);
-      onBlur?.();
+      onBlur?.({ target: { name, value: val } } as any);
     },
-    [onChange, onBlur]
+    [onChange, onBlur, name]
   );
 
   // Keyboard navigation
@@ -130,7 +130,7 @@ export default function FormSelect({
           break;
         case "Escape":
           setIsOpen(false);
-          onBlur?.();
+          onBlur?.({ target: { name, value } } as any);
           break;
       }
     },
@@ -169,17 +169,17 @@ export default function FormSelect({
           }}
           onKeyDown={handleKeyDown}
           className={cn(
-            "w-full rounded-lg border bg-gray-100/80 text-left",
+            "w-full rounded-lg border bg-transparent text-left",
             "flex items-center justify-between gap-2",
             "transition-all duration-200 ease-in-out",
             "focus:outline-none focus:ring-2 focus:ring-(--color-primary)/20 focus:border-(--color-primary) focus:bg-white",
-            "hover:border-gray-300",
+            "hover:border-gray-400",
             "disabled:opacity-50 disabled:cursor-not-allowed disabled:bg-gray-100",
             error
               ? "border-red-300 focus:ring-red-200 focus:border-red-400"
               : isOpen
                 ? "border-(--color-primary) ring-2 ring-(--color-primary)/20 bg-white"
-                : "border-gray-200",
+                : "border-gray-300",
             sizeClasses[selectSize],
             className
           )}

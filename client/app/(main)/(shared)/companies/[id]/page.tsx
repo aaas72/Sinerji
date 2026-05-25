@@ -8,7 +8,7 @@ import { CompanyProfile } from "@/types/company";
 import { Task } from "@/types/task";
 import TaskCard from "@/components/ui/cards/TaskCard";
 import SectionCard from "@/components/ui/cards/SectionCard";
-import { FiMapPin, FiGlobe, FiBriefcase, FiMail, FiEdit2 } from "react-icons/fi";
+import { FiMapPin, FiGlobe, FiBriefcase, FiMail, FiEdit2, FiStar, FiTrendingUp } from "react-icons/fi";
 
 export default function CompanyProfilePage() {
   const params = useParams();
@@ -33,8 +33,11 @@ export default function CompanyProfilePage() {
           setProfile(profileData);
           setTasks(tasksData);
         }
-      } catch (error) {
-        console.error("Failed to fetch company data:", error);
+      } catch (error: any) {
+        // Suppress console.error for 404 to avoid Next.js dev overlay
+        if (error?.status !== 404) {
+          console.warn("Failed to fetch company data:", error);
+        }
       } finally {
         setLoading(false);
       }
@@ -110,6 +113,19 @@ export default function CompanyProfilePage() {
                     {profile.location}
                   </span>
                 )}
+                
+                {/* Rating and Hiring Rate */}
+                <span className="w-1 h-1 rounded-full bg-white/40" />
+                <span className="flex items-center gap-1.5 text-white/90">
+                  <FiStar size={14} />
+                  4.8/5
+                </span>
+                
+                <span className="w-1 h-1 rounded-full bg-white/40" />
+                <span className="flex items-center gap-1.5 text-white/90">
+                  <FiTrendingUp className="text-green-400" size={14} />
+                  %92 İşe Alım Oranı
+                </span>
               </div>
             </div>
           </div>

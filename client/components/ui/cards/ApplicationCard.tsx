@@ -32,6 +32,8 @@ const getStatusText = (status: ApplicationStatus) => {
     case "Kabul Edildi":
       return "Başvuru Kabul Edildi";
     case "Reddedildi":
+
+    
       return "Başvuru Reddedildi";
     default:
       return status;

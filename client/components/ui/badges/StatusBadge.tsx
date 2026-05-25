@@ -10,9 +10,10 @@ import {
 
 interface StatusBadgeProps {
   status?: string | null;
+  customLabel?: string;
 }
 
-export default function StatusBadge({ status }: StatusBadgeProps) {
+export default function StatusBadge({ status, customLabel }: StatusBadgeProps) {
   const map: Record<string, { label: string; icon: any }> = {
     open: { label: "Aktif", icon: FiPlayCircle },
     aktif: { label: "Aktif", icon: FiPlayCircle },
@@ -36,6 +37,7 @@ export default function StatusBadge({ status }: StatusBadgeProps) {
   // Check if it exists in the map; if not, default to "Bekliyor" or use the raw string.
   const cfg = map[normalizedStatus] ?? { label: status || "Bekliyor", icon: FiClock };
   const Icon = cfg.icon;
+  const finalLabel = customLabel || cfg.label;
 
   return (
     <div className="relative group/badge inline-flex items-center justify-center p-2 rounded-full hover:bg-gray-100 transition-colors cursor-help">
@@ -43,10 +45,11 @@ export default function StatusBadge({ status }: StatusBadgeProps) {
 
       {/* Tooltip */}
       <div className="absolute bottom-full mb-2 left-1/2 -translate-x-1/2 px-3 py-1.5 bg-[#004d40] text-white text-[12px] font-bold rounded-lg opacity-0 invisible group-hover/badge:opacity-100 group-hover/badge:visible transition-all whitespace-nowrap z-50 shadow-lg">
-        {cfg.label}
+        {finalLabel}
         {/* Down Arrow (Triangle) */}
         <div className="absolute top-full left-1/2 -translate-x-1/2 border-[4px] border-transparent border-t-[#004d40]"></div>
       </div>
     </div>
   );
 }
+
