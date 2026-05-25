@@ -20,6 +20,7 @@ type Application = {
   title: string;
   tags: string[];
   companyName: string;
+  companyId?: number;
   date: string;
   status: ApplicationStatus;
   rewardType?: RewardType;
@@ -45,6 +46,7 @@ export default function ApplicationsPage() {
           title: s?.task?.title || "İsimsiz Görev",
           tags: s?.task?.requiredSkills?.map((sk: any) => sk.skill?.name).filter(Boolean) || [],
           companyName: s?.task?.company?.company_name || "Bilinmeyen Şirket",
+          companyId: s?.task?.company_user_id || s?.task?.company?.user_id,
           date: s?.submitted_at ? new Date(s.submitted_at).toLocaleDateString("tr-TR") : "—",
           status: mapBackendStatus(s.status),
           rewardType: s?.task?.reward_type as RewardType,
@@ -132,6 +134,7 @@ export default function ApplicationsPage() {
                 title={app.title}
                 tags={app.tags}
                 companyName={app.companyName}
+                companyId={app.companyId}
                 date={app.date}
                 status={app.status}
                 rewardType={app.rewardType}

@@ -14,6 +14,7 @@ router.patch('/me', restrictTo('company'), updateMyProfile);
 
 // Dynamic routes last
 router.get('/', getAllCompanies);
+router.get('', getAllCompanies);
 router.get('/:id', getCompanyProfile);
 
 export default router;

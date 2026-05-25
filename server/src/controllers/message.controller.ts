@@ -123,10 +123,40 @@ export const sendMessage = async (req: Request, res: Response, next: NextFunctio
       return next(new AppError('receiver_id and content are required', 400));
     }
 
+    const receiverIdInt = parseInt(receiver_id);
+
+    // --- Task-Based Messaging Logic ---
+    if (req.user.role === 'student') {
+      // 1. Did the company message the student first?
+      const existingMessage = await prisma.message.findFirst({
+        where: {
+          sender_id: receiverIdInt,
+          receiver_id: sender_id
+        }
+      });
+
+      if (!existingMessage) {
+        // 2. Did the student apply to any task created by the company?
+        const activeSubmission = await prisma.submission.findFirst({
+          where: {
+            student_user_id: sender_id,
+            task: {
+              company_user_id: receiverIdInt
+            }
+          }
+        });
+
+        if (!activeSubmission) {
+          return next(new AppError('Şirkete mesaj gönderebilmek için öncelikle ilanlarından birine başvurmuş olmanız veya şirketin size mesaj göndermiş olması gerekir.', 403));
+        }
+      }
+    }
+    // ----------------------------------
+
     const message = await prisma.message.create({
       data: {
         sender_id,
-        receiver_id: parseInt(receiver_id),
+        receiver_id: receiverIdInt,
         content
       }
     });

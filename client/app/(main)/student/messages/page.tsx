@@ -1,13 +1,18 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import PrimaryButton from "@/components/ui/PrimaryButton";
 import { FiMessageSquare, FiSend, FiSearch, FiMoreVertical, FiPaperclip, FiCheck, FiCornerUpLeft, FiCopy, FiTrash2, FiArrowDown } from "react-icons/fi";
 import { messageService, Contact, Message } from "@/services/message.service";
+import { companyService } from "@/services/company.service";
 import { useAuthStore } from "@/hooks/useAuth";
+import { useSearchParams } from "next/navigation";
 
-export default function StudentMessagesPage() {
+function StudentMessagesContent() {
   const { user } = useAuthStore();
+  const searchParams = useSearchParams();
+  const preSelectedCompanyId = searchParams.get("companyId");
+
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [activeContact, setActiveContact] = useState<Contact | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
@@ -19,6 +24,29 @@ export default function StudentMessagesPage() {
     const fetchContacts = async () => {
       try {
         const data = await messageService.getContacts();
+        
+        if (preSelectedCompanyId) {
+          const cid = parseInt(preSelectedCompanyId);
+          let found = data.find(c => c.id === cid);
+          if (!found) {
+            try {
+              const companyProfile = await companyService.getCompanyById(cid);
+              found = {
+                id: cid,
+                name: companyProfile.company_name,
+                role: "company",
+                initials: companyProfile.company_name.substring(0, 2).toUpperCase(),
+                lastMessageTime: new Date().toISOString(),
+                unread: 0
+              };
+              data.unshift(found);
+            } catch (e) {
+              console.error("Failed to fetch company profile for messaging");
+            }
+          }
+          if (found) setActiveContact(found);
+        }
+
         setContacts(data);
       } catch (error) {
         console.error("Failed to fetch contacts", error);
@@ -27,7 +55,7 @@ export default function StudentMessagesPage() {
       }
     };
     fetchContacts();
-  }, []);
+  }, [preSelectedCompanyId]);
 
   useEffect(() => {
     if (activeContact) {
@@ -233,5 +261,13 @@ export default function StudentMessagesPage() {
 
       </div>
     </div>
+  );
+}
+
+export default function StudentMessagesPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Yükleniyor...</div>}>
+      <StudentMessagesContent />
+    </Suspense>
   );
 }

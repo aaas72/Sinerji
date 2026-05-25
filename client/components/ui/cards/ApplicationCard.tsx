@@ -2,6 +2,7 @@ import React from "react";
 import { BsCurrencyDollar } from "react-icons/bs";
 import { FiAward, FiBriefcase, FiStar, FiZap, FiPackage } from "react-icons/fi";
 import SkillBadge from "../SkillBadge";
+import { useRouter } from "next/navigation";
 import StatusBadge from "@/components/ui/badges/StatusBadge";
 
 export type ApplicationStatus =| "Bekliyor"| "İnceleniyor"| "Kabul Edildi"| "Reddedildi";
@@ -18,6 +19,7 @@ type ApplicationCardProps = {
   title: string;
   tags: string[];
   companyName: string;
+  companyId?: number;
   date: string;
   status: ApplicationStatus;
   rewardType?: RewardType;
@@ -65,10 +67,12 @@ export default function ApplicationCard({
   title,
   tags,
   companyName,
+  companyId,
   date,
   status,
   rewardType,
 }: ApplicationCardProps) {
+  const router = useRouter();
   const reward = rewardType ? getRewardDetails(rewardType) : null;
 
   return (
@@ -108,7 +112,15 @@ export default function ApplicationCard({
           <StatusBadge status={status} />
         </div>
 
-        <div className="w-full md:w-auto text-right">
+        <div className="w-full md:w-auto text-right flex items-center justify-end gap-3">
+          {companyId && (
+            <button 
+              onClick={() => router.push(`/student/messages?companyId=${companyId}`)}
+              className="text-[#004d40] hover:text-[#00342b] border border-[#004d40]/20 hover:border-[#004d40]/50 bg-[#004d40]/5 hover:bg-[#004d40]/10 px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-all text-[11px]"
+            >
+              Mesaj Gönder
+            </button>
+          )}
           <span className="text-gray-400">{date}</span>
         </div>
       </div>
