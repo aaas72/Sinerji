@@ -16,6 +16,8 @@ model User {
   companyProfile CompanyProfile?
   studentProfile StudentProfile?
   supportTickets SupportTicket[]
+  sentMessages   Message[]       @relation("SentMessages")
+  receivedMessages Message[]     @relation("ReceivedMessages")
 
   @@map("users")
 }
@@ -215,4 +217,18 @@ model skill_ontology {
   parent_name String @db.VarChar(255)
 
   @@unique([skill_name, parent_name])
+}
+
+model Message {
+  id          Int      @id @default(autoincrement())
+  sender_id   Int
+  receiver_id Int
+  content     String
+  is_read     Boolean  @default(false)
+  created_at  DateTime @default(now())
+
+  sender      User     @relation("SentMessages", fields: [sender_id], references: [id])
+  receiver    User     @relation("ReceivedMessages", fields: [receiver_id], references: [id])
+
+  @@map("messages")
 }

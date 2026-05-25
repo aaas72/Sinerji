@@ -82,3 +82,17 @@ export const getMyStats = async (req: Request, res: Response, next: NextFunction
     next(error);
   }
 };
+
+export const getAllCompanies = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    const companies = await companyService.getAllCompanies();
+    res.status(200).json({
+      status: 'success',
+      data: {
+        companies,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};

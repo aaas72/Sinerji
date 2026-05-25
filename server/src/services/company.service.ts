@@ -27,6 +27,17 @@ export class CompanyService {
     return profile;
   }
 
+  async getAllCompanies() {
+    const companies = await prisma.companyProfile.findMany({
+      include: {
+        _count: {
+          select: { tasks: true },
+        },
+      },
+    });
+    return companies;
+  }
+
   async updateProfile(userId: number, data: z.infer<typeof updateCompanyProfileSchema>) {
     const profile = await prisma.companyProfile.findUnique({
       where: { user_id: userId },

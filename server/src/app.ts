@@ -21,6 +21,7 @@ import recommendationRoutes from './routes/recommendation.routes';
 import skillRoutes from './routes/skill.routes';
 import publicRoutes from './routes/public.routes';
 import supportRoutes from './routes/support.routes';
+import messageRoutes from './routes/message.routes';
 
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
@@ -62,6 +63,7 @@ app.use('/api/badges', badgeRoutes);
 app.use('/api/recommendations', recommendationRoutes);
 app.use('/api/skills', skillRoutes);
 app.use('/api/support', supportRoutes);
+app.use('/api/messages', messageRoutes);
 app.get('/', (req, res) => {
     res.json({ message: 'Welcome to the Backend API' });
 });

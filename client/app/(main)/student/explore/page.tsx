@@ -4,15 +4,7 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { FiSearch, FiFilter, FiChevronDown, FiX, FiLoader, FiAlertCircle, FiBriefcase } from "react-icons/fi";
 import CompanyExploreCard, { CompanyExploreType } from "@/components/ui/cards/CompanyExploreCard";
-
-const MOCK_COMPANIES: CompanyExploreType[] = [
-  { id: 1, name: "TechCorp Çözümleri", initials: "TC", industry: "Yazılım ve Teknoloji", location: "İstanbul, Türkiye", openTasks: 12, rating: 4.8 },
-  { id: 2, name: "Yenilikçi Tasarım A.Ş.", initials: "YT", industry: "Tasarım ve Medya", location: "Ankara, Türkiye", openTasks: 5, rating: 4.5 },
-  { id: 3, name: "Gelecek Yapay Zeka", initials: "GZ", industry: "Yazılım ve Teknoloji", location: "İzmir, Türkiye", openTasks: 8, rating: 4.9 },
-  { id: 4, name: "Kreatif Ajans", initials: "KA", industry: "Pazarlama ve Reklam", location: "İstanbul, Türkiye", openTasks: 3, rating: 4.3 },
-  { id: 5, name: "FinTech Dünyası", initials: "FD", industry: "Finans Teknolojileri", location: "İstanbul, Türkiye", openTasks: 15, rating: 4.7 },
-  { id: 6, name: "Eco Sistemler", initials: "ES", industry: "Çevre ve Enerji", location: "Bursa, Türkiye", openTasks: 4, rating: 4.6 },
-];
+import { companyService } from "@/services/company.service";
 
 export default function StudentExplorePage() {
   const router = useRouter();
@@ -25,11 +17,27 @@ export default function StudentExplorePage() {
   const [error, setError] = useState(false);
 
   useEffect(() => {
-    // Simulating API call
-    setTimeout(() => {
-      setCompanies(MOCK_COMPANIES);
-      setLoading(false);
-    }, 800);
+    const fetchCompanies = async () => {
+      try {
+        const data = await companyService.getAllCompanies();
+        const mapped = data.map((c: any) => ({
+          id: c.user_id,
+          name: c.company_name || "İsimsiz Şirket",
+          initials: (c.company_name || "İ Ş").substring(0, 2).toUpperCase(),
+          industry: c.industry || "Sektör Belirtilmemiş",
+          location: c.location || "Konum Belirtilmemiş",
+          openTasks: c._count?.tasks || 0,
+          rating: 4.5 // Default placeholder rating
+        }));
+        setCompanies(mapped);
+      } catch (err) {
+        console.error("Failed to fetch companies:", err);
+        setError(true);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchCompanies();
   }, []);
 
   const handleCompanyClick = (company: CompanyExploreType) => {

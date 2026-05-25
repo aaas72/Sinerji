@@ -1,25 +1,62 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import PrimaryButton from "@/components/ui/PrimaryButton";
 import { FiMessageSquare, FiSend, FiSearch, FiMoreVertical, FiPaperclip, FiCheck, FiCornerUpLeft, FiCopy, FiTrash2, FiArrowDown } from "react-icons/fi";
-
-const MOCK_CONTACTS = [
-  { id: 1, name: "TechCorp Çözümleri", role: "İnsan Kaynakları", time: "10:45", unread: 2, initials: "TC" },
-  { id: 2, name: "Yenilikçi Tasarım A.Ş.", role: "İşe Alım Uzmanı", time: "Dün", unread: 0, initials: "YT" },
-  { id: 3, name: "Gelecek Medya", role: "İnsan Kaynakları", time: "Pzt", unread: 0, initials: "GM" },
-];
-
-const MOCK_MESSAGES = [
-  { id: 1, sender: "TechCorp Çözümleri", text: "Merhaba, mülakat için hangi saat uygun olur?", time: "10:30", date: "Bugün", isMe: false, status: "read" },
-  { id: 2, sender: "Ben", text: "Merhaba, yarın öğleden sonra 14:00 uygun mudur?", time: "10:40", date: "Bugün", isMe: true, status: "read" },
-  { id: 3, sender: "TechCorp Çözümleri", text: "Evet, çok uygun. Teşekkür ederim.", time: "10:45", date: "Bugün", isMe: false, status: "read" },
-];
+import { messageService, Contact, Message } from "@/services/message.service";
+import { useAuthStore } from "@/hooks/useAuth";
 
 export default function StudentMessagesPage() {
-  const [activeContact, setActiveContact] = useState<(typeof MOCK_CONTACTS)[0] | null>(null);
+  const { user } = useAuthStore();
+  const [contacts, setContacts] = useState<Contact[]>([]);
+  const [activeContact, setActiveContact] = useState<Contact | null>(null);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
+  const [loadingContacts, setLoadingContacts] = useState(true);
+  const [loadingMessages, setLoadingMessages] = useState(false);
   
+  useEffect(() => {
+    const fetchContacts = async () => {
+      try {
+        const data = await messageService.getContacts();
+        setContacts(data);
+      } catch (error) {
+        console.error("Failed to fetch contacts", error);
+      } finally {
+        setLoadingContacts(false);
+      }
+    };
+    fetchContacts();
+  }, []);
+
+  useEffect(() => {
+    if (activeContact) {
+      const fetchMessages = async () => {
+        setLoadingMessages(true);
+        try {
+          const data = await messageService.getMessages(activeContact.id);
+          setMessages(data);
+        } catch (error) {
+          console.error("Failed to fetch messages", error);
+        } finally {
+          setLoadingMessages(false);
+        }
+      };
+      fetchMessages();
+    }
+  }, [activeContact]);
+
+  const handleSendMessage = async () => {
+    if (!newMessage.trim() || !activeContact) return;
+    try {
+      const msg = await messageService.sendMessage(activeContact.id, newMessage.trim());
+      setMessages([...messages, msg]);
+      setNewMessage("");
+    } catch (error) {
+      console.error("Failed to send message", error);
+    }
+  };
+
   let lastDate = "";
 
   return (
@@ -41,7 +78,13 @@ export default function StudentMessagesPage() {
             </div>
           </div>
           <div className="flex-1 overflow-y-auto custom-scrollbar">
-            {MOCK_CONTACTS.map((contact) => (
+            {loadingContacts ? (
+              <div className="p-4 text-center text-gray-400 text-sm">Kişiler yükleniyor...</div>
+            ) : contacts.length === 0 ? (
+              <div className="p-4 text-center text-gray-400 text-sm">Henüz mesajınız yok.</div>
+            ) : contacts.map((contact) => {
+              const timeStr = new Date(contact.lastMessageTime).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
+              return (
               <button
                 key={contact.id}
                 onClick={() => setActiveContact(contact)}
@@ -64,12 +107,12 @@ export default function StudentMessagesPage() {
                     <h3 className={`text-sm font-bold truncate ${activeContact?.id === contact.id ? "text-[#0b1c30]" : "text-gray-800"}`}>
                       {contact.name}
                     </h3>
-                    <span className="text-xs text-gray-400 font-medium shrink-0">{contact.time}</span>
+                    <span className="text-xs text-gray-400 font-medium shrink-0">{timeStr}</span>
                   </div>
                   <p className="text-xs text-[#e28743] font-medium truncate">{contact.role}</p>
                 </div>
               </button>
-            ))}
+            )})}
           </div>
         </div>
 
@@ -94,24 +137,31 @@ export default function StudentMessagesPage() {
 
               {/* Messages List */}
               <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-4 bg-transparent custom-scrollbar">
-                {MOCK_MESSAGES.map((msg) => {
-                  const showDate = msg.date !== lastDate;
-                  if (showDate) lastDate = msg.date;
+                {loadingMessages ? (
+                   <div className="flex-1 flex justify-center items-center text-gray-400">Yükleniyor...</div>
+                ) : messages.map((msg) => {
+                  const dateObj = new Date(msg.created_at);
+                  const msgDate = dateObj.toLocaleDateString('tr-TR');
+                  const msgTime = dateObj.toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
+                  const isMe = msg.sender_id === user?.id;
+
+                  const showDate = msgDate !== lastDate;
+                  if (showDate) lastDate = msgDate;
 
                   return (
                     <div key={msg.id} className="flex flex-col gap-4">
                       {showDate && (
                         <div className="flex justify-center my-2">
                           <span className="bg-gray-100 text-gray-500 text-[10px] font-bold px-3 py-1 rounded-full uppercase tracking-wider">
-                            {msg.date}
+                            {msgDate}
                           </span>
                         </div>
                       )}
                       
-                      <div className={`flex max-w-[80%] group ${msg.isMe ? "self-end" : "self-start"}`}>
+                      <div className={`flex max-w-[80%] group ${isMe ? "self-end" : "self-start"}`}>
                         
                         {/* Hover Actions (Sent) */}
-                        {msg.isMe && (
+                        {isMe && (
                           <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity mr-2">
                             <button className="p-1.5 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-full" title="Yanıtla"><FiCornerUpLeft size={14} /></button>
                             <button className="p-1.5 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-full" title="Kopyala"><FiCopy size={14} /></button>
@@ -120,18 +170,18 @@ export default function StudentMessagesPage() {
                         )}
 
                         <div className={`p-4 rounded-3xl relative ${
-                          msg.isMe 
+                          isMe 
                             ? "bg-[#004d40] text-white rounded-br-sm" 
                             : "bg-white border border-[#DFDED6] text-gray-800 rounded-bl-sm"
                         }`}>
-                          <p className="text-sm font-medium">{msg.text}</p>
-                          <div className={`text-[10px] mt-2 flex items-center justify-end gap-1 ${msg.isMe ? "text-white/70" : "text-gray-400"}`}>
-                            <span>{msg.time}</span>
+                          <p className="text-sm font-medium">{msg.content}</p>
+                          <div className={`text-[10px] mt-2 flex items-center justify-end gap-1 ${isMe ? "text-white/70" : "text-gray-400"}`}>
+                            <span>{msgTime}</span>
                           </div>
                         </div>
 
                         {/* Hover Actions (Received) */}
-                        {!msg.isMe && (
+                        {!isMe && (
                           <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity ml-2">
                             <button className="p-1.5 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-full" title="Yanıtla"><FiCornerUpLeft size={14} /></button>
                             <button className="p-1.5 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-full" title="Kopyala"><FiCopy size={14} /></button>
@@ -162,7 +212,7 @@ export default function StudentMessagesPage() {
                     onChange={(e) => setNewMessage(e.target.value)}
                     className="flex-1 h-12 px-5 rounded-[50px] bg-white border border-[#DFDED6] text-sm focus:border-[#00342b] focus:ring-1 focus:ring-[#00342b] outline-none transition-all"
                   />
-                  <PrimaryButton variant="primary" className="h-12 w-12 rounded-xl flex items-center justify-center p-0 shrink-0 bg-[#00342b] hover:bg-[#002620] border-none text-white">
+                  <PrimaryButton onClick={handleSendMessage} variant="primary" className="h-12 w-12 rounded-xl flex items-center justify-center p-0 shrink-0 bg-[#00342b] hover:bg-[#002620] border-none text-white">
                     <FiSend size={18} className="ml-0.5" />
                   </PrimaryButton>
                 </div>

@@ -47,6 +47,11 @@ interface CompanyStatsResponse {
 }
 
 export const companyService = {
+  async getAllCompanies(): Promise<(CompanyProfile & { _count?: { tasks: number } })[]> {
+    const response = await api.get<ApiResponse<{ companies: (CompanyProfile & { _count?: { tasks: number } })[] }>>('/companies');
+    return response.data.data.companies;
+  },
+
   async getCompanyById(id: number): Promise<CompanyProfile> {
     // Assuming backend has GET /companies/:id (public)
     // We might need to implement this in backend if not exists.
