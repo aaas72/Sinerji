@@ -267,7 +267,7 @@ export default function TasksBoard({
         </div>
 
         {/* Right Column: Spec Detail Pane */}
-        <div className="hidden md:flex flex-1 h-full bg-[#faf9f6] overflow-hidden relative">
+        <div className="hidden md:flex flex-1 h-full bg-[#F1F0EA] overflow-hidden relative">
           {selectedTask ? (
             <div className="w-full h-full overflow-hidden">
               <TaskDetail task={selectedTask} />
