@@ -1,6 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
 import { notificationService } from '../services/notification.service';
-import { successResponse } from '../utils/responseFormatter';
 import { AppError } from '../utils/AppError';
 
 export const getMyNotifications = async (req: Request, res: Response, next: NextFunction) => {
@@ -11,7 +10,7 @@ export const getMyNotifications = async (req: Request, res: Response, next: Next
         const notifications = await notificationService.getUserNotifications(userId);
         const unreadCount = await notificationService.getUnreadCount(userId);
 
-        res.json(successResponse({ notifications, unreadCount }));
+        res.status(200).json({ status: 'success', data: { notifications, unreadCount } });
     } catch (error) {
         next(error);
     }
@@ -26,7 +25,7 @@ export const markAsRead = async (req: Request, res: Response, next: NextFunction
         if (isNaN(notificationId)) return next(new AppError('Invalid notification ID', 400));
 
         const notification = await notificationService.markAsRead(notificationId, userId);
-        res.json(successResponse({ notification }));
+        res.status(200).json({ status: 'success', data: { notification } });
     } catch (error) {
         next(error);
     }
@@ -38,7 +37,7 @@ export const markAllAsRead = async (req: Request, res: Response, next: NextFunct
         if (!userId) return next(new AppError('User not found', 401));
 
         await notificationService.markAllAsRead(userId);
-        res.json(successResponse({ message: 'All notifications marked as read' }));
+        res.status(200).json({ status: 'success', message: 'All notifications marked as read' });
     } catch (error) {
         next(error);
     }
