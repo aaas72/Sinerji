@@ -166,7 +166,8 @@ export class SubmissionService {
               student: {
                   include: { user: { select: { email: true } } }
               },
-              review: true
+              review: true,
+              task: true
           }
       });
   }

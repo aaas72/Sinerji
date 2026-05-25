@@ -24,7 +24,6 @@ import supportRoutes from './routes/support.routes';
 import messageRoutes from './routes/message.routes';
 import notificationRoutes from './routes/notification.routes';
 import uploadRoutes from './routes/upload.routes';
-import path from 'path';
 
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
