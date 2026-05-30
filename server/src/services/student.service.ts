@@ -1,10 +1,10 @@
 // Student service for profile and task management
-import { PrismaClient } from '@prisma/client';
+import prisma from '../lib/prisma';
 import { AppError } from '../utils/AppError';
 import { updateStudentProfileSchema, addSkillSchema } from '../utils/validation';
 import { z } from 'zod';
 
-const prisma = new PrismaClient() as any;
+
 
 export class StudentService {
   async getAllStudents() {

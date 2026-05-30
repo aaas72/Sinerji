@@ -1,9 +1,9 @@
-import { PrismaClient } from '@prisma/client';
+import prisma from '../lib/prisma';
 import { AppError } from '../utils/AppError';
 import { createReviewSchema } from '../utils/validation';
 import { z } from 'zod';
 
-const prisma = new PrismaClient();
+
 
 export class ReviewService {
     async createReview(companyUserId: number, submissionId: number, data: z.infer<typeof createReviewSchema>) {

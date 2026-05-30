@@ -1,10 +1,10 @@
 import { Request, Response, NextFunction } from 'express';
 import { JwtPayload } from 'jsonwebtoken';
 import { AppError } from '../utils/AppError';
-import { PrismaClient } from '@prisma/client';
+import prisma from '../lib/prisma';
 import { verifyToken } from '../utils/jwt';
 
-const prisma = new PrismaClient();
+
 
 // Extend Express Request interface to include user
 declare global {

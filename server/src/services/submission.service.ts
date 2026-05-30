@@ -1,10 +1,10 @@
-import { PrismaClient } from '@prisma/client';
+import prisma from '../lib/prisma';
 import { AppError } from '../utils/AppError';
 import { createSubmissionSchema } from '../utils/validation';
 import { z } from 'zod';
 import { MatchingService } from './matching.service';
 
-const prisma = new PrismaClient();
+
 const matchingService = new MatchingService();
 
 export class SubmissionService {

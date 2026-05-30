@@ -107,3 +107,26 @@ async def match_single_pair(payload: SingleMatchRequest):
         explanation=result.get("explanation"),
         semantic_details=result["semantic_details"]
     )
+
+@router.post("/ontology/sync-skills")
+async def sync_ontology_skills():
+    """Fetch all skills in the database and pre-populate their ontology parents."""
+    from app.services.ontology import get_skill_parents
+    
+    with db_cursor() as cur:
+        ensure_ontology_table(cur)
+        cur.execute("SELECT name FROM skills")
+        skills = [str(row[0]) for row in cur.fetchall()]
+        
+        synced_count = 0
+        ontology_cache = {}
+        
+        for skill_name in skills:
+            get_skill_parents(cur, skill_name, ontology_cache)
+            synced_count += 1
+            
+    return {
+        "status": "success",
+        "message": f"Successfully synced and pre-calculated parents for {synced_count} skills in the ontology cache.",
+        "skills_processed": synced_count
+    }

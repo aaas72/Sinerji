@@ -1,10 +1,10 @@
 import { Request, Response, NextFunction } from 'express';
-import { PrismaClient } from '@prisma/client';
+import prisma from '../lib/prisma';
 import { AppError } from '../utils/AppError';
 import { notificationService } from '../services/notification.service';
 import { getIO, userSockets } from '../socket';
 
-const prisma = new PrismaClient();
+
 
 export const getContacts = async (req: Request, res: Response, next: NextFunction) => {
   try {

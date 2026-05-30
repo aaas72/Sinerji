@@ -1,8 +1,8 @@
-import { PrismaClient } from '@prisma/client';
+import prisma from '../lib/prisma';
 import { AppError } from '../utils/AppError';
 import logger from '../utils/logger';
 
-const prisma = new PrismaClient();
+
 const DEFAULT_MATCHING_SERVICE_URL = 'http://localhost:8001';
 
 type ScoreStudentTaskResponse = {

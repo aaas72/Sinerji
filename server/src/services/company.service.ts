@@ -1,9 +1,9 @@
-import { PrismaClient } from '@prisma/client';
+import prisma from '../lib/prisma';
 import { AppError } from '../utils/AppError';
 import { updateCompanyProfileSchema } from '../utils/validation';
 import { z } from 'zod';
 
-const prisma = new PrismaClient();
+
 
 export class CompanyService {
   async getProfile(userId: number) {

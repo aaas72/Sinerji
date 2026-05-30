@@ -1,9 +1,9 @@
-import { PrismaClient } from '@prisma/client';
+import prisma from '../lib/prisma';
 import { AppError } from '../utils/AppError';
 import { createTaskSchema, updateTaskSchema } from '../utils/validation';
 import { z } from 'zod';
 
-const prisma = new PrismaClient();
+
 
 interface TaskFilters {
   search?: string;

@@ -30,6 +30,12 @@ async def lifespan(app: FastAPI):
     
     # Shutdown Logic
     logger.info("Shutting down Sinerji AI Matching Service...")
+    try:
+        from app.database.connection import pool
+        pool.close()
+        logger.info("Database connection pool closed.")
+    except Exception as e:
+        logger.error(f"Failed to close database connection pool: {e}")
 
 app = FastAPI(
     title="Sinerji AI Matching Service",

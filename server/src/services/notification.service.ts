@@ -1,8 +1,8 @@
-import { PrismaClient } from '@prisma/client';
+import prisma from '../lib/prisma';
 import { getIO, userSockets } from '../socket';
 import logger from '../utils/logger';
 
-const prisma = new PrismaClient();
+
 
 export const notificationService = {
     async createNotification(userId: number, title: string, message: string, type: string = 'info', link?: string) {

@@ -5,7 +5,7 @@ import morgan from 'morgan';
 import cookieParser from 'cookie-parser';
 import dotenv from 'dotenv';
 import path from 'path';
-import { PrismaClient } from '@prisma/client';
+import prisma from './lib/prisma';
 import logger from './utils/logger';
 import { errorHandler } from './middlewares/error.middleware';
 import { AppError } from './utils/AppError';
@@ -28,7 +28,7 @@ import uploadRoutes from './routes/upload.routes';
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
 const app = express();
-const prisma = new PrismaClient();
+
 
 // Middleware
 app.use(cors({

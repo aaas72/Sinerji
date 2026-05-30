@@ -1,9 +1,9 @@
-import { PrismaClient } from '@prisma/client';
+import prisma from '../lib/prisma';
 import { AppError } from '../utils/AppError';
 import { z } from 'zod';
 import { createRecommendationSchema } from '../utils/validation';
 
-const prisma = new PrismaClient();
+
 
 export class RecommendationService {
   async createRecommendation(companyUserId: number, data: z.infer<typeof createRecommendationSchema>) {

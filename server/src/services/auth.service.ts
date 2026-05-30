@@ -1,11 +1,11 @@
-import { PrismaClient } from '@prisma/client';
+import prisma from '../lib/prisma';
 import bcrypt from 'bcryptjs';
 import { signToken } from '../utils/jwt';
 import { AppError } from '../utils/AppError';
 import { registerSchema, loginSchema } from '../utils/validation';
 import { z } from 'zod';
 
-const prisma = new PrismaClient();
+
 
 export class AuthService {
   async register(data: z.infer<typeof registerSchema>) {

@@ -1,7 +1,7 @@
 // Support service for handling tickets
-import { PrismaClient } from '@prisma/client';
+import prisma from '../lib/prisma';
 
-const prisma = new PrismaClient() as any;
+
 
 export class SupportService {
   async createTicket(userId: number, data: { subject: string; message: string }) {
