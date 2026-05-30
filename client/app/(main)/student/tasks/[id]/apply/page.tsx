@@ -132,7 +132,7 @@ export default function ApplyPage() {
   const isProjectTask = !task.reward_type || ['money', 'certificate', 'recommendation'].includes(task.reward_type.toLowerCase());
 
   return (
-    <div className="w-full max-w-[1280px] mx-auto px-6 md:px-16 py-16 flex flex-col gap-8">
+    <div className="w-full app-container px-6 md:px-16 py-16 flex flex-col gap-8">
       <Breadcrumb
         items={[
           { label: "Görevler", href: "/student/tasks" },
