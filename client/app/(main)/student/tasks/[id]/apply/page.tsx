@@ -5,26 +5,23 @@ import { useParams, useRouter } from "next/navigation";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import FormCard from "@/components/ui/form/FormCard";
 import FormRow from "@/components/ui/form/FormRow";
 import FormField from "@/components/ui/form/FormField";
 import FormInput from "@/components/ui/form/FormInput";
 import FormButton from "@/components/ui/form/FormButton";
 import RichTextEditor from "@/components/ui/form/RichTextEditor";
 import SectionCard from "@/components/ui/cards/SectionCard";
-import Input from "@/components/ui/Input";
 import Breadcrumb from "@/components/ui/Breadcrumb";
-import PrimaryButton from "@/components/ui/PrimaryButton";
 import { taskService } from "@/services/task.service";
 import { submissionService } from "@/services/submission.service";
 import { studentService } from "@/services/student.service";
 import { Task } from "@/types/task";
 import { StudentProfile } from "@/types/student";
 import { useToast } from "@/context/ToastContext";
-import { FiBriefcase, FiMapPin, FiFileText, FiCheckCircle } from "react-icons/fi";
-import { FaUpload, FaCheckCircle, FaTrash, FaPlus, FaTimes } from "react-icons/fa";
+import { FiBriefcase, FiMapPin, FiFileText, FiCheckCircle, FiX, FiSend } from "react-icons/fi";
 import PageLoadingSkeleton from "@/components/ui/PageLoadingSkeleton";
 import SkillBadge from "@/components/ui/SkillBadge";
+import MainSection from "@/components/layout/MainSection";
 
 const applySchema = z.object({
   coverLetter: z.string().min(50, "Lütfen en az 50 karakterlik bir başvuru yazısı girin."),
@@ -113,18 +110,18 @@ export default function ApplyPage() {
 
   if (!isProfileComplete) {
     return (
-      <div className="max-w-4xl mx-auto px-4 py-8 mt-10">
-        <div className="bg-red-50 border border-red-100 rounded-2xl p-8 text-center space-y-4 shadow-sm">
-          <div className="w-16 h-16 bg-red-100 text-red-600 rounded-full flex items-center justify-center mx-auto mb-2">
+      <div className="max-w-4xl mx-auto px-6 py-12 mt-10">
+        <div className="bg-[#fffdf9] border border-[#dfded6] rounded-2xl p-8 md:p-12 text-center space-y-6 shadow-sm">
+          <div className="w-16 h-16 bg-[#e28743]/10 text-[#e28743] rounded-full flex items-center justify-center mx-auto mb-2">
             <FiMapPin className="w-8 h-8" />
           </div>
-          <h2 className="text-xl font-bold text-gray-900">Profiliniz Eksik!</h2>
-          <p className="text-gray-600 max-w-lg mx-auto text-sm leading-relaxed">
+          <h2 className="text-2xl font-bold text-[#00342b] tracking-tight">Profiliniz Eksik!</h2>
+          <p className="text-[#565e74] max-w-lg mx-auto text-sm font-medium leading-relaxed">
             Yapay zeka (AI) eşleştirme algoritmasının düzgün çalışabilmesi ve şirketlerin size güvenebilmesi için profilinizdeki zorunlu alanları (Bölüm, Mezuniyet Yılı, Yetenekler ve Portfolyo/GitHub bağlantısı) doldurmanız gerekmektedir.
           </p>
           <div className="pt-4 flex justify-center gap-4">
-            <PrimaryButton variant="outline" onClick={() => router.back()}>Geri Dön</PrimaryButton>
-            <PrimaryButton variant="primary" onClick={() => router.push('/student/settings')}>Profilimi Tamamla</PrimaryButton>
+            <FormButton variant="outline" onClick={() => router.back()} className="!rounded-full px-6">Geri Dön</FormButton>
+            <FormButton variant="primary" onClick={() => router.push('/student/settings')} className="!rounded-full px-8 bg-[#004d40] hover:bg-[#00342b]">Profilimi Tamamla</FormButton>
           </div>
         </div>
       </div>
@@ -133,144 +130,142 @@ export default function ApplyPage() {
 
   const isMoneyTask = task.reward_type?.toLowerCase() === 'money';
   const isProjectTask = !task.reward_type || ['money', 'certificate', 'recommendation'].includes(task.reward_type.toLowerCase());
-  
-  // Dynamic section numbering
-  let sectionIndex = 1;
 
   return (
-    <div className="app-container px-6 py-10 space-y-8">
+    <div className="w-full max-w-[1280px] mx-auto px-6 md:px-16 py-16 flex flex-col gap-8">
+      <Breadcrumb
+        items={[
+          { label: "Görevler", href: "/student/tasks" },
+          { label: task.title, href: `/student/tasks/${task.id}` },
+          { label: "Başvuru Yap", active: true },
+        ]}
+      />
 
-      {/* Page Header Outside Box */}
-      <div className="flex flex-col md:flex-row gap-6 items-start justify-between select-none">
-          <div>
-            <span className="inline-block px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider bg-[#004d40]/10 text-[#004d40] mb-3">
-              Başvuru Formu
-            </span>
-            <h1 className="text-2xl lg:text-3xl font-extrabold tracking-tight text-gray-900 leading-tight mb-2">{task.title}</h1>
-            <div className="flex items-center gap-4 text-xs font-bold uppercase tracking-wider text-gray-450">
-              <span className="flex items-center gap-1.5 text-gray-700">
-                <FiBriefcase className="text-[#004d40] w-4 h-4" /> {task.company?.company_name}
-              </span>
-              <span className="flex items-center gap-1.5">
-                <FiMapPin className="text-gray-400 w-4 h-4" /> {task.location || "Uzaktan"}
-              </span>
-            </div>
+      <MainSection hideHeader variant="transparent" bordered={false} padding="none">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-8">
+          <div className="space-y-3">
+            <h1 className="text-[22px] md:text-[28px] font-bold leading-tight text-[#00342b] font-sans break-words tracking-tight">
+              Başvuru: {task.title}
+            </h1>
+            <p className="text-sm text-[#565e74] font-medium">
+              <strong className="text-[#004d40]">{task.company?.company_name}</strong> şirketindeki bu görev için neden uygun olduğunuzu detaylıca anlatın.
+            </p>
           </div>
           {task.company?.logo_url && (
-            <img src={task.company.logo_url} alt="Logo" className="w-16 h-16 rounded-2xl border border-[#f1f0ea] object-cover bg-white p-1.5 shadow-2xs" />
+            <img src={task.company.logo_url} alt="Logo" className="w-16 h-16 rounded-2xl border border-[#dfded6] object-cover bg-white p-1.5" />
           )}
-      </div>
+        </div>
 
-      <div className="space-y-6">
-        <form onSubmit={handleSubmit(onSubmit as any)} className="space-y-8">
-          
-          <SectionCard 
-            icon={FiFileText} 
-            title="1. Başvuru Mektubu (Zorunlu)" 
-            description="Bu göreve neden uygun olduğunuzu, varsa tecrübelerinizi ve görevi nasıl yapmayı planladığınızı detaylıca açıklayın."
-            className="bg-white border-[#f1f0ea] shadow-2xs"
-          >
-            <FormField error={errors.coverLetter?.message}>
-              <Controller
-                control={control}
-                name="coverLetter"
-                render={({ field }) => (
-                  <RichTextEditor
-                    value={field.value}
-                    onChange={field.onChange}
-                    placeholder="Örn: Bu görev için gerekli yeteneklere sahibim çünkü geçmişte şu projeleri geliştirdim..."
-                  />
-                )}
-              />
-            </FormField>
-          </SectionCard>
-
-          {isProjectTask && (
+        <div className="max-w-4xl space-y-6">
+          <form onSubmit={handleSubmit(onSubmit as any)} className="space-y-8">
+            
             <SectionCard 
-              icon={FiBriefcase} 
-              title={`2. Teklifiniz ${isMoneyTask ? "(Opsiyonel)" : ""}`} 
-              description={`Şirketin değerlendirebilmesi için ${isMoneyTask ? "talep ettiğiniz bütçeyi ve " : ""}teslim süresini belirtin.`}
-              className="bg-white border-[#f1f0ea] shadow-2xs"
+              icon={FiFileText} 
+              title="1. Başvuru Mektubu (Zorunlu)" 
+              description="Bu göreve neden uygun olduğunuzu, varsa tecrübelerinizi ve görevi nasıl yapmayı planladığınızı detaylıca açıklayın."
             >
-              <FormRow>
-                {isMoneyTask && (
-                  <FormInput
-                    label="Talep Edilen Bütçe ($ - İsteğe Bağlı)"
-                    type="number"
-                    {...register("proposed_budget")}
-                    placeholder="Örn: 150"
-                    error={errors.proposed_budget?.message}
-                    icon={FiBriefcase}
-                  />
-                )}
-                
-                <FormInput
-                  label="Tahmini Teslim Süresi (Gün - Zorunlu)"
-                  type="number"
-                  required={isProjectTask}
-                  {...register("estimated_delivery_days")}
-                  placeholder="Örn: 3"
-                  error={errors.estimated_delivery_days?.message}
-                  icon={FiBriefcase}
+              <FormField error={errors.coverLetter?.message}>
+                <Controller
+                  control={control}
+                  name="coverLetter"
+                  render={({ field }) => (
+                    <RichTextEditor
+                      value={field.value}
+                      onChange={field.onChange}
+                      placeholder="Örn: Bu görev için gerekli yeteneklere sahibim çünkü geçmişte şu projeleri geliştirdim..."
+                    />
+                  )}
                 />
-              </FormRow>
+              </FormField>
             </SectionCard>
-          )}
 
-          <SectionCard 
-            icon={FiCheckCircle} 
-            title="3. Gereksinim Onayı"
-            className="bg-white border-[#f1f0ea] shadow-2xs"
-          >
-             <div className="bg-transparent border border-[#f1f0ea] p-5 rounded-2xl mb-4 select-none">
-                <p className="text-xs font-bold text-gray-450 uppercase tracking-wider mb-3">Bu görev için aranan temel yetenekler:</p>
-                <div className="flex flex-wrap gap-2">
-                  {task.requiredSkills && task.requiredSkills.length > 0 ? (
-                    task.requiredSkills.map((s: any, idx) => (
-                      <SkillBadge key={idx} label={s.skill.name} />
-                    ))
-                  ) : <span className="text-xs text-gray-400 font-medium italic">Belirtilmemiş</span>}
-                </div>
-             </div>
-
-             <label className="flex items-start gap-3 cursor-pointer group mt-6 select-none">
-                <div className="flex items-center h-5">
-                  <input
-                    type="checkbox"
-                    {...register("agreesToRequirements")}
-                    className="w-5 h-5 border-gray-300 rounded-lg text-[#004d40] focus:ring-[#004d40]/15 bg-white cursor-pointer transition-all"
+            {isProjectTask && (
+              <SectionCard 
+                icon={FiBriefcase} 
+                title={`2. Teklifiniz ${isMoneyTask ? "(Opsiyonel)" : ""}`} 
+                description={`Şirketin değerlendirebilmesi için ${isMoneyTask ? "talep ettiğiniz bütçeyi ve " : ""}teslim süresini belirtin.`}
+              >
+                <FormRow>
+                  {isMoneyTask && (
+                    <FormInput
+                      label="Talep Edilen Bütçe ($ - İsteğe Bağlı)"
+                      type="number"
+                      {...register("proposed_budget")}
+                      placeholder="Örn: 150"
+                      error={errors.proposed_budget?.message}
+                      className="!rounded-full px-5"
+                    />
+                  )}
+                  
+                  <FormInput
+                    label="Tahmini Teslim Süresi (Gün - Zorunlu)"
+                    type="number"
+                    required={isProjectTask}
+                    {...register("estimated_delivery_days")}
+                    placeholder="Örn: 3"
+                    error={errors.estimated_delivery_days?.message}
+                    className="!rounded-full px-5"
                   />
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-sm font-bold text-gray-800">Gereksinimleri Onaylıyorum</span>
-                  <p className="text-xs text-gray-450 mt-1 font-medium leading-relaxed">Bu görevi üstlenmek için yukarıdaki yeteneklere sahip olduğumu ve görev şartlarını kabul ettiğimi beyan ederim.</p>
-                </div>
-              </label>
-              {errors.agreesToRequirements?.message && (
-                <p className="mt-2 text-xs text-red-500 font-medium">{errors.agreesToRequirements.message}</p>
-              )}
-          </SectionCard>
+                </FormRow>
+              </SectionCard>
+            )}
 
-          <div className="flex items-center justify-end gap-3 pt-6 border-t border-[#f1f0ea] select-none">
-            <PrimaryButton
-              type="button"
-              variant="outline"
-              onClick={() => router.back()}
-              className="px-6 py-3 cursor-pointer rounded-xl"
+            <SectionCard 
+              icon={FiCheckCircle} 
+              title="3. Gereksinim Onayı"
             >
-              İptal
-            </PrimaryButton>
-            <PrimaryButton
-              type="submit"
-              variant="primary"
-              className="px-8 py-3 bg-[#004d40] hover:bg-[#00332a] text-white border-transparent cursor-pointer rounded-xl"
-              disabled={isSubmitting}
-            >
-              {isSubmitting ? "Gönderiliyor..." : "Başvurumu Tamamla"}
-            </PrimaryButton>
-          </div>
-        </form>
-      </div>
+               <div className="bg-[#fffdf9] border border-[#dfded6] p-5 rounded-2xl mb-4 select-none">
+                  <p className="text-[10px] font-extrabold text-[#565e74] uppercase tracking-wider mb-3">Bu görev için aranan temel yetenekler:</p>
+                  <div className="flex flex-wrap gap-2">
+                    {task.requiredSkills && task.requiredSkills.length > 0 ? (
+                      task.requiredSkills.map((s: any, idx) => (
+                        <SkillBadge key={idx} label={s.skill.name} />
+                      ))
+                    ) : <span className="text-xs text-gray-400 font-medium italic">Belirtilmemiş</span>}
+                  </div>
+               </div>
+
+               <label className="flex items-start gap-3 cursor-pointer group mt-6 select-none">
+                  <div className="flex items-center h-5">
+                    <input
+                      type="checkbox"
+                      {...register("agreesToRequirements")}
+                      className="w-5 h-5 border-[#dfded6] rounded-lg text-[#004d40] focus:ring-[#004d40]/15 bg-white cursor-pointer transition-all"
+                    />
+                  </div>
+                  <div className="flex flex-col">
+                    <span className="text-sm font-bold text-[#0b1c30]">Gereksinimleri Onaylıyorum</span>
+                    <p className="text-xs text-[#565e74] mt-1 font-medium leading-relaxed">Bu görevi üstlenmek için yukarıdaki yeteneklere sahip olduğumu ve görev şartlarını kabul ettiğimi beyan ederim.</p>
+                  </div>
+                </label>
+                {errors.agreesToRequirements?.message && (
+                  <p className="mt-2 text-xs text-red-500 font-medium">{errors.agreesToRequirements.message}</p>
+                )}
+            </SectionCard>
+
+            <div className="flex flex-col sm:flex-row justify-end items-center gap-4 pt-6 border-t border-[#dfded6]">
+              <FormButton
+                type="button"
+                variant="outline"
+                onClick={() => router.back()}
+                className="w-full sm:w-auto !rounded-full px-6"
+              >
+                <FiX className="mr-2" />
+                İptal
+              </FormButton>
+              <FormButton
+                type="submit"
+                variant="primary"
+                isLoading={isSubmitting}
+                className="w-full sm:w-auto !rounded-full px-8 bg-[#004d40] hover:bg-[#00342b]"
+              >
+                <FiSend className="mr-2" />
+                Başvuruyu Gönder
+              </FormButton>
+            </div>
+          </form>
+        </div>
+      </MainSection>
     </div>
   );
 }

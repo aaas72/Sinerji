@@ -104,13 +104,6 @@ export default function StudentSettingsPage() {
 
   return (
     <div className="w-full app-container px-4 md:px-8 py-10 flex flex-col gap-8 min-h-screen font-sans">
-      <Breadcrumb
-        items={[
-          { label: "Öğrenci Paneli", href: `/student/tasks` },
-          { label: "Hesap Ayarları", active: true },
-        ]}
-      />
-      
       {/* ── Page Header ── */}
       <div className="mb-2">
         <h1 className="text-3xl font-bold text-[#00342b] tracking-tight mb-2">Hesap Ayarları</h1>
