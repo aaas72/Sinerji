@@ -3,6 +3,8 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import CompanyTaskCard from "@/components/ui/cards/CompanyTaskCard";
+import ListSkeleton from "@/components/ui/ListSkeleton";
+import EmptyState from "@/components/ui/EmptyState";
 import Link from "next/link";
 import { FiPlus, FiBriefcase } from "react-icons/fi";
 import Tabs from "@/components/ui/Tabs";
@@ -77,9 +79,8 @@ export default function MyTasksPage() {
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {isLoading ? (
-            <div className="col-span-full bg-white rounded-2xl border border-[#dfded6] shadow-2xs p-12 text-center text-gray-500">
-              <div className="w-8 h-8 border-2 border-[#004d40] border-t-transparent rounded-full animate-spin mx-auto mb-4" />
-              Yükleniyor...
+            <div className="col-span-full">
+              <ListSkeleton count={4} />
             </div>
           ) : filteredTasks.length > 0 ? (
             filteredTasks.map((task) => (
@@ -111,12 +112,12 @@ export default function MyTasksPage() {
               />
             ))
           ) : (
-            <div className="col-span-full bg-white rounded-2xl border border-[#dfded6] shadow-2xs p-12 text-center text-gray-500 flex flex-col items-center justify-center min-h-[250px]">
-              <FiBriefcase className="w-12 h-12 text-[#004d40]/10 mb-3" />
-              <h3 className="font-bold text-gray-900 mb-1">Görev Bulunmuyor</h3>
-              <p className="text-xs text-[#565e74] font-medium max-w-xs">
-                Seçtiğiniz kategoride şirketiniz tarafından eklenmiş bir görev bulunmamaktadır.
-              </p>
+            <div className="col-span-full min-h-[300px] flex">
+              <EmptyState 
+                icon={FiBriefcase} 
+                title="Görev Bulunmuyor" 
+                message="Seçtiğiniz kategoride şirketiniz tarafından eklenmiş bir görev bulunmamaktadır." 
+              />
             </div>
           )}
         </div>

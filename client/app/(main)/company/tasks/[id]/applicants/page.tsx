@@ -13,6 +13,8 @@ import PrimaryButton from "@/components/ui/PrimaryButton";
 import ApplicantCard from "@/components/ui/cards/ApplicantCard";
 import ApplicantsSearchFilter from "@/components/ui/sections/ApplicantsSearchFilter";
 import { useToast } from "@/context/ToastContext";
+import PageLoadingSkeleton from "@/components/ui/PageLoadingSkeleton";
+import EmptyState from "@/components/ui/EmptyState";
 import {
   FiUser,
   FiCalendar,
@@ -477,15 +479,7 @@ export default function TaskApplicantsPage() {
       return sortBy === "newest" ? dateB - dateA : dateA - dateB;
     });
 
-  if (loading)
-    return (
-      <div className="min-h-screen p-0 mx-auto flex justify-center items-center text-[#565e74] bg-[#faf9f6]">
-        <div className="flex flex-col items-center gap-3">
-          <div className="w-10 h-10 border-4 border-[#00342b]/20 border-t-[#00342b] rounded-full animate-spin" />
-          <p className="text-sm font-semibold">Yükleniyor...</p>
-        </div>
-      </div>
-    );
+  if (loading) return <PageLoadingSkeleton />;
 
   return (
     <div className="min-h-screen w-full max-w-[1280px] mx-auto px-6 md:px-16 py-16 bg-[#faf9f6] text-[#0b1c30] relative flex flex-col font-sans">
@@ -585,11 +579,12 @@ export default function TaskApplicantsPage() {
 
         {/* Candidate Grid */}
         {filteredSubmissions.length === 0 ? (
-          <div className="text-center py-16 bg-white border border-[#dfded6] rounded-2xl p-6 shadow-sm">
-            <FiUser size={48} className="mx-auto mb-4 text-[#bfc9c4]" />
-            <p className="text-sm font-semibold text-[#565e74]">
-              {submissions.length === 0 ? "Henüz başvuru bulunmamaktadır." : "Filtrelere uygun başvuru bulunamadı."}
-            </p>
+          <div className="flex justify-center items-center py-16 bg-transparent">
+            <EmptyState 
+              icon={FiUser} 
+              title="Başvuru Bulunamadı" 
+              message={submissions.length === 0 ? "Henüz başvuru bulunmamaktadır." : "Filtrelere uygun başvuru bulunamadı."} 
+            />
           </div>
         ) : (
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 xl:grid-cols-4 gap-6 relative">

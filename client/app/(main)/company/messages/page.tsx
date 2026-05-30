@@ -6,6 +6,10 @@ import { FiMessageSquare, FiSend, FiSearch, FiMoreVertical, FiPaperclip, FiCheck
 import { messageService, Contact, Message } from "@/services/message.service";
 import { useAuthStore } from "@/hooks/useAuth";
 import { useSearchParams } from "next/navigation";
+import EmptyState from "@/components/ui/EmptyState";
+import { Skeleton } from "@/components/ui/Skeleton";
+import ListSkeleton from "@/components/ui/ListSkeleton";
+import PageLoadingSkeleton from "@/components/ui/PageLoadingSkeleton";
 import { useSocket } from "@/context/SocketContext";
 
 function CompanyMessagesContent() {
@@ -130,9 +134,11 @@ function CompanyMessagesContent() {
           </div>
           <div className="flex-1 overflow-y-auto custom-scrollbar">
             {loadingContacts ? (
-              <div className="p-4 text-center text-gray-400 text-sm">Kişiler yükleniyor...</div>
+              <div className="p-4"><ListSkeleton count={4} /></div>
             ) : contacts.length === 0 ? (
-              <div className="p-4 text-center text-gray-400 text-sm">Henüz mesajınız yok.</div>
+              <div className="flex-1 min-h-[300px]">
+                <EmptyState icon={FiMessageSquare} title="Kişi Bulunamadı" message="Henüz mesajınız yok." />
+              </div>
             ) : contacts.map((contact) => {
               const timeStr = new Date(contact.lastMessageTime).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
               return (
@@ -189,7 +195,7 @@ function CompanyMessagesContent() {
               {/* Messages List */}
               <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-4 bg-transparent custom-scrollbar">
                 {loadingMessages ? (
-                   <div className="flex-1 flex justify-center items-center text-gray-400">Yükleniyor...</div>
+                   <div className="flex-1 p-6"><ListSkeleton count={5} /></div>
                 ) : messages.map((msg) => {
                   const dateObj = new Date(msg.created_at);
                   const msgDate = dateObj.toLocaleDateString('tr-TR');
@@ -289,7 +295,7 @@ function CompanyMessagesContent() {
 
 export default function CompanyMessagesPage() {
   return (
-    <Suspense fallback={<div className="min-h-screen flex items-center justify-center">Yükleniyor...</div>}>
+    <Suspense fallback={<PageLoadingSkeleton />}>
       <CompanyMessagesContent />
     </Suspense>
   );

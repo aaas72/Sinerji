@@ -4,6 +4,8 @@ import { useState, useEffect } from "react";
 import { FiBookmark } from "react-icons/fi";
 import { studentService } from "@/services/student.service";
 import TaskCard from "@/components/ui/cards/TaskCard";
+import { Skeleton } from "@/components/ui/Skeleton";
+import EmptyState from "@/components/ui/EmptyState";
 
 export default function SavedTasksPage() {
   const [savedTasks, setSavedTasks] = useState<any[]>([]);
@@ -51,11 +53,10 @@ export default function SavedTasksPage() {
       </div>
 
       {loading ? (
-        <div className="flex justify-center items-center min-h-[250px] bg-[#F1F0EA] rounded-2xl border border-[#dfded6] shadow-2xs">
-          <div className="flex flex-col items-center gap-3">
-            <div className="w-8 h-8 border-2 border-[#004d40] border-t-transparent rounded-full animate-spin"></div>
-            <p className="text-gray-500 text-sm font-medium">Yükleniyor...</p>
-          </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <Skeleton className="h-[200px] w-full rounded-2xl" />
+          <Skeleton className="h-[200px] w-full rounded-2xl" />
+          <Skeleton className="h-[200px] w-full rounded-2xl" />
         </div>
       ) : savedTasks.length > 0 ? (
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
@@ -74,12 +75,12 @@ export default function SavedTasksPage() {
           ))}
         </div>
       ) : (
-        <div className="col-span-full bg-[#F1F0EA] rounded-2xl border border-[#dfded6] shadow-2xs p-12 text-center text-gray-500 flex flex-col items-center justify-center min-h-[250px]">
-          <FiBookmark className="w-12 h-12 text-[#004d40]/10 mb-3" />
-          <h3 className="font-bold text-gray-900 mb-1">Henüz Kaydedilmiş Görev Yok</h3>
-          <p className="text-xs text-[#565e74] font-medium max-w-xs">
-            Daha sonra başvurmak için ilginizi çeken görevleri kaydedebilirsiniz.
-          </p>
+        <div className="col-span-full min-h-[40vh] flex">
+          <EmptyState 
+            icon={FiBookmark} 
+            title="Henüz Kaydedilmiş Görev Yok" 
+            message="Daha sonra başvurmak için ilginizi çeken görevleri kaydedebilirsiniz." 
+          />
         </div>
       )}
     </div>

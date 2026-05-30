@@ -5,6 +5,8 @@ import { useParams, useRouter } from "next/navigation";
 import MainSection from "@/components/ui/layouts/MainSection";
 import MainSectionTitle from "@/components/ui/MainSectionTitle";
 import PrimaryButton from "@/components/ui/PrimaryButton";
+import PageLoadingSkeleton from "@/components/ui/PageLoadingSkeleton";
+import EmptyState from "@/components/ui/EmptyState";
 import SkillBadge from "@/components/ui/SkillBadge";
 import Link from "next/link";
 import {
@@ -13,6 +15,7 @@ import {
   FiBriefcase,
   FiMapPin,
   FiGlobe,
+  FiFileText,
 } from "react-icons/fi";
 import { taskService } from "@/services/task.service";
 import { Task } from "@/types/task";
@@ -71,17 +74,13 @@ export default function TaskDetailsPage() {
   }, [params.id]);
 
   if (loading) {
-    return (
-      <div className="min-h-screen mt-12 app-container flex justify-center items-center text-gray-500">
-        Yükleniyor...
-      </div>
-    );
+    return <PageLoadingSkeleton />;
   }
 
   if (!task) {
     return (
-      <div className="min-h-screen mt-12 app-container flex justify-center items-center text-gray-500">
-        Görev bulunamadı.
+      <div className="min-h-screen mt-12 app-container flex justify-center items-center">
+        <EmptyState title="Görev Bulunamadı" message="Aradığınız görev silinmiş veya erişime kapanmış olabilir." icon={FiFileText} />
       </div>
     );
   }

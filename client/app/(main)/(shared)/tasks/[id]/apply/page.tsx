@@ -15,6 +15,8 @@ import MainSection from "@/components/ui/layouts/MainSection";
 import SectionCard from "@/components/ui/cards/SectionCard";
 import Breadcrumb from "@/components/ui/Breadcrumb";
 import { FiFileText, FiSend, FiX } from "react-icons/fi";
+import PageLoadingSkeleton from "@/components/ui/PageLoadingSkeleton";
+import EmptyState from "@/components/ui/EmptyState";
 
 const applySchema = z.object({
   submission_content: z.string().min(50, "Lütfen en az 50 karakterlik bir başvuru yazısı girin."),
@@ -72,20 +74,13 @@ export default function ApplyPage() {
   };
 
   if (loading) {
-    return (
-      <div className="min-h-screen flex justify-center items-center text-gray-500 text-sm font-medium">
-        Yükleniyor...
-      </div>
-    );
+    return <PageLoadingSkeleton />;
   }
 
   if (!task) {
     return (
-      <div className="min-h-screen flex flex-col justify-center items-center text-gray-500 gap-4">
-        <p className="font-medium">Görev bulunamadı.</p>
-        <FormButton variant="outline" onClick={() => router.back()} className="!rounded-full">
-          Geri Dön
-        </FormButton>
+      <div className="min-h-screen flex flex-col justify-center items-center gap-4">
+        <EmptyState title="Görev Bulunamadı" message="Başvuru yapmak istediğiniz görev bulunamadı." icon={FiFileText} />
       </div>
     );
   }

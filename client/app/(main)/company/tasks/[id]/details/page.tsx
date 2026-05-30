@@ -5,6 +5,8 @@ import { useParams, useRouter } from "next/navigation";
 import MainSection from "@/components/ui/layouts/MainSection";
 import PrimaryButton from "@/components/ui/PrimaryButton";
 import SectionCard from "@/components/ui/cards/SectionCard";
+import PageLoadingSkeleton from "@/components/ui/PageLoadingSkeleton";
+import EmptyState from "@/components/ui/EmptyState";
 import Breadcrumb from "@/components/ui/Breadcrumb";
 import { taskService } from "@/services/task.service";
 import { Task } from "@/types/task";
@@ -103,18 +105,13 @@ export default function TaskDetailsPage() {
   }, [params.id]);
 
   if (loading) {
-    return (
-      <div className="min-h-screen p-0 mx-auto flex justify-center items-center text-gray-400 text-sm">
-        Yükleniyor...
-      </div>
-    );
+    return <PageLoadingSkeleton />;
   }
 
   if (!task) {
     return (
-      <div className="min-h-screen p-0 mx-auto flex flex-col justify-center items-center gap-4 text-gray-500">
-        <p>Görev bulunamadı.</p>
-        <PrimaryButton variant="outline" className="rounded-full px-5 py-2 border-[#dfded6]" onClick={() => router.back()}>Geri Dön</PrimaryButton>
+      <div className="min-h-screen p-0 mx-auto flex flex-col justify-center items-center">
+        <EmptyState title="Görev Bulunamadı" message="Aradığınız görev bulunamadı veya silinmiş olabilir." />
       </div>
     );
   }

@@ -2,6 +2,8 @@
 import { useState, useEffect } from "react";
 import SearchFilter, { SearchFilters } from "@/components/ui/SearchFilter";
 import TasksBoard from "@/components/features/tasks/TasksBoard";
+import { useToast } from "@/context/ToastContext";
+import PageLoadingSkeleton from "@/components/ui/PageLoadingSkeleton";
 import { Task } from "@/components/features/tasks/types";
 import { taskService } from "@/services/task.service";
 import { studentService } from "@/services/student.service";
@@ -113,15 +115,7 @@ export default function StudentDashboard() {
 
   const visibleTasks = viewMode === "recommended" ? recommendedTasks : tasks;
 
-  if (isLoading && tasks.length === 0)
-    return (
-      <div className="flex items-center justify-center min-h-[50vh]">
-        <div className="flex flex-col items-center gap-3">
-          <div className="w-8 h-8 border-2 border-[#004d40] border-t-transparent rounded-full animate-spin" />
-          <p className="text-gray-500 text-sm">Yükleniyor...</p>
-        </div>
-      </div>
-    );
+  if (isLoading && tasks.length === 0) return <PageLoadingSkeleton />;
   if (error)
     return (
       <div className="flex items-center justify-center min-h-[50vh]">

@@ -22,6 +22,7 @@ import { taskService } from "@/services/task.service";
 import { TASK_CATEGORIES } from "@/constants/categories";
 import RichTextEditor from "@/components/ui/form/RichTextEditor";
 import Breadcrumb from "@/components/ui/Breadcrumb";
+import PageLoadingSkeleton from "@/components/ui/PageLoadingSkeleton";
 import ToggleSwitch from "@/components/ui/ToggleSwitch";
 import Input from "@/components/ui/Input";
 import Select from "@/components/ui/Select";
@@ -230,11 +231,8 @@ export default function EditTaskPage() {
 
   if (isFetching) {
     return (
-      <div className="min-h-screen flex items-center justify-center bg-[#FCFBF7]">
-        <div className="flex flex-col items-center gap-3 text-primary">
-          <div className="w-10 h-10 border-4 border-primary border-t-transparent rounded-full animate-spin" />
-          <span className="font-bold text-sm">Görev yükleniyor...</span>
-        </div>
+      <div className="bg-[#FCFBF7] min-h-screen py-10">
+        <PageLoadingSkeleton />
       </div>
     );
   }

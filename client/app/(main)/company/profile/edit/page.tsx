@@ -20,6 +20,8 @@ import {
   FiImage,
   FiCheck,
 } from "react-icons/fi";
+import PageLoadingSkeleton from "@/components/ui/PageLoadingSkeleton";
+import EmptyState from "@/components/ui/EmptyState";
 import Input from "@/components/ui/Input";
 
 // ─── shared input style ────────────────────────────────────────────────────────
@@ -122,18 +124,13 @@ export default function EditCompanyProfilePage() {
   });
 
   if (loading) {
-    return (
-      <div className="flex justify-center items-center min-h-[50vh]">
-        <div className="w-10 h-10 border-4 border-[#004d40]/20 border-t-[#004d40] rounded-full animate-spin" />
-      </div>
-    );
+    return <PageLoadingSkeleton />;
   }
 
   if (!profile) {
     return (
-      <div className="flex flex-col items-center gap-4 min-h-[50vh] justify-center text-gray-500">
-        <FiBriefcase className="w-12 h-12 text-[#e28743]" />
-        <p className="font-medium">Profil verileri yüklenemedi. Lütfen sayfayı yenileyin.</p>
+      <div className="flex justify-center items-center min-h-[60vh]">
+        <EmptyState title="Profil Verileri Yüklenemedi" message="Lütfen sayfayı yenileyin." icon={FiBriefcase} />
       </div>
     );
   }

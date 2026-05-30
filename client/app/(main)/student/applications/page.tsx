@@ -5,6 +5,8 @@ import ApplicationCard, {
   ApplicationStatus,
   RewardType,
 } from "@/components/ui/cards/ApplicationCard";
+import ListSkeleton from "@/components/ui/ListSkeleton";
+import EmptyState from "@/components/ui/EmptyState";
 import {
   FiClock,
   FiPlay,
@@ -87,12 +89,7 @@ export default function ApplicationsPage() {
   if (isLoading) {
     return (
       <div className="w-full max-w-[1280px] mx-auto px-6 md:px-16 py-16 flex flex-col gap-8">
-        <div className="flex justify-center items-center min-h-[250px] bg-[#F1F0EA] rounded-2xl border border-[#dfded6] shadow-2xs">
-          <div className="flex flex-col items-center gap-3">
-            <div className="w-8 h-8 border-2 border-[#004d40] border-t-transparent rounded-full animate-spin"></div>
-            <p className="text-gray-500 text-sm font-medium">Yükleniyor...</p>
-          </div>
-        </div>
+        <ListSkeleton count={4} />
       </div>
     );
   }
@@ -142,12 +139,8 @@ export default function ApplicationsPage() {
             ))}
           </div>
         ) : (
-          <div className="bg-[#F1F0EA] rounded-2xl border border-[#dfded6] shadow-2xs p-12 text-center text-gray-500 flex flex-col items-center justify-center min-h-[250px]">
-            <FiInbox className="w-12 h-12 text-[#004d40]/10 mb-3" />
-            <h3 className="font-bold text-gray-900 mb-1">Başvuru Bulunmuyor</h3>
-            <p className="text-xs text-[#565e74] font-medium max-w-xs mx-auto">
-              Bu kategoride henüz bir başvurunuz bulunmamaktadır.
-            </p>
+          <div className="bg-transparent rounded-2xl p-12 text-center text-gray-500 flex flex-col items-center justify-center min-h-[300px]">
+            <EmptyState icon={FiInbox} title="Başvuru Bulunmuyor" message="Bu kategoride henüz bir başvurunuz bulunmamaktadır." />
           </div>
         )}
       </div>

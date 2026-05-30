@@ -2,6 +2,8 @@
 
 import { useState, useEffect } from "react";
 import TaskBrowsingCard from "./TaskBrowsingCard";
+import { taskService } from "@/services/task.service";
+import EmptyState from "@/components/ui/EmptyState";
 import TaskDetail from "./TaskDetail";
 import { Task } from "./types";
 import { FiSearch, FiZap, FiFilter, FiX } from "react-icons/fi";
@@ -246,12 +248,15 @@ export default function TasksBoard({
           {/* Scrollable list */}
           <div className="flex-1 overflow-y-auto space-y-4 no-scrollbar px-2 -mx-2 pb-8 pt-1">
             {filteredTasks.length === 0 ? (
-              <div className="bg-gray-50/50 rounded-xl border border-dashed border-gray-200 p-8 text-center mt-4">
-                <p className="text-gray-400 text-xs font-semibold">
-                  {viewMode === "recommended"
-                    ? "Profil uyumluluğunuza göre henüz eşleşen görev bulunamadı."
-                    : "Gösterilecek görev bulunamadı."}
-                </p>
+              <div className="mt-4 flex min-h-[250px]">
+                <EmptyState 
+                  title="Görev Bulunamadı"
+                  message={
+                    viewMode === "recommended"
+                      ? "Profil uyumluluğunuza göre henüz eşleşen görev bulunamadı."
+                      : "Filtrelerinize uygun görev bulunamadı."
+                  } 
+                />
               </div>
             ) : (
               filteredTasks.map((t) => (
