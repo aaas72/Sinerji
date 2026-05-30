@@ -25,8 +25,8 @@ import MainSection from "@/components/layout/MainSection";
 
 const applySchema = z.object({
   coverLetter: z.string().min(50, "Lütfen en az 50 karakterlik bir başvuru yazısı girin."),
-  proposed_budget: z.coerce.number().optional(),
-  estimated_delivery_days: z.coerce.number().optional(),
+  proposed_budget: z.preprocess((val) => (val === "" || val === undefined ? undefined : Number(val)), z.number().positive().optional()),
+  estimated_delivery_days: z.preprocess((val) => (val === "" || val === undefined ? undefined : Number(val)), z.number().int().positive().optional()),
   agreesToRequirements: z.boolean().refine(val => val === true, {
     message: "Gereksinimleri sağladığınızı onaylamanız gerekmektedir."
   })
