@@ -4,7 +4,7 @@ import { useEffect, useState } from "react";
 import ApplicationCard, {
   ApplicationStatus,
   RewardType,
-} from "@/components/ui/cards/ApplicationCard";
+} from '@/components/features/applications/ApplicationCard';
 import ListSkeleton from "@/components/ui/ListSkeleton";
 import EmptyState from "@/components/ui/EmptyState";
 import {

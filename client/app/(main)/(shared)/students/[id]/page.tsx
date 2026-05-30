@@ -27,7 +27,7 @@ import {
 import { studentService } from "@/services/student.service";
 import { StudentProfile, StudentSkill } from "@/types/student";
 import SectionCard from "@/components/ui/cards/SectionCard";
-import MainSection from "@/components/ui/layouts/MainSection";
+import MainSection from '@/components/layout/MainSection';
 import Breadcrumb from "@/components/ui/Breadcrumb";
 import PrimaryButton from "@/components/ui/PrimaryButton";
 import StatusBadge from "@/components/ui/badges/StatusBadge";

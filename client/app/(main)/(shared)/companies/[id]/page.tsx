@@ -6,7 +6,7 @@ import { useAuthStore } from "@/hooks/useAuth";
 import { companyService } from "@/services/company.service";
 import { CompanyProfile } from "@/types/company";
 import { Task } from "@/types/task";
-import TaskCard from "@/components/ui/cards/TaskCard";
+import TaskCard from '@/components/features/tasks/TaskCard';
 import SectionCard from "@/components/ui/cards/SectionCard";
 import { FiMapPin, FiGlobe, FiBriefcase, FiMail, FiEdit2, FiStar, FiTrendingUp } from "react-icons/fi";
 

@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import CompanyTaskCard from "@/components/ui/cards/CompanyTaskCard";
+import CompanyTaskCard from '@/components/features/tasks/CompanyTaskCard';
 import ListSkeleton from "@/components/ui/ListSkeleton";
 import EmptyState from "@/components/ui/EmptyState";
 import Link from "next/link";

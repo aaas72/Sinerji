@@ -21,8 +21,8 @@ import { companyService } from "@/services/company.service";
 import { CompanyProfile } from "@/types/company";
 import PrimaryButton from "@/components/ui/PrimaryButton";
 import StatCard from "@/components/ui/cards/StatCard";
-import ActiveTaskCard from "@/components/ui/cards/ActiveTaskCard";
-import CompanyWelcomeHero from "@/components/ui/sections/CompanyWelcomeHero";
+import ActiveTaskCard from '@/components/features/tasks/ActiveTaskCard';
+import CompanyWelcomeHero from '@/components/features/companies/CompanyWelcomeHero';
 import StatusBadge from "@/components/ui/badges/StatusBadge";
 
 interface DashboardStats {

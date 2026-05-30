@@ -3,7 +3,7 @@ import { useState } from "react";
 import { cn } from "@/utils/cn";
 import CustomSelect from "@/components/ui/CustomSelect";
 import PrimaryButton from "@/components/ui/PrimaryButton";
-import MainSection from "@/components/ui/layouts/MainSection";
+import MainSection from '@/components/layout/MainSection';
 import { FiChevronDown, FiSearch, FiAward, FiFilter } from "react-icons/fi";
 
 type SearchFilterProps = {

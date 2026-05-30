@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { FiBookmark } from "react-icons/fi";
 import { studentService } from "@/services/student.service";
-import TaskCard from "@/components/ui/cards/TaskCard";
+import TaskCard from '@/components/features/tasks/TaskCard';
 import { Skeleton } from "@/components/ui/Skeleton";
 import EmptyState from "@/components/ui/EmptyState";
 

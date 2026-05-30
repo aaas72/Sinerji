@@ -23,7 +23,7 @@ import { useToast } from "@/context/ToastContext";
 import { StudentProfile, StudentSkill } from "@/types/student";
 import SectionCard from "@/components/ui/cards/SectionCard";
 import { FormInput, FormButton, FormSelect, FormTextarea, LevelSlider } from "@/components/ui/form";
-import MainSection from "@/components/ui/layouts/MainSection";
+import MainSection from '@/components/layout/MainSection';
 import Breadcrumb from "@/components/ui/Breadcrumb";
 
 const studentProfileSchema = z.object({

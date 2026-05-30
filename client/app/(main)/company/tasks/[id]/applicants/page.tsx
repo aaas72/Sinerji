@@ -3,15 +3,15 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
-import MainSection from "@/components/ui/layouts/MainSection";
+import MainSection from '@/components/layout/MainSection';
 import Breadcrumb from "@/components/ui/Breadcrumb";
 import { submissionService } from "@/services/submission.service";
 import { taskService } from "@/services/task.service";
 import { Submission } from "@/types/submission";
 import { Task } from "@/types/task";
 import PrimaryButton from "@/components/ui/PrimaryButton";
-import ApplicantCard from "@/components/ui/cards/ApplicantCard";
-import ApplicantsSearchFilter from "@/components/ui/sections/ApplicantsSearchFilter";
+import ApplicantCard from '@/components/features/applicants/ApplicantCard';
+import ApplicantsSearchFilter from '@/components/features/applicants/ApplicantsSearchFilter';
 import { useToast } from "@/context/ToastContext";
 import PageLoadingSkeleton from "@/components/ui/PageLoadingSkeleton";
 import EmptyState from "@/components/ui/EmptyState";

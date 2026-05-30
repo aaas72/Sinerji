@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
-import MainSection from "@/components/ui/layouts/MainSection";
+import MainSection from '@/components/layout/MainSection';
 import MainSectionTitle from "@/components/ui/MainSectionTitle";
 import PrimaryButton from "@/components/ui/PrimaryButton";
 import PageLoadingSkeleton from "@/components/ui/PageLoadingSkeleton";

@@ -1,7 +1,7 @@
 import React from "react";
 import { BsCurrencyDollar } from "react-icons/bs";
 import { FiAward, FiBriefcase, FiStar, FiZap, FiPackage } from "react-icons/fi";
-import SkillBadge from "../SkillBadge";
+import SkillBadge from "@/components/ui/SkillBadge";
 import { useRouter } from "next/navigation";
 import StatusBadge from "@/components/ui/badges/StatusBadge";
 

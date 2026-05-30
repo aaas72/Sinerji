@@ -1,8 +1,8 @@
 "use client";
 import { useState } from "react";
-import TaskCard from "@/components/ui/cards/TaskCard";
+import TaskCard from '@/components/features/tasks/TaskCard';
 import InfoBanner from "@/components/ui/InfoBanner";
-import MainSection from "@/components/ui/layouts/MainSection";
+import MainSection from '@/components/layout/MainSection';
 import MainSectionTitle from "@/components/ui/MainSectionTitle";
 
 export default function TasksSection({ studentData }: { studentData: any }) {

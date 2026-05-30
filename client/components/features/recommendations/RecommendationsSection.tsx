@@ -1,8 +1,8 @@
 "use client";
 import { useState } from "react";
-import RecommendationCard from "@/components/ui/cards/RecommendationCard";
+import RecommendationCard from '@/components/features/recommendations/RecommendationCard';
 import InfoBanner from "@/components/ui/InfoBanner";
-import MainSection from "@/components/ui/layouts/MainSection";
+import MainSection from '@/components/layout/MainSection';
 import MainSectionTitle from "@/components/ui/MainSectionTitle";
 
 export default function RecommendationsSection({

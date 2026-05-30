@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { FiSearch, FiFilter, FiChevronDown, FiX, FiLoader, FiAlertCircle, FiBriefcase } from "react-icons/fi";
-import CompanyExploreCard, { CompanyExploreType } from "@/components/ui/cards/CompanyExploreCard";
+import CompanyExploreCard, { CompanyExploreType } from '@/components/features/companies/CompanyExploreCard';
 import { companyService } from "@/services/company.service";
 
 export default function StudentExplorePage() {

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { FiX, FiMapPin, FiBriefcase, FiUserPlus, FiGithub, FiLinkedin, FiTwitter, FiGlobe, FiAward, FiStar, FiCalendar, FiBookOpen } from "react-icons/fi";
-import { StudentType } from "@/components/ui/cards/StudentExploreCard";
+import { StudentType } from '@/components/features/students/StudentExploreCard';
 import PrimaryButton from "@/components/ui/PrimaryButton";
 import Link from "next/link";
 import SkillBadge from "@/components/ui/SkillBadge";

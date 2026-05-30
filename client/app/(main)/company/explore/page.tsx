@@ -3,8 +3,8 @@
 import { useState, useEffect } from "react";
 import PrimaryButton from "@/components/ui/PrimaryButton";
 import { FiCompass, FiSearch, FiFilter, FiMapPin, FiBriefcase, FiUserPlus, FiChevronDown, FiX, FiStar, FiLoader, FiAlertCircle } from "react-icons/fi";
-import StudentExploreCard, { StudentType } from "@/components/ui/cards/StudentExploreCard";
-import StudentProfileDrawer from "@/components/ui/StudentProfileDrawer";
+import StudentExploreCard, { StudentType } from '@/components/features/students/StudentExploreCard';
+import StudentProfileDrawer from '@/components/features/students/StudentProfileDrawer';
 import { studentService } from "@/services/student.service";
 
 export default function ExplorePage() {

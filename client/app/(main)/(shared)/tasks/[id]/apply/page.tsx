@@ -11,7 +11,7 @@ import { taskService } from "@/services/task.service";
 import { submissionService } from "@/services/submission.service";
 import { Task } from "@/types/task";
 import { useToast } from "@/context/ToastContext";
-import MainSection from "@/components/ui/layouts/MainSection";
+import MainSection from '@/components/layout/MainSection';
 import SectionCard from "@/components/ui/cards/SectionCard";
 import Breadcrumb from "@/components/ui/Breadcrumb";
 import { FiFileText, FiSend, FiX } from "react-icons/fi";

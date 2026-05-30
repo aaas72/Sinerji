@@ -1,4 +1,4 @@
-import StarRating from "../StarRating";
+import StarRating from "@/components/ui/StarRating";
 
 type RecommendationCardProps = {
   text: string;
