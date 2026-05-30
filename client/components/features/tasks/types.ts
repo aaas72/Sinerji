@@ -12,7 +12,7 @@ export type Task = {
   title: string;
   tags: string[];
   rewardAmount?: string; // e.g. "5.000 ₺"
-  company: { id?: number; name: string };
+  company: { id?: number; name: string; logoUrl?: string | null };
   location?: string;
   workType?: string;
   rewardType?: string; // e.g. "Nakit", "Hediye Çeki"

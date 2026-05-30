@@ -8,6 +8,7 @@ export interface Contact {
   initials: string;
   lastMessageTime: string;
   unread: number;
+  imageUrl?: string | null;
 }
 
 export interface Message {

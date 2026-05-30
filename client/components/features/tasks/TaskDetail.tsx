@@ -87,8 +87,19 @@ export default function TaskDetail({ task }: TaskDetailProps) {
       <div className="flex flex-col gap-4 mb-6 flex-shrink-0">
         <div className="flex items-center gap-3">
           {/* Logo Badge */}
-          <div className="w-10 h-10 bg-transparent rounded-lg flex items-center justify-center font-extrabold text-[#004d40] text-xs border border-gray-200 shrink-0">
-            {task.company.name.substring(0, 2).toUpperCase()}
+          <div className="w-10 h-10 bg-transparent rounded-lg flex items-center justify-center font-extrabold text-[#004d40] text-xs border border-gray-200 shrink-0 overflow-hidden">
+            {task.company.logoUrl ? (
+              <img
+                src={task.company.logoUrl}
+                alt={task.company.name}
+                className="w-full h-full object-cover animate-fadeIn"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).style.display = 'none';
+                }}
+              />
+            ) : (
+              task.company.name.substring(0, 2).toUpperCase()
+            )}
           </div>
           <div className="min-w-0">
             <Link

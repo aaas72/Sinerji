@@ -41,13 +41,16 @@ export const getContacts = async (req: Request, res: Response, next: NextFunctio
         let name = 'Unknown';
         let role = otherUser.role;
         let initials = 'U';
+        let imageUrl = null;
         
         if (otherUser.companyProfile) {
           name = otherUser.companyProfile.company_name;
           initials = name.substring(0, 2).toUpperCase();
+          imageUrl = otherUser.companyProfile.logo_url;
         } else if (otherUser.studentProfile) {
           name = otherUser.studentProfile.full_name;
           initials = name.substring(0, 2).toUpperCase();
+          imageUrl = otherUser.studentProfile.profile_image_url;
         }
 
         contactMap.set(otherUser.id, {
@@ -55,6 +58,7 @@ export const getContacts = async (req: Request, res: Response, next: NextFunctio
           name,
           role,
           initials,
+          imageUrl,
           lastMessageTime: msg.created_at,
           unread: !isSender && !msg.is_read ? 1 : 0 // simplify unread counting
         });

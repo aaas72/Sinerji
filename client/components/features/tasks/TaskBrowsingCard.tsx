@@ -44,9 +44,20 @@ export default function TaskBrowsingCard({
         {/* Company Avatar & Info */}
         <div className="flex items-start gap-3 min-w-0 flex-1">
           <div className="w-10 h-10 rounded-full bg-gray-50 overflow-hidden flex items-center justify-center border border-gray-100 shrink-0">
-            <span className="text-[10px] font-bold text-gray-400">
-              {task.company.name.substring(0, 2).toUpperCase()}
-            </span>
+            {task.company.logoUrl ? (
+              <img
+                src={task.company.logoUrl}
+                alt={task.company.name}
+                className="w-full h-full object-cover animate-fadeIn"
+                onError={(e) => {
+                  (e.target as HTMLImageElement).style.display = 'none';
+                }}
+              />
+            ) : (
+              <span className="text-[10px] font-bold text-[#004d40]">
+                {task.company.name.substring(0, 2).toUpperCase()}
+              </span>
+            )}
           </div>
           <div className="min-w-0 flex-1">
             <h3 className={cn(

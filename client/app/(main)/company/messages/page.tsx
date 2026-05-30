@@ -150,8 +150,19 @@ function CompanyMessagesContent() {
                 }`}
               >
                 <div className="relative shrink-0">
-                  <div className="w-12 h-12 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center font-bold text-slate-600">
-                    {contact.initials}
+                  <div className="w-12 h-12 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center font-bold text-slate-600 overflow-hidden">
+                    {contact.imageUrl ? (
+                      <img
+                        src={contact.imageUrl}
+                        alt={contact.name}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).style.display = 'none';
+                        }}
+                      />
+                    ) : (
+                      contact.initials
+                    )}
                   </div>
                   {contact.unread > 0 && (
                     <span className="absolute -top-1 -right-1 w-5 h-5 bg-[#00342b] text-white text-[10px] font-bold rounded-full flex items-center justify-center border-2 border-white">
@@ -180,8 +191,19 @@ function CompanyMessagesContent() {
               {/* Chat Header */}
               <div className="h-20 border-b border-[#DFDED6] flex items-center justify-between px-6 shrink-0 bg-transparent">
                 <div className="flex items-center gap-4">
-                  <div className="w-10 h-10 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center font-bold text-slate-600">
-                    {activeContact.initials}
+                  <div className="w-10 h-10 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center font-bold text-slate-600 overflow-hidden">
+                    {activeContact.imageUrl ? (
+                      <img
+                        src={activeContact.imageUrl}
+                        alt={activeContact.name}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          (e.target as HTMLImageElement).style.display = 'none';
+                        }}
+                      />
+                    ) : (
+                      activeContact.initials
+                    )}
                   </div>
                   <div>
                     <h2 className="text-base font-bold text-[#0b1c30]">{activeContact.name}</h2>

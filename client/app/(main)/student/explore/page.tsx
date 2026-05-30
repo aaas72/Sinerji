@@ -27,7 +27,8 @@ export default function StudentExplorePage() {
           industry: c.industry || "Sektör Belirtilmemiş",
           location: c.location || "Konum Belirtilmemiş",
           openTasks: c._count?.tasks || 0,
-          rating: 4.5 // Default placeholder rating
+          rating: 4.5, // Default placeholder rating
+          logo_url: c.logo_url || undefined
         }));
         setCompanies(mapped);
       } catch (err) {
