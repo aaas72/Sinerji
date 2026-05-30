@@ -35,7 +35,9 @@ app.use(cors({
     origin: 'http://localhost:3000', // Explicitly allow frontend origin
     credentials: true
 }));
-app.use(helmet());
+app.use(helmet({
+    crossOriginResourcePolicy: { policy: "cross-origin" }
+}));
 
 // Request logger for debugging
 app.use((req, res, next) => {
