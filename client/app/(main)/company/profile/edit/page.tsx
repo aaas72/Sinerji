@@ -178,7 +178,7 @@ export default function EditCompanyProfilePage() {
           <div className="shrink-0 space-y-3 relative group cursor-pointer" onClick={() => document.getElementById("company-logo-input")?.click()}>
             <div className="w-24 h-24 md:w-28 md:h-28 rounded-full border border-white/20 bg-white/10 flex items-center justify-center text-[32px] tracking-[-0.01em] font-semibold text-white overflow-hidden backdrop-blur-sm relative">
               {form.logo_url ? (
-                <Image src={form.logo_url} alt="Logo" width={112} height={112} className="w-full h-full object-cover" />
+                <img src={form.logo_url} alt="Logo" className="w-full h-full object-cover" />
               ) : (
                 form.company_name.charAt(0) || "C"
               )}
