@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import PrimaryButton from "@/components/ui/PrimaryButton";
 import SectionCard from "@/components/ui/cards/SectionCard";
 import { companyService } from "@/services/company.service";
+import { uploadService } from "@/services/upload.service";
 import { CompanyProfile } from "@/types/company";
 import { useToast } from "@/context/ToastContext";
 import {
@@ -52,6 +53,7 @@ export default function EditCompanyProfilePage() {
   const [profile, setProfile] = useState<CompanyProfile | null>(null);
   const [loading, setLoading] = useState(true);
   const [isSaving, setIsSaving] = useState(false);
+  const [uploadingImage, setUploadingImage] = useState(false);
 
   type FormData = {
     company_name: string;
@@ -91,6 +93,23 @@ export default function EditCompanyProfilePage() {
     };
     fetchData();
   }, []);
+
+  const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingImage(true);
+    try {
+      const response = await uploadService.uploadFile(file);
+      setForm((f) => ({ ...f, logo_url: response.url }));
+      showToast("Şirket logosu başarıyla yüklendi.", "success");
+    } catch (error: any) {
+      console.error("Logo upload error:", error);
+      showToast(error.message || "Logo yüklenemedi.", "error");
+    } finally {
+      setUploadingImage(false);
+    }
+  };
 
   const cancelEdit = () => router.push("/company/profile");
 
@@ -156,21 +175,34 @@ export default function EditCompanyProfilePage() {
         {/* Main hero content */}
         <div className="relative px-8 pb-8 pt-8 flex flex-col md:flex-row gap-6 items-start md:items-center">
           {/* Logo */}
-          <div className="shrink-0 space-y-3 relative group">
-            <div className="w-24 h-24 md:w-28 md:h-28 rounded-full border border-white/20 bg-white/10 flex items-center justify-center text-[32px] tracking-[-0.01em] font-semibold text-white overflow-hidden backdrop-blur-sm">
+          <div className="shrink-0 space-y-3 relative group cursor-pointer" onClick={() => document.getElementById("company-logo-input")?.click()}>
+            <div className="w-24 h-24 md:w-28 md:h-28 rounded-full border border-white/20 bg-white/10 flex items-center justify-center text-[32px] tracking-[-0.01em] font-semibold text-white overflow-hidden backdrop-blur-sm relative">
               {form.logo_url ? (
                 <Image src={form.logo_url} alt="Logo" width={112} height={112} className="w-full h-full object-cover" />
               ) : (
                 form.company_name.charAt(0) || "C"
               )}
-            </div>
-            {/* Quick Logo Edit Bubble */}
-            <div className="absolute -bottom-4 -left-4 right-0 w-[140%] flex justify-center">
-              <div className="flex items-center gap-2 bg-[#0f172a]/90 backdrop-blur-md p-1.5 rounded-xl border border-white/10 shadow-lg">
-                <FiImage size={14} className="text-white/70 shrink-0 ml-1" />
-                <input {...field("logo_url")} placeholder="Logo URL (https://)" className="bg-transparent border-none outline-none text-xs text-white placeholder:text-white/50 w-full" />
+              
+              {/* Upload Hover Overlay */}
+              <div className="absolute inset-0 bg-black/40 opacity-0 group-hover:opacity-100 flex flex-col items-center justify-center transition-all duration-300">
+                <FiImage size={20} className="text-white mb-1" />
+                <span className="text-[9px] font-extrabold uppercase tracking-wider text-white">Yükle</span>
               </div>
+              
+              {uploadingImage && (
+                <div className="absolute inset-0 bg-black/60 flex items-center justify-center">
+                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+                </div>
+              )}
             </div>
+            
+            <input
+              type="file"
+              accept="image/*"
+              id="company-logo-input"
+              className="hidden"
+              onChange={handleLogoUpload}
+            />
           </div>
 
           <div className="flex-1 min-w-0 w-full mt-6 md:mt-0">

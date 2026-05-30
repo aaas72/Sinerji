@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { studentService } from "@/services/student.service";
+import { uploadService } from "@/services/upload.service";
 import {
   FiUser,
   FiBook,
@@ -17,7 +18,7 @@ import {
   FiTrash2,
   FiPlus,
 } from "react-icons/fi";
-import { FaGraduationCap, FaBriefcase, FaGlobe, FaCertificate, FaImage, FaTrash } from "react-icons/fa";
+import { FaGraduationCap, FaBriefcase as FaBriefcaseIcon, FaGlobe as FaGlobeIcon, FaCertificate, FaImage, FaTrash } from "react-icons/fa";
 import PageLoadingSkeleton from "@/components/ui/PageLoadingSkeleton";
 import { useToast } from "@/context/ToastContext";
 import { StudentProfile, StudentSkill } from "@/types/student";
@@ -54,6 +55,11 @@ const studentProfileSchema = z.object({
     .url("Geçersiz URL formatı")
     .optional()
     .or(z.literal("")),
+  profile_image_url: z
+    .string()
+    .url("Geçersiz URL formatı")
+    .optional()
+    .or(z.literal("")),
   major: z.string().optional().or(z.literal("")),
   graduation_year: z.coerce.number().optional(),
   availability_status: z.string().optional(),
@@ -76,6 +82,8 @@ export default function StudentProfileEditPage() {
   const [isFetching, setIsFetching] = useState(true);
   const [isAddingSkill, setIsAddingSkill] = useState(false);
   const [skillLevel, setSkillLevel] = useState(5);
+  const [profileImageUrl, setProfileImageUrl] = useState<string>("");
+  const [uploadingImage, setUploadingImage] = useState(false);
 
   const {
     register,
@@ -111,6 +119,8 @@ export default function StudentProfileEditPage() {
       setValue("github_url", data.github_url || "");
       setValue("twitter_url", data.twitter_url || "");
       setValue("website_url", data.website_url || "");
+      setValue("profile_image_url", data.profile_image_url || "");
+      setProfileImageUrl(data.profile_image_url || "");
       setValue("major", data.major || "");
       setValue("graduation_year", data.graduation_year || undefined);
       setValue("availability_status", data.availability_status || "available");
@@ -126,6 +136,30 @@ export default function StudentProfileEditPage() {
   useEffect(() => {
     fetchProfile();
   }, [setValue, showToast]);
+
+  const handleImageUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    setUploadingImage(true);
+    try {
+      const response = await uploadService.uploadFile(file);
+      setProfileImageUrl(response.url);
+      setValue("profile_image_url", response.url);
+      showToast("Profil resmi başarıyla yüklendi.", "success");
+    } catch (error: any) {
+      console.error("Failed to upload profile image:", error);
+      showToast(error.message || "Fotoğraf yüklenemedi.", "error");
+    } finally {
+      setUploadingImage(false);
+    }
+  };
+
+  const handleImageDelete = () => {
+    setProfileImageUrl("");
+    setValue("profile_image_url", "");
+    showToast("Profil resmi kaldırıldı. Kaydetmeyi unutmayın.", "info");
+  };
 
   const onProfileSubmit = async (data: StudentProfileFormData) => {
     setIsLoading(true);
@@ -203,7 +237,56 @@ export default function StudentProfileEditPage() {
           title="Kişisel Bilgiler"
           description="Profiliniz şirketler tarafından nasıl görünüyor?"
         >
-          <form className="space-y-5" onSubmit={handleSubmit(onProfileSubmit as any)}>
+          <form className="space-y-6" onSubmit={handleSubmit(onProfileSubmit as any)}>
+            
+            {/* Profile Image Uploader */}
+            <div className="flex flex-col sm:flex-row items-center gap-6 pb-6 border-b border-[#f1f0ea]">
+              <div className="relative group">
+                <div className="w-24 h-24 rounded-full overflow-hidden bg-[#faf9f6] border border-[#dfded6] flex items-center justify-center shadow-2xs">
+                  {profileImageUrl ? (
+                    <img src={profileImageUrl} alt="Profil Resmi" className="w-full h-full object-cover" />
+                  ) : (
+                    <FiUser className="w-10 h-10 text-gray-300" />
+                  )}
+                </div>
+                {uploadingImage && (
+                  <div className="absolute inset-0 bg-black/40 rounded-full flex items-center justify-center">
+                    <span className="text-[10px] text-white font-extrabold uppercase tracking-widest animate-pulse">Yükleniyor</span>
+                  </div>
+                )}
+              </div>
+              
+              <div className="space-y-2 text-center sm:text-left">
+                <h4 className="text-sm font-bold text-[#0b1c30]">Profil Resmi</h4>
+                <p className="text-xs font-semibold text-gray-400">En fazla 10MB boyutunda JPEG, PNG yükleyebilirsiniz.</p>
+                <div className="flex items-center gap-3 justify-center sm:justify-start pt-1">
+                  <input
+                    type="file"
+                    accept="image/*"
+                    id="profile-image-input"
+                    className="hidden"
+                    onChange={handleImageUpload}
+                  />
+                  <FormButton
+                    type="button"
+                    variant="outline"
+                    className="!rounded-full px-5 py-2 !text-xs"
+                    onClick={() => document.getElementById("profile-image-input")?.click()}
+                  >
+                    <FaImage className="mr-1.5" /> Fotoğraf Yükle
+                  </FormButton>
+                  {profileImageUrl && (
+                    <button
+                      type="button"
+                      onClick={handleImageDelete}
+                      className="text-red-650 hover:text-red-700 font-bold text-xs uppercase tracking-wider pl-2"
+                    >
+                      Kaldır
+                    </button>
+                  )}
+                </div>
+              </div>
+            </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
               <div>

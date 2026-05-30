@@ -22,6 +22,7 @@ export interface StudentProfile {
     twitter_url: string | null;
     website_url: string | null;
     cv_url?: string | null;
+    profile_image_url?: string | null;
     major?: string | null;
     graduation_year?: number | null;
     availability_status?: string | null;
@@ -46,6 +47,7 @@ export interface UpdateProfileData {
     twitter_url?: string;
     website_url?: string;
     cv_url?: string;
+    profile_image_url?: string;
     major?: string;
     graduation_year?: number;
     availability_status?: string;

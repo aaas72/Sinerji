@@ -34,6 +34,7 @@ model StudentProfile {
   twitter_url            String?
   website_url            String?
   cv_url                 String?
+  profile_image_url      String?
   availability_status    String           @default("available")
   categories_of_interest String?
   graduation_year        Int?
