@@ -90,7 +90,7 @@ export default function ApplyPage() {
       showToast("Başvurunuz başarıyla gönderildi!", "success");
       router.push("/student/applications");
     } catch (error: any) {
-      showToast(error.response?.data?.message || "Başvuru sırasında bir hata oluştu.", "error");
+      showToast(error.message || "Başvuru sırasında bir hata oluştu.", "error");
     }
   };
 
