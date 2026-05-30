@@ -29,6 +29,19 @@ export interface User {
     id: number;
     email: string;
     role: 'student' | 'company' | 'admin';
+    studentProfile?: {
+        user_id: number;
+        full_name: string;
+        university?: string | null;
+        bio?: string | null;
+        profile_image_url?: string | null;
+    } | null;
+    companyProfile?: {
+        user_id: number;
+        company_name: string;
+        description?: string | null;
+        logo_url?: string | null;
+    } | null;
 }
 
 export interface AuthState {

@@ -52,17 +52,28 @@ export class AuthService {
         });
       }
 
-      return newUser;
+      const fullUser = await tx.user.findUnique({
+        where: { id: newUser.id },
+        include: {
+          studentProfile: true,
+          companyProfile: true,
+        }
+      });
+      return fullUser;
     });
 
-    const token = signToken(result.id, result.role);
+    const token = signToken(result!.id, result!.role);
 
-    return { user: result, token };
+    return { user: result!, token };
   }
 
   async login(data: z.infer<typeof loginSchema>) {
     const user = await prisma.user.findUnique({
       where: { email: data.email },
+      include: {
+        studentProfile: true,
+        companyProfile: true,
+      }
     });
 
     if (!user || !(await bcrypt.compare(data.password, user.password_hash))) {

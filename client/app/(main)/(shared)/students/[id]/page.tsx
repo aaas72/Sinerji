@@ -133,10 +133,21 @@ export default function ProfilePage() {
         {/* ── Header Section ── */}
         <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-6 mb-12">
           <div className="flex items-center gap-6">
-            <div className="w-24 h-24 rounded-full bg-gradient-to-tr from-[#004d40] to-[#00796b] flex items-center justify-center shadow-lg select-none shrink-0 border-4 border-white">
-              <span className="text-white font-extrabold text-3xl tracking-wide leading-none">
-                {profile.full_name.split(" ").slice(0, 2).map((n) => n[0]?.toUpperCase()).join("")}
-              </span>
+            <div className="w-24 h-24 rounded-full bg-gradient-to-tr from-[#004d40] to-[#00796b] flex items-center justify-center shadow-lg select-none shrink-0 border-4 border-white overflow-hidden">
+              {profile.profile_image_url ? (
+                <img
+                  src={profile.profile_image_url}
+                  alt={profile.full_name}
+                  className="w-full h-full object-cover animate-fadeIn"
+                  onError={(e) => {
+                    (e.target as HTMLImageElement).style.display = 'none';
+                  }}
+                />
+              ) : (
+                <span className="text-white font-extrabold text-3xl tracking-wide leading-none">
+                  {profile.full_name.split(" ").slice(0, 2).map((n) => n[0]?.toUpperCase()).join("")}
+                </span>
+              )}
             </div>
             
             <div className="space-y-2">

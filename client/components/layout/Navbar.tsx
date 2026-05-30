@@ -101,9 +101,14 @@ export default function Navbar({ authenticated, userName, role }: NavbarProps) {
 
   const isAuth = isAuthenticated && !!user;
   const name =
-    userName || (user && (typeof user === "object" && "full_name" in user ? (user.full_name as string) : undefined))
-    || (user && (typeof user === "object" && "company_name" in user ? (user.company_name as string) : undefined))
-    || "User";
+    userName ||
+    user?.studentProfile?.full_name ||
+    user?.companyProfile?.company_name ||
+    "User";
+
+  const imageUrl =
+    user?.studentProfile?.profile_image_url ||
+    user?.companyProfile?.logo_url;
 
   const userRole = (role || user?.role || "guest").toLowerCase();
   const menuItems = userRole === "company" ? companyMenuItems : studentMenuItems;
@@ -251,12 +256,23 @@ export default function Navbar({ authenticated, userName, role }: NavbarProps) {
 
                 {/* Profile Circle Menu */}
                 <div
-                  className="w-10 h-10 rounded-full border border-gray-200 flex items-center justify-center bg-white hover:bg-gray-100 transition-all cursor-pointer select-none"
+                  className="w-10 h-10 rounded-full border border-gray-200 flex items-center justify-center bg-white hover:bg-gray-100 transition-all cursor-pointer select-none overflow-hidden"
                   onClick={() => setMenuOpen(!menuOpen)}
                 >
-                  <span className="text-[10px] font-bold text-[#004d40]">
-                    {name.substring(0, 2).toUpperCase()}
-                  </span>
+                  {imageUrl ? (
+                    <img
+                      src={imageUrl}
+                      alt={name}
+                      className="w-full h-full object-cover animate-fadeIn"
+                      onError={(e) => {
+                        (e.target as HTMLImageElement).style.display = 'none';
+                      }}
+                    />
+                  ) : (
+                    <span className="text-[10px] font-bold text-[#004d40]">
+                      {name.substring(0, 2).toUpperCase()}
+                    </span>
+                  )}
                 </div>
               </div>
 
