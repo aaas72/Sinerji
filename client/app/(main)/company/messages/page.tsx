@@ -126,7 +126,7 @@ function CompanyMessagesContent() {
   );
 
   return (
-    <div className="w-full max-w-[1280px] mx-auto px-6 md:px-16 py-16 h-[calc(100vh-80px)] flex flex-col">
+    <div className="w-full max-w-[1500px] mx-auto px-4 md:px-8 py-6 h-[calc(100vh-64px)] flex flex-col">
 
       {/* Main Chat Container */}
       <div className="flex-1 min-h-0 flex bg-transparent rounded-3xl border border-[#DFDED6] overflow-hidden">
