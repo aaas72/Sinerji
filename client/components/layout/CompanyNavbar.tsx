@@ -34,8 +34,25 @@ export default function CompanyNavbar() {
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [visible, setVisible] = useState(true);
+  const prevScrollY = useRef(0);
 
   const menuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      if (currentScrollY > prevScrollY.current && currentScrollY > 50) {
+        setVisible(false);
+      } else {
+        setVisible(true);
+      }
+      prevScrollY.current = currentScrollY;
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   // Close dropdown on click outside
   useEffect(() => {
@@ -65,8 +82,11 @@ export default function CompanyNavbar() {
   };
 
   return (
-    <header className="w-full z-50 bg-white/85 backdrop-blur-md border-b border-[#dfded6]/30 shadow-sm shadow-[#00342b]/5 sticky top-0 transition-all duration-300">
-      <nav className="mx-auto app-container px-6 h-[64px] flex items-center justify-between">
+    <header className={cn(
+      "w-full z-50 bg-white/85 backdrop-blur-md border-b border-[#dfded6]/30 shadow-sm shadow-[#00342b]/5 sticky top-0 transition-transform duration-300 transform",
+      visible ? "translate-y-0" : "-translate-y-full"
+    )}>
+      <nav className="max-w-[1280px] mx-auto px-6 md:px-16 h-[64px] flex items-center justify-between">
         
         {/* Left: Brand logo & Navigation links */}
         <div className="flex items-center gap-8 lg:gap-12 h-full">
@@ -117,7 +137,7 @@ export default function CompanyNavbar() {
 
               {/* Profile Circle Menu */}
               <div
-                className="w-10 h-10 rounded-full border border-gray-200 flex items-center justify-center bg-white hover:bg-gray-100 transition-all cursor-pointer select-none overflow-hidden"
+                className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center bg-white hover:bg-gray-100 transition-all cursor-pointer select-none overflow-hidden"
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
               >
                 {imageUrl ? (
@@ -130,7 +150,7 @@ export default function CompanyNavbar() {
                     }}
                   />
                 ) : (
-                  <span className="text-[10px] font-bold text-[#004d40]">
+                  <span className="text-[9px] font-bold text-[#004d40]">
                     {name.substring(0, 2).toUpperCase()}
                   </span>
                 )}

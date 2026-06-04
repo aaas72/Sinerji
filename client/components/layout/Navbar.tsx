@@ -166,7 +166,7 @@ export default function Navbar({ authenticated, userName, role }: NavbarProps) {
   if (!_hasHydrated) {
     return (
       <header className="w-full z-50 absolute top-0 left-0 right-0 bg-transparent">
-        <nav className="mx-auto app-container px-6 py-4 flex items-center justify-between">
+        <nav className="max-w-[1280px] mx-auto px-6 md:px-16 py-4 flex items-center justify-between">
           <span className="text-[#004d40] font-bold text-lg tracking-tight">
             Sinerji
           </span>
@@ -185,7 +185,7 @@ export default function Navbar({ authenticated, userName, role }: NavbarProps) {
         visible ? "translate-y-0" : "-translate-y-full"
       )}
     >
-      <nav className="mx-auto app-container px-6 h-[64px] flex items-center justify-between">
+      <nav className="max-w-[1280px] mx-auto px-6 md:px-16 h-[64px] flex items-center justify-between">
         {/* Left: Brand logo & Navigation links */}
         <div className="flex items-center gap-8 lg:gap-12 h-full">
           <Link

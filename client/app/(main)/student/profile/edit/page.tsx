@@ -23,6 +23,7 @@ import PageLoadingSkeleton from "@/components/ui/PageLoadingSkeleton";
 import { useToast } from "@/context/ToastContext";
 import { StudentProfile, StudentSkill } from "@/types/student";
 import SectionCard from "@/components/ui/cards/SectionCard";
+import { useAuthStore } from "@/hooks/useAuth";
 import { FormInput, FormButton, FormSelect, FormTextarea, LevelSlider } from "@/components/ui/form";
 import MainSection from '@/components/layout/MainSection';
 import Breadcrumb from "@/components/ui/Breadcrumb";
@@ -161,10 +162,13 @@ export default function StudentProfileEditPage() {
     showToast("Profil resmi kaldırıldı. Kaydetmeyi unutmayın.", "info");
   };
 
+  const checkAuth = useAuthStore((state) => state.checkAuth);
+
   const onProfileSubmit = async (data: StudentProfileFormData) => {
     setIsLoading(true);
     try {
       await studentService.updateProfile(data);
+      await checkAuth();
       showToast("Profil başarıyla güncellendi.", "success");
       fetchProfile();
     } catch (error: any) {

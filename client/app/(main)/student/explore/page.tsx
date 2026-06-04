@@ -7,6 +7,7 @@ import CompanyExploreCard, { CompanyExploreType } from '@/components/features/co
 import { companyService } from "@/services/company.service";
 import Input from "@/components/ui/Input";
 import Select from "@/components/ui/Select";
+import FilterContainer from "@/components/ui/FilterContainer";
 
 export default function StudentExplorePage() {
   const router = useRouter();
@@ -109,7 +110,7 @@ export default function StudentExplorePage() {
         </div>
 
       {/* Filter Bar */}
-      <div className="bg-[#F1F0EA] border border-[#dfded6] rounded-[50px] p-4 flex flex-col lg:flex-row items-center gap-4 select-none">
+      <FilterContainer>
         {/* Search Input Box */}
         <div className="relative w-full lg:w-80">
           <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-[#565e74] w-4 h-4" />
@@ -164,7 +165,7 @@ export default function StudentExplorePage() {
             Filtreleri Temizle
           </button>
         </div>
-      </div>
+      </FilterContainer>
 
       {/* Grid */}
       {loading ? (

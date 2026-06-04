@@ -24,6 +24,7 @@ import {
 import PageLoadingSkeleton from "@/components/ui/PageLoadingSkeleton";
 import EmptyState from "@/components/ui/EmptyState";
 import Input from "@/components/ui/Input";
+import { useAuthStore } from "@/hooks/useAuth";
 
 // ─── shared input style ────────────────────────────────────────────────────────
 const heroInputCls = "px-3 py-1 bg-white/10 text-white font-semibold text-sm placeholder:text-white/50 placeholder:font-normal border border-white/20 focus:border-white/50 focus:bg-white/20 focus:ring-0 transition-all rounded-lg outline-none";
@@ -49,6 +50,7 @@ function InfoRow({
 export default function EditCompanyProfilePage() {
   const router = useRouter();
   const { showToast } = useToast();
+  const checkAuth = useAuthStore((state) => state.checkAuth);
 
   const [profile, setProfile] = useState<CompanyProfile | null>(null);
   const [loading, setLoading] = useState(true);
@@ -111,7 +113,7 @@ export default function EditCompanyProfilePage() {
     }
   };
 
-  const cancelEdit = () => router.push("/company/profile");
+  const cancelEdit = () => router.push(profile ? `/companies/${profile.user_id}` : "/company/dashboard");
 
   const handleSave = async () => {
     if (!profile) return;
@@ -126,8 +128,9 @@ export default function EditCompanyProfilePage() {
         description: form.description || null,
       } as Partial<CompanyProfile>);
       
+      await checkAuth();
       showToast("Profil başarıyla güncellendi.", "success");
-      router.push("/company/profile");
+      router.push(`/companies/${profile.user_id}`);
     } catch (err: unknown) {
       const msg = err instanceof Error ? err.message : "Güncelleme başarısız.";
       showToast(msg, "error");

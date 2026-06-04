@@ -3,6 +3,7 @@
 import { FiSearch, FiChevronDown, FiX } from "react-icons/fi";
 import Input from "@/components/ui/Input";
 import Select from "@/components/ui/Select";
+import FilterContainer from "@/components/ui/FilterContainer";
 
 interface ApplicantsSearchFilterProps {
   searchQuery: string;
@@ -28,7 +29,7 @@ export default function ApplicantsSearchFilter({
   onClearFilters,
 }: ApplicantsSearchFilterProps) {
   return (
-    <div className="bg-[#F1F0EA] border border-[#dfded6] rounded-[50px] p-4 mb-8 flex flex-col lg:flex-row items-center gap-4 select-none">
+    <FilterContainer className="mb-8">
       {/* Search Input Box */}
       <div className="relative w-full lg:w-80">
         <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-[#565e74] w-4 h-4" />
@@ -97,6 +98,6 @@ export default function ApplicantsSearchFilter({
           Filtreleri Temizle
         </button>
       </div>
-    </div>
+    </FilterContainer>
   );
 }

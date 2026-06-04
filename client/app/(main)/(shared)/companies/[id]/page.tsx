@@ -67,6 +67,17 @@ export default function CompanyProfilePage() {
         {/* Decorative elements */}
         <div className="absolute top-0 right-0 w-64 h-64 bg-[#e28743] opacity-10 blur-3xl rounded-full -mr-20 -mt-20 pointer-events-none" />
 
+        {isOwner && (
+          <button 
+            onClick={() => router.push('/company/profile/edit')}
+            className="absolute top-6 right-6 z-10 p-2.5 bg-white/10 hover:bg-white/20 border border-white/20 text-white rounded-full transition-all cursor-pointer flex items-center justify-center backdrop-blur-sm"
+            aria-label="Profili Düzenle"
+            title="Profili Düzenle"
+          >
+            <FiEdit2 size={16} />
+          </button>
+        )}
+
         {/* Main hero content */}
         <div className="relative px-8 pb-8 pt-8 flex flex-col md:flex-row gap-6 items-start md:items-center">
           {/* Logo */}
@@ -86,14 +97,6 @@ export default function CompanyProfilePage() {
               <h1 className="text-[32px] tracking-[-0.01em] font-semibold leading-[40px]">
                 {profile.company_name}
               </h1>
-              {isOwner && (
-                <button 
-                  onClick={() => router.push('/company/profile/edit')}
-                  className="px-3 py-1.5 bg-white/10 hover:bg-white/20 border border-white/20 text-white rounded-lg text-xs font-bold transition-all cursor-pointer flex items-center gap-1.5 backdrop-blur-sm"
-                >
-                  <FiEdit2 size={14} /> Profili Düzenle
-                </button>
-              )}
             </div>
 
             <div className="flex flex-wrap items-center gap-3">
