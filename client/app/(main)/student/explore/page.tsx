@@ -72,7 +72,7 @@ export default function StudentExplorePage() {
   };
 
   return (
-    <div className="w-full max-w-[1280px] mx-auto px-6 md:px-16 py-16 flex flex-col gap-6">
+    <div className="w-full max-w-[1280px] mx-auto px-6 md:px-16 py-16 flex flex-col gap-6 animate-fade-up">
 
       {/* Popular Section */}
       <section className="hero-gradient rounded-[40px] p-6 md:p-8 shadow-xl border border-white/5 bg-gradient-to-r from-[#004d40] to-[#0f172a]">

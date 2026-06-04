@@ -102,7 +102,7 @@ export default function CompanyDashboardPage() {
       : 0;
 
   return (
-    <div className="w-full max-w-[1280px] mx-auto px-6 md:px-16 py-16 flex flex-col gap-8">
+    <div className="w-full max-w-[1280px] mx-auto px-6 md:px-16 py-16 flex flex-col gap-8 animate-fade-up">
 
       {/* ── Hero Welcome Section ── */}
       <CompanyWelcomeHero companyName={profile.company_name}>

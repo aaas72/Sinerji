@@ -133,7 +133,7 @@ export default function StudentDashboard() {
     );
 
   return (
-    <div className="w-full min-h-[calc(100vh-64px)] flex flex-col bg-[#faf9f6] pb-8">
+    <div className="w-full min-h-[calc(100vh-64px)] flex flex-col bg-[#faf9f6] pb-8 animate-fade-up">
       <TasksFilterHeader
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
