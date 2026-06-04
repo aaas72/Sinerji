@@ -24,25 +24,16 @@ import { useAuthStore } from "@/hooks/useAuth";
 
 interface TaskDetailProps {
   task: Task;
+  isSaved?: boolean;
+  onToggleSave?: () => void;
 }
 
-export default function TaskDetail({ task }: TaskDetailProps) {
+export default function TaskDetail({ task, isSaved = false, onToggleSave }: TaskDetailProps) {
   const router = useRouter();
   const { showToast } = useToast();
-  const [isSaved, setIsSaved] = useState(false);
   const hasMatchPercentage = typeof task.matchPercentage === "number";
 
   const { user } = useAuthStore();
-
-  useEffect(() => {
-    if (user?.role === "student") {
-      studentService.getSavedTasks().then((tasks) => {
-        if (tasks.some((t: any) => t.id === task.id)) {
-          setIsSaved(true);
-        }
-      }).catch(console.error);
-    }
-  }, [task.id, user?.role]);
 
   const handleSave = async (e: React.MouseEvent) => {
     e.stopPropagation();
@@ -56,11 +47,11 @@ export default function TaskDetail({ task }: TaskDetailProps) {
       
       if (isSaved) {
         await studentService.unsaveTask(numericTaskId);
-        setIsSaved(false);
+        if (onToggleSave) onToggleSave();
         showToast("Görev kaydedilenlerden çıkarıldı.", "success");
       } else {
         await studentService.saveTask(numericTaskId);
-        setIsSaved(true);
+        if (onToggleSave) onToggleSave();
         showToast("Görev başarıyla kaydedildi!", "success");
       }
     } catch (error) {
@@ -175,12 +166,12 @@ export default function TaskDetail({ task }: TaskDetailProps) {
             onClick={handleSave}
             className={`w-9 h-9 flex items-center justify-center rounded-full border transition-all ${
               isSaved
-                ? "border-emerald-600/30 text-emerald-700 bg-emerald-50/20"
-                : "border-gray-200 text-gray-400 hover:bg-gray-50/20 hover:border-emerald-600 hover:text-emerald-700"
+                ? "border-[#004d40]/30 text-[#004d40] bg-[#004d40]/10"
+                : "border-gray-200 text-gray-400 hover:bg-gray-50/20 hover:border-[#004d40] hover:text-[#004d40]"
             }`}
             title="Görevi Kaydet"
           >
-            <FiBookmark className="w-4 h-4" fill={isSaved ? "currentColor" : "none"} />
+            <FiBookmark className="w-4 h-4" fill={isSaved ? "#004d40" : "none"} />
           </button>
           <button
             onClick={handleCopyLink}

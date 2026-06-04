@@ -2,6 +2,7 @@
 
 import { FiSearch, FiZap, FiX, FiChevronDown } from "react-icons/fi";
 import { cn } from "@/utils/cn";
+import PrimaryButton from "@/components/ui/PrimaryButton";
 
 interface TasksFilterHeaderProps {
   searchQuery: string;
@@ -39,20 +40,21 @@ export default function TasksFilterHeader({
         <div className="flex items-center justify-between">
           <h1 className="text-2xl font-extrabold text-[#00342b] font-heading">Fırsatları Keşfet</h1>
           
-          <button
+          <PrimaryButton
             type="button"
             onClick={viewMode === "recommended" ? setViewAllTasks : fetchRecommendedTasks}
-            disabled={isRecommendedLoading}
+            isLoading={isRecommendedLoading}
+            variant="primary"
             className={cn(
-              "flex items-center gap-1.5 px-5 py-2.5 rounded-full text-xs font-bold transition-all border tracking-wider uppercase cursor-pointer select-none shadow-md",
+              "group tracking-wider uppercase select-none shadow-sm text-xs py-2 px-5 font-bold transition-all border border-transparent",
               viewMode === "recommended"
-                ? "bg-gradient-to-r from-[#e28743] to-[#f09653] border-none text-white shadow-[#e28743]/20"
-                : "bg-white/50 border-[#bfc9c4]/50 text-gray-500 hover:text-gray-800 hover:bg-white hover:border-[#00342b]"
+                ? "bg-[#00342b] ring-2 ring-[#004d40]/30 ring-offset-1"
+                : "bg-[#004d40]"
             )}
           >
-            <FiZap className={cn("w-3.5 h-3.5 fill-current", viewMode === "recommended" ? "text-white animate-pulse" : "text-[#e28743]")} />
+            <FiZap className={cn("w-3.5 h-3.5 fill-current mr-2 transition-colors text-white", viewMode === "recommended" && "animate-pulse")} />
             {isRecommendedLoading ? "Eşleşiyor..." : "AI Eşleşen Görevler"}
-          </button>
+          </PrimaryButton>
         </div>
 
         {/* Unified Sinerji Filter Bar */}

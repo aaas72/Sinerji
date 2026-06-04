@@ -8,6 +8,9 @@ import TaskDetail from "./TaskDetail";
 import { Task } from "./types";
 import { FiSearch, FiZap, FiFilter, FiX } from "react-icons/fi";
 import { cn } from "@/utils/cn";
+import { studentService } from "@/services/student.service";
+import { useAuthStore } from "@/hooks/useAuth";
+import { useToast } from "@/context/ToastContext";
 
 interface TasksBoardProps {
   tasks: Task[];
@@ -31,6 +34,55 @@ export default function TasksBoard({
   selectedRewardTypes,
 }: TasksBoardProps) {
   const [selectedId, setSelectedId] = useState<string | undefined>(undefined);
+  const [savedIds, setSavedIds] = useState<string[]>([]);
+  const { user } = useAuthStore();
+  const { showToast } = useToast();
+
+  // Load saved task IDs on mount
+  useEffect(() => {
+    if (user?.role === "student") {
+      studentService
+        .getSavedTasks()
+        .then((savedTasks) => {
+          setSavedIds(savedTasks.map((t: any) => t.id.toString()));
+        })
+        .catch(console.error);
+    }
+  }, [user?.role]);
+
+  // Handle toggling bookmark from the browsing card
+  const handleToggleSaveFromCard = async (taskId: string) => {
+    if (user?.role !== "student") {
+      showToast("Sadece öğrenciler görev kaydedebilir.", "error");
+      return;
+    }
+    const isCurrentlySaved = savedIds.includes(taskId);
+    const numericTaskId = Number(taskId);
+    try {
+      if (isCurrentlySaved) {
+        await studentService.unsaveTask(numericTaskId);
+        setSavedIds((prev) => prev.filter((id) => id !== taskId));
+        showToast("Görev kaydedilenlerden çıkarıldı.", "success");
+      } else {
+        await studentService.saveTask(numericTaskId);
+        setSavedIds((prev) => [...prev, taskId]);
+        showToast("Görev başarıyla kaydedildi!", "success");
+      }
+    } catch (error) {
+      showToast("Bir hata oluştu.", "error");
+    }
+  };
+
+  // Sync state when detail toggles bookmark
+  const handleToggleSaveStateOnly = (taskId: string) => {
+    setSavedIds((prev) => {
+      if (prev.includes(taskId)) {
+        return prev.filter((id) => id !== taskId);
+      } else {
+        return [...prev, taskId];
+      }
+    });
+  };
 
   // Real-time multi-select client-side filter
   const filteredTasks = tasks.filter((t) => {
@@ -67,16 +119,16 @@ export default function TasksBoard({
     }
   }, [filteredTasks, selectedId]);
 
-  const selectedTask = tasks.find((t) => t.id === selectedId) ?? filteredTasks[0] ?? tasks[0];
+  const selectedTask = filteredTasks.find((t) => t.id === selectedId) ?? filteredTasks[0];
 
   return (
-    <div className="w-full flex-1 min-h-0 bg-[#faf9f6] p-6 overflow-hidden flex items-center justify-center">
-      <div className="w-full app-container h-full bg-white rounded-2xl border border-[#f1f0ea] shadow-2xs overflow-hidden flex flex-col md:flex-row">
+    <div className="w-full bg-[#faf9f6] px-6 py-2 flex items-start justify-center">
+      <div className="w-full app-container bg-white rounded-2xl border border-[#f1f0ea] shadow-2xs flex flex-col md:flex-row items-start">
         {/* Left Column: Master Opportunity List */}
-        <div className="w-full md:w-[450px] lg:w-[490px] h-full flex flex-col border-r border-[#f1f0ea] bg-white px-6 py-6 overflow-hidden shrink-0">
+        <div className="w-full md:w-[450px] lg:w-[490px] flex flex-col border-r border-[#f1f0ea] bg-white px-6 py-6 shrink-0">
           
           {/* Scrollable list */}
-          <div className="flex-1 overflow-y-auto space-y-4 no-scrollbar px-2 -mx-2 pb-8 pt-1">
+          <div className="space-y-4 px-2 -mx-2 pb-8 pt-1">
             {filteredTasks.length === 0 ? (
               <div className="mt-4 flex min-h-[250px]">
                 <EmptyState 
@@ -95,6 +147,8 @@ export default function TasksBoard({
                   task={t}
                   selected={t.id === selectedId}
                   onClick={() => setSelectedId(t.id)}
+                  isSaved={savedIds.includes(t.id)}
+                  onToggleSave={() => handleToggleSaveFromCard(t.id)}
                 />
               ))
             )}
@@ -102,10 +156,14 @@ export default function TasksBoard({
         </div>
 
         {/* Right Column: Spec Detail Pane */}
-        <div className="hidden md:flex flex-1 h-full bg-[#F1F0EA] overflow-hidden relative">
+        <div className="hidden md:flex flex-1 sticky top-[80px] h-[calc(100vh-112px)] bg-[#F1F0EA] overflow-hidden relative rounded-r-2xl">
           {selectedTask ? (
             <div className="w-full h-full overflow-hidden">
-              <TaskDetail task={selectedTask} />
+              <TaskDetail 
+                task={selectedTask} 
+                isSaved={savedIds.includes(selectedTask.id)}
+                onToggleSave={() => handleToggleSaveStateOnly(selectedTask.id)}
+              />
             </div>
           ) : (
             <div className="flex items-center justify-center w-full h-full text-gray-400 text-sm font-semibold">
@@ -117,5 +175,3 @@ export default function TasksBoard({
     </div>
   );
 }
-
-

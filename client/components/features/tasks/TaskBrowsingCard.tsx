@@ -9,12 +9,16 @@ interface TaskBrowsingCardProps {
   task: Task;
   selected?: boolean;
   onClick?: () => void;
+  isSaved?: boolean;
+  onToggleSave?: () => void;
 }
 
 export default function TaskBrowsingCard({
   task,
   selected,
   onClick,
+  isSaved = false,
+  onToggleSave,
 }: TaskBrowsingCardProps) {
   const hasMatchPercentage = typeof task.matchPercentage === "number";
 
@@ -31,13 +35,13 @@ export default function TaskBrowsingCard({
 
       {/* Bookmark icon absolute top right */}
       <button 
-        className="absolute top-4 right-4 text-gray-300 hover:text-emerald-700 transition-colors z-30"
+        className="absolute top-4 right-4 transition-colors z-30"
         onClick={(e) => {
           e.stopPropagation();
-          // handle bookmark logic
+          if (onToggleSave) onToggleSave();
         }}
       >
-        <FiBookmark size={18} />
+        <FiBookmark size={18} fill={isSaved ? "#004d40" : "none"} className={isSaved ? "text-[#004d40]" : "text-gray-300 hover:text-[#004d40]"} />
       </button>
 
       <div className="flex items-start justify-between gap-4">
