@@ -1,11 +1,23 @@
-import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback, useRef } from "react";
 
 export function useLazyRender<T>(items: T[], batchSize = 10) {
   const [visibleCount, setVisibleCount] = useState(batchSize);
+  const prevItemsRef = useRef<T[]>([]);
+
+  // Determine if elements inside the array have actually changed (shallow comparison)
+  const itemsChanged =
+    items.length !== prevItemsRef.current.length ||
+    items.some((item, index) => item !== prevItemsRef.current[index]);
+
+  if (itemsChanged) {
+    prevItemsRef.current = items;
+  }
 
   useEffect(() => {
-    setVisibleCount(batchSize);
-  }, [items, batchSize]);
+    if (itemsChanged) {
+      setVisibleCount(batchSize);
+    }
+  }, [itemsChanged, batchSize]);
 
   const loadMore = useCallback(() => {
     setVisibleCount((prev) => Math.min(prev + batchSize, items.length));

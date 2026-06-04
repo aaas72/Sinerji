@@ -10,6 +10,8 @@ import { submissionService } from "@/services/submission.service";
 import Input from "@/components/ui/Input";
 import Select from "@/components/ui/Select";
 import FilterContainer from "@/components/ui/FilterContainer";
+import { useLazyRender } from "@/hooks/useLazyRender";
+import InfiniteScrollTrigger from "@/components/ui/InfiniteScrollTrigger";
 
 interface ApplicationData {
   id: number;
@@ -91,6 +93,8 @@ export default function ApplicationsPage() {
     if (sortBy === "newest") return tB - tA;
     return tA - tB;
   });
+
+  const { visibleItems: visibleApps, hasMore, loadMore } = useLazyRender(filteredApps, 10);
 
   const stats = {
     all: applications.length,
@@ -190,30 +194,33 @@ export default function ApplicationsPage() {
             <p>Veriler yüklenemedi. Lütfen sayfayı yenileyin.</p>
           </div>
         ) : filteredApps.length > 0 ? (
-          filteredApps.map((app) => (
-            <div key={app.id} onClick={() => setSelectedApp(app)} className="p-4 flex items-center group cursor-pointer bg-transparent border border-transparent hover:rounded-none hover-card-effect transition-colors">
-              <div className="flex items-center gap-4 min-w-0 flex-1">
-                <div className="w-12 h-12 rounded-full bg-[#00342b]/5 border border-[#dfded6] flex items-center justify-center text-[#00342b] font-bold text-sm shrink-0">
-                  {app.studentInitials}
+          <>
+            {visibleApps.map((app) => (
+              <div key={app.id} onClick={() => setSelectedApp(app)} className="p-4 flex items-center group cursor-pointer bg-transparent border border-transparent hover:rounded-none hover-card-effect transition-colors">
+                <div className="flex items-center gap-4 min-w-0 flex-1">
+                  <div className="w-12 h-12 rounded-full bg-[#00342b]/5 border border-[#dfded6] flex items-center justify-center text-[#00342b] font-bold text-sm shrink-0">
+                    {app.studentInitials}
+                  </div>
+                  <div className="min-w-0 text-left">
+                    <h4 className="text-[14px] tracking-[0.01em] font-medium leading-[20px] text-[#0b1c30] truncate">{app.studentName}</h4>
+                    <p className="text-[12px] tracking-[0.05em] font-semibold leading-[16px] text-[#565e74] truncate">{app.taskName}</p>
+                  </div>
                 </div>
-                <div className="min-w-0 text-left">
-                  <h4 className="text-[14px] tracking-[0.01em] font-medium leading-[20px] text-[#0b1c30] truncate">{app.studentName}</h4>
-                  <p className="text-[12px] tracking-[0.05em] font-semibold leading-[16px] text-[#565e74] truncate">{app.taskName}</p>
+                
+                <div className="hidden md:flex flex-1 justify-center shrink-0">
+                  <div className="flex items-center gap-1 text-[#565e74] text-[12px] tracking-[0.05em] font-semibold leading-[16px]">
+                    <FiCalendar className="w-4 h-4 text-[#00342b]/60" />
+                    <span>{app.date}</span>
+                  </div>
+                </div>
+                
+                <div className="flex flex-1 justify-end shrink-0">
+                  <StatusBadge status={app.status} />
                 </div>
               </div>
-              
-              <div className="hidden md:flex flex-1 justify-center shrink-0">
-                <div className="flex items-center gap-1 text-[#565e74] text-[12px] tracking-[0.05em] font-semibold leading-[16px]">
-                  <FiCalendar className="w-4 h-4 text-[#00342b]/60" />
-                  <span>{app.date}</span>
-                </div>
-              </div>
-              
-              <div className="flex flex-1 justify-end shrink-0">
-                <StatusBadge status={app.status} />
-              </div>
-            </div>
-          ))
+            ))}
+            <InfiniteScrollTrigger onTrigger={loadMore} hasMore={hasMore} />
+          </>
         ) : (
           <div className="py-20 flex flex-col items-center justify-center text-center">
             <div className="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mb-4 border border-gray-100">
