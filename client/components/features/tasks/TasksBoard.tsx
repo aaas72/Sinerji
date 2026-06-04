@@ -11,6 +11,8 @@ import { cn } from "@/utils/cn";
 import { studentService } from "@/services/student.service";
 import { useAuthStore } from "@/hooks/useAuth";
 import { useToast } from "@/context/ToastContext";
+import { useLazyRender } from "@/hooks/useLazyRender";
+import InfiniteScrollTrigger from "@/components/ui/InfiniteScrollTrigger";
 
 interface TasksBoardProps {
   tasks: Task[];
@@ -107,6 +109,8 @@ export default function TasksBoard({
     return matchesSearch && matchesWorkType && matchesReward;
   });
 
+  const { visibleItems: visibleTasks, hasMore, loadMore } = useLazyRender(filteredTasks, 10);
+
   // Sync selection to first task when task list changes
   useEffect(() => {
     if (filteredTasks.length > 0) {
@@ -141,16 +145,19 @@ export default function TasksBoard({
                 />
               </div>
             ) : (
-              filteredTasks.map((t) => (
-                <TaskBrowsingCard
-                  key={t.id}
-                  task={t}
-                  selected={t.id === selectedId}
-                  onClick={() => setSelectedId(t.id)}
-                  isSaved={savedIds.includes(t.id)}
-                  onToggleSave={() => handleToggleSaveFromCard(t.id)}
-                />
-              ))
+              <>
+                {visibleTasks.map((t) => (
+                  <TaskBrowsingCard
+                    key={t.id}
+                    task={t}
+                    selected={t.id === selectedId}
+                    onClick={() => setSelectedId(t.id)}
+                    isSaved={savedIds.includes(t.id)}
+                    onToggleSave={() => handleToggleSaveFromCard(t.id)}
+                  />
+                ))}
+                <InfiniteScrollTrigger onTrigger={loadMore} hasMore={hasMore} />
+              </>
             )}
           </div>
         </div>

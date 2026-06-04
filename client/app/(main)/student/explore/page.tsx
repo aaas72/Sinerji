@@ -9,6 +9,8 @@ import Input from "@/components/ui/Input";
 import Select from "@/components/ui/Select";
 import FilterContainer from "@/components/ui/FilterContainer";
 import CompanyProfileDrawer from "@/components/features/companies/CompanyProfileDrawer";
+import { useLazyRender } from "@/hooks/useLazyRender";
+import InfiniteScrollTrigger from "@/components/ui/InfiniteScrollTrigger";
 
 export default function StudentExplorePage() {
   const router = useRouter();
@@ -64,6 +66,8 @@ export default function StudentExplorePage() {
     if (sortBy === "tasks") return b.openTasks - a.openTasks;
     return Number(a.id) - Number(b.id); // newest/default
   });
+
+  const { visibleItems: visibleCompanies, hasMore, loadMore } = useLazyRender(filteredCompanies, 12);
 
   const handleClearFilters = () => {
     setSearchTerm("");
@@ -183,14 +187,17 @@ export default function StudentExplorePage() {
           <p>Veriler yüklenemedi. Lütfen sayfayı yenileyin.</p>
         </div>
       ) : filteredCompanies.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {filteredCompanies.map((company) => (
-            <CompanyExploreCard 
-              key={company.id} 
-              company={company} 
-              onClick={() => handleCompanyClick(company)}
-            />
-          ))}
+        <div className="flex flex-col gap-6 w-full">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {visibleCompanies.map((company) => (
+              <CompanyExploreCard 
+                key={company.id} 
+                company={company} 
+                onClick={() => handleCompanyClick(company)}
+              />
+            ))}
+          </div>
+          <InfiniteScrollTrigger onTrigger={loadMore} hasMore={hasMore} />
         </div>
       ) : (
         <div className="py-20 flex flex-col items-center justify-center text-center bg-white rounded-3xl border border-[#DFDED6]">

@@ -9,6 +9,8 @@ import { studentService } from "@/services/student.service";
 import Input from "@/components/ui/Input";
 import Select from "@/components/ui/Select";
 import FilterContainer from "@/components/ui/FilterContainer";
+import { useLazyRender } from "@/hooks/useLazyRender";
+import InfiniteScrollTrigger from "@/components/ui/InfiniteScrollTrigger";
 
 export default function ExplorePage() {
   const [searchTerm, setSearchTerm] = useState("");
@@ -66,6 +68,8 @@ export default function ExplorePage() {
     if (sortBy === "newest") return Number(b.id) - Number(a.id);
     return Number(a.id) - Number(b.id);
   });
+
+  const { visibleItems: visibleStudents, hasMore, loadMore } = useLazyRender(filteredStudents, 12);
 
   const handleClearFilters = () => {
     setSearchTerm("");
@@ -184,14 +188,17 @@ export default function ExplorePage() {
           <p>Veriler yüklenemedi. Lütfen sayfayı yenileyin.</p>
         </div>
       ) : filteredStudents.length > 0 ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {filteredStudents.map((student) => (
-            <StudentExploreCard 
-              key={student.id} 
-              student={student} 
-              onClick={() => handleStudentClick(student)}
-            />
-          ))}
+        <div className="flex flex-col gap-6 w-full">
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+            {visibleStudents.map((student) => (
+              <StudentExploreCard 
+                key={student.id} 
+                student={student} 
+                onClick={() => handleStudentClick(student)}
+              />
+            ))}
+          </div>
+          <InfiniteScrollTrigger onTrigger={loadMore} hasMore={hasMore} />
         </div>
       ) : (
         <div className="py-20 flex flex-col items-center justify-center text-center bg-white rounded-3xl border border-[#DFDED6]">
