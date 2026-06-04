@@ -3,6 +3,8 @@
 import { FiSearch, FiZap, FiX, FiChevronDown } from "react-icons/fi";
 import { cn } from "@/utils/cn";
 import PrimaryButton from "@/components/ui/PrimaryButton";
+import Input from "@/components/ui/Input";
+import Select from "@/components/ui/Select";
 
 interface TasksFilterHeaderProps {
   searchQuery: string;
@@ -58,47 +60,47 @@ export default function TasksFilterHeader({
         </div>
 
         {/* Unified Sinerji Filter Bar */}
-        <div className="bg-white/50 border border-[#dfded6] rounded-[50px] p-4 flex flex-col lg:flex-row items-center gap-4">
+        <div className="bg-[#F1F0EA] border border-[#dfded6] rounded-t-2xl rounded-b-none p-4 flex flex-col lg:flex-row items-center gap-4">
           
           {/* Search Field */}
           <div className="relative w-full lg:w-80">
             <FiSearch className="absolute left-4 top-1/2 -translate-y-1/2 text-[#565e74] w-4 h-4" />
-            <input
+            <Input
               type="text"
               placeholder="Fırsat veya yetenek ara..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="w-full bg-white border-[#bfc9c4]/50 border rounded-full pl-10 pr-4 py-2.5 focus:ring-2 focus:ring-[#00342b]/20 focus:border-[#00342b] outline-none text-xs font-semibold text-[#3f465c] transition-all placeholder-gray-400"
+              className="pl-10 pr-4 py-2.5 text-xs font-semibold text-[#3f465c] bg-white border-[#bfc9c4]/50 focus:ring-2 focus:ring-[#00342b]/20 focus:border-[#00342b] placeholder-gray-400"
             />
           </div>
 
           {/* Work type filters */}
           <div className="relative w-full sm:w-48 shrink-0">
-            <select
+            <Select
               value={selectedWorkTypes[0] || "all"}
               onChange={(e) => toggleWorkType(e.target.value)}
-              className="w-full appearance-none bg-white border-[#bfc9c4]/50 border rounded-full pl-5 pr-10 py-2.5 text-xs font-bold text-[#3f465c] focus:ring-2 focus:ring-[#00342b]/20 focus:border-[#00342b] outline-none cursor-pointer transition-all"
+              className="pl-5 pr-10 py-2.5 text-xs font-bold text-[#3f465c] bg-white border-[#bfc9c4]/50 focus:ring-2 focus:ring-[#00342b]/20 focus:border-[#00342b]"
             >
               <option value="all">Tüm Çalışma Şekilleri</option>
               <option value="remote">Uzaktan</option>
               <option value="hybrid">Hibrit</option>
               <option value="onsite">Ofiste</option>
-            </select>
+            </Select>
             <FiChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-[#565e74] w-4 h-4" />
           </div>
 
           {/* Reward type filters */}
           <div className="relative w-full sm:w-48 shrink-0">
-            <select
+            <Select
               value={selectedRewardTypes[0] || "all"}
               onChange={(e) => toggleRewardType(e.target.value)}
-              className="w-full appearance-none bg-white border-[#bfc9c4]/50 border rounded-full pl-5 pr-10 py-2.5 text-xs font-bold text-[#3f465c] focus:ring-2 focus:ring-[#00342b]/20 focus:border-[#00342b] outline-none cursor-pointer transition-all"
+              className="pl-5 pr-10 py-2.5 text-xs font-bold text-[#3f465c] bg-white border-[#bfc9c4]/50 focus:ring-2 focus:ring-[#00342b]/20 focus:border-[#00342b]"
             >
               <option value="all">Tüm Ödül Türleri</option>
               <option value="Nakit">Nakit</option>
               <option value="Hediye">Hediye</option>
               <option value="Deneyim">Deneyim</option>
-            </select>
+            </Select>
             <FiChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-[#565e74] w-4 h-4" />
           </div>
 

@@ -41,14 +41,14 @@ export default function Toast({ message, type, onClose }: ToastProps) {
       }`}
     >
       <div
-        className={`flex items-center gap-3.5 px-6 py-4.5 rounded-2xl shadow-lg border backdrop-blur-md transition-all ${
+        className={`flex items-center gap-3.5 px-6 py-4.5 rounded-2xl shadow-lg border backdrop-blur-xl transition-all ${
           type === "success"
-            ? "bg-white/95 border-[#004d40]/15 text-[#00342b]"
+            ? "bg-white/70 border-[#004d40]/25 text-[#00342b] shadow-[#004d40]/5"
             : type === "error"
-            ? "bg-white/95 border-red-200 text-red-800"
+            ? "bg-white/70 border-red-200/50 text-red-800 shadow-red-500/5"
             : type === "warning"
-            ? "bg-white/95 border-[#e28743]/20 text-[#00342b]"
-            : "bg-white/95 border-blue-200 text-blue-800"
+            ? "bg-white/70 border-[#e28743]/35 text-[#00342b] shadow-[#e28743]/5"
+            : "bg-white/70 border-blue-200/50 text-blue-800 shadow-blue-500/5"
         } cursor-pointer min-w-[340px] max-w-[420px] select-none`}
         onClick={type !== "success" ? handleClose : undefined}
       >

@@ -123,7 +123,7 @@ export default function TasksBoard({
 
   return (
     <div className="w-full bg-[#faf9f6] px-6 py-2 flex items-start justify-center">
-      <div className="w-full app-container bg-white rounded-2xl border border-[#f1f0ea] shadow-2xs flex flex-col md:flex-row items-start">
+      <div className="w-full app-container bg-white rounded-t-none rounded-b-2xl border border-[#f1f0ea] shadow-2xs flex flex-col md:flex-row items-start">
         {/* Left Column: Master Opportunity List */}
         <div className="w-full md:w-[450px] lg:w-[490px] flex flex-col border-r border-[#f1f0ea] bg-white px-6 py-6 shrink-0">
           
@@ -156,7 +156,7 @@ export default function TasksBoard({
         </div>
 
         {/* Right Column: Spec Detail Pane */}
-        <div className="hidden md:flex flex-1 sticky top-[80px] h-[calc(100vh-112px)] bg-[#F1F0EA] overflow-hidden relative rounded-r-2xl">
+        <div className="hidden md:flex flex-1 sticky top-16 h-[calc(100vh-64px)] bg-[#F1F0EA] overflow-hidden relative rounded-br-2xl rounded-tr-none">
           {selectedTask ? (
             <div className="w-full h-full overflow-hidden">
               <TaskDetail 

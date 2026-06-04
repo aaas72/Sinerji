@@ -91,7 +91,7 @@ export default function SearchFilter({
   };
 
   return (
-    <div className="bg-white rounded-2xl border border-gray-100 p-6">
+    <div className="bg-[#F1F0EA] rounded-2xl border border-[#dfded6] p-6">
       <h2 className="text-lg font-bold text-gray-900 mb-1">Senin İçin Önerilen Görevler</h2>
       <p className="text-sm text-gray-500 mb-5">Yeteneklerine uygun görevleri keşfet</p>
       <div className="flex flex-wrap gap-3 items-end relative">

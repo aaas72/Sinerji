@@ -131,6 +131,23 @@ export default function Navbar({ authenticated, userName, role }: NavbarProps) {
 
   const [menuOpen, setMenuOpen] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+  const [visible, setVisible] = useState(true);
+  const prevScrollY = useRef(0);
+
+  useEffect(() => {
+    const handleScroll = () => {
+      const currentScrollY = window.scrollY;
+      if (currentScrollY > prevScrollY.current && currentScrollY > 50) {
+        setVisible(false);
+      } else {
+        setVisible(true);
+      }
+      prevScrollY.current = currentScrollY;
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   useEffect(() => {
     const onDocClick = (e: MouseEvent) => {
@@ -161,10 +178,11 @@ export default function Navbar({ authenticated, userName, role }: NavbarProps) {
   return (
     <header
       className={cn(
-        "w-full z-50 transition-all duration-300",
+        "w-full z-50 transition-transform duration-300 transform",
         isLanding
           ? "absolute top-0 left-0 right-0 bg-transparent"
-          : "bg-white/85 backdrop-blur-md border-b border-[#dfded6]/30 shadow-sm shadow-[#00342b]/5 sticky top-0"
+          : "bg-white/85 backdrop-blur-md border-b border-[#dfded6]/30 shadow-sm shadow-[#00342b]/5 sticky top-0",
+        visible ? "translate-y-0" : "-translate-y-full"
       )}
     >
       <nav className="mx-auto app-container px-6 h-[64px] flex items-center justify-between">
@@ -256,7 +274,7 @@ export default function Navbar({ authenticated, userName, role }: NavbarProps) {
 
                 {/* Profile Circle Menu */}
                 <div
-                  className="w-10 h-10 rounded-full border border-gray-200 flex items-center justify-center bg-white hover:bg-gray-100 transition-all cursor-pointer select-none overflow-hidden"
+                  className="w-8 h-8 rounded-full border border-gray-200 flex items-center justify-center bg-white hover:bg-gray-100 transition-all cursor-pointer select-none overflow-hidden"
                   onClick={() => setMenuOpen(!menuOpen)}
                 >
                   {imageUrl ? (
@@ -269,7 +287,7 @@ export default function Navbar({ authenticated, userName, role }: NavbarProps) {
                       }}
                     />
                   ) : (
-                    <span className="text-[10px] font-bold text-[#004d40]">
+                    <span className="text-[9px] font-bold text-[#004d40]">
                       {name.substring(0, 2).toUpperCase()}
                     </span>
                   )}
