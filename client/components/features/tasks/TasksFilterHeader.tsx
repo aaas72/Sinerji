@@ -1,6 +1,6 @@
 "use client";
 
-import { FiSearch, FiZap, FiX } from "react-icons/fi";
+import { FiSearch, FiZap, FiX, FiChevronDown } from "react-icons/fi";
 import { cn } from "@/utils/cn";
 
 interface TasksFilterHeaderProps {
@@ -71,43 +71,33 @@ export default function TasksFilterHeader({
           </div>
 
           {/* Work type filters */}
-          <div className="flex items-center gap-2 overflow-x-auto py-0.5 no-scrollbar shrink-0 w-full lg:w-auto">
-            <span className="text-xs font-bold text-gray-400 uppercase tracking-wider hidden lg:inline mr-1">Çalışma Şekli:</span>
-            {['remote', 'hybrid', 'onsite'].map((type) => (
-              <button
-                key={type}
-                type="button"
-                onClick={() => toggleWorkType(type)}
-                className={cn(
-                  "px-4 py-2 rounded-full text-xs font-bold border transition-all cursor-pointer select-none",
-                  selectedWorkTypes.includes(type)
-                    ? "bg-[#00342b] border-[#00342b] text-white"
-                    : "bg-white/50 border-[#bfc9c4]/50 text-gray-500 hover:border-[#00342b] hover:text-[#00342b]"
-                )}
-              >
-                {type === 'remote' ? 'Uzaktan' : type === 'hybrid' ? 'Hibrit' : 'Ofiste'}
-              </button>
-            ))}
+          <div className="relative w-full sm:w-48 shrink-0">
+            <select
+              value={selectedWorkTypes[0] || "all"}
+              onChange={(e) => toggleWorkType(e.target.value)}
+              className="w-full appearance-none bg-white border-[#bfc9c4]/50 border rounded-full pl-5 pr-10 py-2.5 text-xs font-bold text-[#3f465c] focus:ring-2 focus:ring-[#00342b]/20 focus:border-[#00342b] outline-none cursor-pointer transition-all"
+            >
+              <option value="all">Tüm Çalışma Şekilleri</option>
+              <option value="remote">Uzaktan</option>
+              <option value="hybrid">Hibrit</option>
+              <option value="onsite">Ofiste</option>
+            </select>
+            <FiChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-[#565e74] w-4 h-4" />
           </div>
 
           {/* Reward type filters */}
-          <div className="flex items-center gap-2 overflow-x-auto py-0.5 no-scrollbar shrink-0 w-full lg:w-auto">
-            <span className="text-xs font-bold text-gray-400 uppercase tracking-wider hidden lg:inline mr-1">Ödül Türü:</span>
-            {['Nakit', 'Hediye', 'Deneyim'].map((reward) => (
-              <button
-                key={reward}
-                type="button"
-                onClick={() => toggleRewardType(reward)}
-                className={cn(
-                  "px-4 py-2 rounded-full text-xs font-bold border transition-all cursor-pointer select-none",
-                  selectedRewardTypes.includes(reward)
-                    ? "bg-[#e28743] border-[#e28743] text-white"
-                    : "bg-white/50 border-[#bfc9c4]/50 text-gray-500 hover:border-[#e28743] hover:text-[#e28743]"
-                )}
-              >
-                {reward}
-              </button>
-            ))}
+          <div className="relative w-full sm:w-48 shrink-0">
+            <select
+              value={selectedRewardTypes[0] || "all"}
+              onChange={(e) => toggleRewardType(e.target.value)}
+              className="w-full appearance-none bg-white border-[#bfc9c4]/50 border rounded-full pl-5 pr-10 py-2.5 text-xs font-bold text-[#3f465c] focus:ring-2 focus:ring-[#00342b]/20 focus:border-[#00342b] outline-none cursor-pointer transition-all"
+            >
+              <option value="all">Tüm Ödül Türleri</option>
+              <option value="Nakit">Nakit</option>
+              <option value="Hediye">Hediye</option>
+              <option value="Deneyim">Deneyim</option>
+            </select>
+            <FiChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 pointer-events-none text-[#565e74] w-4 h-4" />
           </div>
 
           {/* Clear Actions */}

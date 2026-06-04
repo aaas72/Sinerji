@@ -44,15 +44,11 @@ export default function StudentDashboard() {
   const [selectedRewardTypes, setSelectedRewardTypes] = useState<string[]>([]);
 
   const toggleWorkType = (type: string) => {
-    setSelectedWorkTypes((prev) =>
-      prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type]
-    );
+    setSelectedWorkTypes(type === "all" ? [] : [type]);
   };
 
   const toggleRewardType = (reward: string) => {
-    setSelectedRewardTypes((prev) =>
-      prev.includes(reward) ? prev.filter((r) => r !== reward) : [...prev, reward]
-    );
+    setSelectedRewardTypes(reward === "all" ? [] : [reward]);
   };
 
   const resetFilters = () => {
