@@ -64,9 +64,7 @@ export default function CompanyExploreCard({ company, className = "", variant = 
       <div className={`mt-auto pt-4 border-t flex items-center gap-3 ${isGlass ? "border-white/20" : "border-[#dfded6]/50"}`}>
         <PrimaryButton 
           className={`w-full rounded-full py-2 ${isGlass ? "!bg-white !text-[#00342b] hover:!bg-white/90" : ""}`}
-          onClick={(e) => {
-             e.stopPropagation();
-          }}
+          onClick={onClick}
         >
           Profili İncele
         </PrimaryButton>

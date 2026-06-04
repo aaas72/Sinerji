@@ -8,6 +8,7 @@ import { companyService } from "@/services/company.service";
 import Input from "@/components/ui/Input";
 import Select from "@/components/ui/Select";
 import FilterContainer from "@/components/ui/FilterContainer";
+import CompanyProfileDrawer from "@/components/features/companies/CompanyProfileDrawer";
 
 export default function StudentExplorePage() {
   const router = useRouter();
@@ -18,6 +19,9 @@ export default function StudentExplorePage() {
   const [companies, setCompanies] = useState<CompanyExploreType[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
+
+  const [selectedCompany, setSelectedCompany] = useState<CompanyExploreType | null>(null);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
 
   useEffect(() => {
     const fetchCompanies = async () => {
@@ -45,7 +49,8 @@ export default function StudentExplorePage() {
   }, []);
 
   const handleCompanyClick = (company: CompanyExploreType) => {
-    router.push(`/companies/${company.id}`);
+    setSelectedCompany(company);
+    setIsDrawerOpen(true);
   };
 
   const filteredCompanies = companies.filter((company) => {
@@ -196,10 +201,14 @@ export default function StudentExplorePage() {
           <p className="text-sm text-gray-500 mt-2 max-w-sm">
             Arama kriterlerinize uygun bir şirket bulunamadı. Lütfen farklı anahtar kelimeler deneyin.
           </p>
-        </div>
       )}
       </section>
 
+      <CompanyProfileDrawer 
+        isOpen={isDrawerOpen} 
+        onClose={() => setIsDrawerOpen(false)} 
+        company={selectedCompany} 
+      />
     </div>
   );
 }
