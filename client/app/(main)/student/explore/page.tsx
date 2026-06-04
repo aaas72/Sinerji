@@ -201,6 +201,7 @@ export default function StudentExplorePage() {
           <p className="text-sm text-gray-500 mt-2 max-w-sm">
             Arama kriterlerinize uygun bir şirket bulunamadı. Lütfen farklı anahtar kelimeler deneyin.
           </p>
+        </div>
       )}
       </section>
 
