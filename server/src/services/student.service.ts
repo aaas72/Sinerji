@@ -269,4 +269,68 @@ export class StudentService {
     });
     return saved.map((s: any) => s.task);
   }
+
+  async verifyDocument(userId: number, fileBuffer: Buffer, fileName: string, mimeType: string) {
+    const FormData = require('form-data');
+    const axios = require('axios');
+
+    const profile = await prisma.studentProfile.findUnique({
+      where: { user_id: userId },
+    });
+
+    if (!profile) {
+      throw new AppError('Student profile not found', 404);
+    }
+
+    if (profile.is_verified) {
+      throw new AppError('Profile is already verified', 400);
+    }
+
+    const verifyUrl = process.env.STUDENT_VERIFICATION_SERVICE_URL 
+      ? `${process.env.STUDENT_VERIFICATION_SERVICE_URL}/api/verify-student`
+      : 'http://localhost:4000/api/verify-student';
+
+    try {
+      const formData = new FormData();
+      formData.append('document', fileBuffer, {
+        filename: fileName,
+        contentType: mimeType,
+      });
+
+      const response = await axios.post(verifyUrl, formData, {
+        headers: {
+          ...formData.getHeaders(),
+          // Optional: 'x-api-key': process.env.VERIFY_SERVICE_API_KEY
+        },
+      });
+
+      const data = response.data;
+
+      if (data.success && data.verified) {
+        // Verification succeeded! Update student profile
+        const updatedProfile = await prisma.studentProfile.update({
+          where: { user_id: userId },
+          data: {
+            is_verified: true,
+            university: data.university || profile.university,
+            major: data.program || profile.major,
+            // You can also capture full_name if you want to strictly match it
+          },
+        });
+
+        return {
+          success: true,
+          message: 'Student verified successfully',
+          profile: updatedProfile,
+        };
+      } else {
+        throw new AppError(data.error || data.message || 'Verification failed', 400);
+      }
+    } catch (error: any) {
+      if (error instanceof AppError) throw error;
+      
+      const errMsg = error.response?.data?.error || error.response?.data?.message || error.message;
+      throw new AppError(`Verification service error: ${errMsg}`, 500);
+    }
+  }
 }

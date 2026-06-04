@@ -197,3 +197,32 @@ export const getSavedTasks = async (req: Request, res: Response, next: NextFunct
     next(error);
   }
 };
+
+export const verifyStudentDocument = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    if (!req.user || req.user.role !== 'student') {
+      return next(new AppError('Only students can verify documents', 403));
+    }
+
+    const file = req.file;
+    if (!file) {
+      return next(new AppError('Please upload a PDF document', 400));
+    }
+
+    if (file.mimetype !== 'application/pdf') {
+      return next(new AppError('Only PDF files are allowed', 400));
+    }
+
+    const result = await studentService.verifyDocument(req.user.id, file.buffer, file.originalname, file.mimetype);
+
+    res.status(200).json({
+      status: 'success',
+      message: result.message,
+      data: {
+        profile: result.profile,
+      },
+    });
+  } catch (error) {
+    next(error);
+  }
+};

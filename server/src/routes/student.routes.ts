@@ -1,11 +1,15 @@
 import express from 'express';
-import { getAllStudents, getMyProfile, updateMyProfile, addSkill, removeSkill, getMyStats, getMatchingStudentsForTask, saveTask, unsaveTask, getSavedTasks, getStudentProfile } from '../controllers/student.controller';
+import multer from 'multer';
+import { getAllStudents, getMyProfile, updateMyProfile, addSkill, removeSkill, getMyStats, getMatchingStudentsForTask, saveTask, unsaveTask, getSavedTasks, getStudentProfile, verifyStudentDocument } from '../controllers/student.controller';
 import { protect, restrictTo } from '../middlewares/auth.middleware';
 
 const router = express.Router();
+const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 5 * 1024 * 1024 } });
 
 // Protect all routes after this middleware
 router.use(protect);
+
+router.post('/verify-document', restrictTo('student'), upload.single('document'), verifyStudentDocument);
 
 router.get('/', restrictTo('company', 'student'), getAllStudents);
 

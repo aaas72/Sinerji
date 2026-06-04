@@ -38,6 +38,10 @@ export class SubmissionService {
         throw new AppError('Profiliniz eksik. Lütfen yeteneklerinizi, okul bilgilerinizi ve portfolyo/github linkinizi sisteme ekleyin.', 400);
     }
 
+    if (!student.is_verified) {
+        throw new AppError('Hesabınız doğrulanmamış. Lütfen başvurmadan önce e-Devlet Öğrenci Belgeniz ile profilinizi doğrulayın.', 403);
+    }
+
     // Check if already submitted
     const existingSubmission = await prisma.submission.findFirst({
       where: {
