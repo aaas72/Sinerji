@@ -68,14 +68,20 @@ export default function CompanyProfileDrawer({ isOpen, onClose, company }: Compa
                 <h2 className="text-2xl font-bold text-white">{company.name}</h2>
                 <p className="text-[#afefdd] font-medium mt-1">{company.industry}</p>
 
-                <div className="flex items-center justify-center gap-4 mt-4 text-sm text-white/80 font-medium">
+                <div className="flex flex-wrap items-center justify-center gap-x-4 gap-y-2 mt-4 text-sm text-white/80 font-medium">
                   <div className="flex items-center gap-1.5">
                     <FiMapPin className="text-white/60" />
                     <span>{company.location}</span>
                   </div>
+                  <span className="w-1.5 h-1.5 rounded-full bg-white/20" />
                   <div className="flex items-center gap-1.5">
                     <FiBriefcase className="text-white/60" />
-                    <span>{company.openTasks} Açık İlan</span>
+                    <span>{company.openTasks} Görev (Açık İlan)</span>
+                  </div>
+                  <span className="w-1.5 h-1.5 rounded-full bg-white/20" />
+                  <div className="flex items-center gap-1.5">
+                    <FiStar className="text-amber-400 fill-amber-400 shrink-0" size={14} />
+                    <span>{company.rating}/5 Değerlendirme</span>
                   </div>
                 </div>
 
@@ -109,22 +115,8 @@ export default function CompanyProfileDrawer({ isOpen, onClose, company }: Compa
                   Şirket Hakkında
                 </h3>
                 <p className="text-sm text-[#565e74] leading-relaxed">
-                  Bu şirket hakkında detaylı bilgi ve iş fırsatlarını görmek için lütfen tüm profili ziyaret edin.
+                  Bu şirket hakkında detaylı bilgi, geçmiş projeler ve yeni iş fırsatlarını görmek için lütfen tüm profili ziyaret edin.
                 </p>
-              </div>
-
-              {/* General details */}
-              <div className="space-y-4">
-                <div className="flex items-center gap-3 py-2 border-b border-[#dfded6]/40 text-sm">
-                  <FiStar className="text-[#e28743] w-5 h-5 shrink-0" />
-                  <span className="font-semibold text-gray-700">Değerlendirme:</span>
-                  <span className="text-gray-900 font-bold">{company.rating}/5</span>
-                </div>
-                <div className="flex items-center gap-3 py-2 border-b border-[#dfded6]/40 text-sm">
-                  <FiBriefcase className="text-[#e28743] w-5 h-5 shrink-0" />
-                  <span className="font-semibold text-gray-700">Aktif Görev Sayısı:</span>
-                  <span className="text-gray-900 font-bold">{company.openTasks} Görev</span>
-                </div>
               </div>
             </div>
           </div>
