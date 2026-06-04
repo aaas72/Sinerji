@@ -248,7 +248,7 @@ export default function ApplyPage() {
                 type="button"
                 variant="outline"
                 onClick={() => router.back()}
-                className="w-full sm:w-auto !rounded-full px-6"
+                className="w-full sm:w-auto !bg-transparent px-6"
               >
                 <FiX className="mr-2" />
                 İptal
