@@ -33,8 +33,10 @@ export interface User {
         user_id: number;
         full_name: string;
         university?: string | null;
+        major?: string | null;
         bio?: string | null;
         profile_image_url?: string | null;
+        is_verified?: boolean;
     } | null;
     companyProfile?: {
         user_id: number;

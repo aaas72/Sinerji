@@ -13,11 +13,14 @@ import {
   FiAlertTriangle,
   FiUser,
   FiMail,
+  FiCheckCircle,
+  FiUploadCloud
 } from "react-icons/fi";
 import { useToast } from "@/context/ToastContext";
 import SectionCard from "@/components/ui/cards/SectionCard";
 import { FormInput, FormButton } from "@/components/ui/form";
 import Breadcrumb from "@/components/ui/Breadcrumb";
+import { studentService } from "@/services/student.service";
 
 // Shared Toggle component
 function Toggle({
@@ -51,8 +54,36 @@ function Toggle({
 
 export default function StudentSettingsPage() {
   const { showToast } = useToast();
-  const { user, logout } = useAuthStore();
+  const { user, logout, checkAuth } = useAuthStore();
   const router = useRouter();
+
+  /* Verification State */
+  const [verifyLoading, setVerifyLoading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const handleVerifyDocument = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    if (file.type !== "application/pdf") {
+      showToast("Lütfen sadece PDF dosyası yükleyin.", "error");
+      return;
+    }
+
+    setVerifyLoading(true);
+    try {
+      const res = await studentService.verifyDocument(file);
+      showToast(res.message, "success");
+      await checkAuth(); // Refresh profile state
+    } catch (err: any) {
+      showToast(err.response?.data?.message || err.message || "Doğrulama işlemi başarısız oldu.", "error");
+    } finally {
+      setVerifyLoading(false);
+      if (fileInputRef.current) {
+        fileInputRef.current.value = "";
+      }
+    }
+  };
 
   /* Password Form */
   const [showCurrent, setShowCurrent] = useState(false);
@@ -113,6 +144,61 @@ export default function StudentSettingsPage() {
       </div>
 
       <div className="w-full space-y-8">
+
+        {/* ⓪ Öğrenci Kimlik Doğrulaması */}
+        {user?.role === 'student' && (
+          <SectionCard
+            icon={user.studentProfile?.is_verified ? FiCheckCircle : FiUploadCloud}
+            title="Öğrenci Kimlik Doğrulaması"
+            description="Platformdaki iş ve staj ilanlarına başvurabilmek için e-Devlet Öğrenci Belgeniz ile hesabınızı doğrulamanız gerekmektedir."
+          >
+            <div className="max-w-2xl">
+              {user.studentProfile?.is_verified ? (
+                <div className="bg-[#e8f5e9] border border-[#a5d6a7] text-[#1b5e20] p-4 rounded-xl flex flex-col gap-2">
+                  <div className="flex items-center gap-2 font-bold text-base">
+                    <FiCheckCircle size={20} />
+                    <span>Hesabınız başarıyla doğrulandı!</span>
+                  </div>
+                  <div className="text-sm">
+                    <p><strong>Üniversite:</strong> {user.studentProfile.university}</p>
+                    <p><strong>Bölüm:</strong> {user.studentProfile.major}</p>
+                    <p className="mt-2 text-xs opacity-80">Bu bilgiler devlet sisteminden otomatik çekilmiştir ve güvenliğiniz için değiştirilemez.</p>
+                  </div>
+                </div>
+              ) : (
+                <div className="flex flex-col gap-4">
+                  <div className="bg-amber-50 border border-amber-200 text-amber-800 p-4 rounded-xl text-sm leading-relaxed">
+                    <strong>Doğrulama Adımları:</strong>
+                    <ol className="list-decimal list-inside mt-2 space-y-1">
+                      <li>e-Devlet kapısına giriş yapın ve <strong>YÖK Öğrenci Belgesi Sorgulama</strong> sayfasına gidin.</li>
+                      <li>Barkodlu yeni bir belge oluşturun (Belge tarihi 1 haftadan eski olmamalıdır).</li>
+                      <li>Oluşturulan <strong>PDF dosyasını</strong> indirip buraya yükleyin.</li>
+                    </ol>
+                  </div>
+                  
+                  <div className="mt-2">
+                    <input
+                      type="file"
+                      accept="application/pdf"
+                      className="hidden"
+                      ref={fileInputRef}
+                      onChange={handleVerifyDocument}
+                    />
+                    <FormButton 
+                      type="button" 
+                      onClick={() => fileInputRef.current?.click()}
+                      isLoading={verifyLoading}
+                      disabled={verifyLoading}
+                      className="!rounded-full px-8"
+                    >
+                      {verifyLoading ? "e-Devlet üzerinden doğrulanıyor..." : "YÖK PDF Belgesi Yükle"}
+                    </FormButton>
+                  </div>
+                </div>
+              )}
+            </div>
+          </SectionCard>
+        )}
 
         {/* ① Güvenlik ve Şifre */}
         <SectionCard

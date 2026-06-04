@@ -65,5 +65,25 @@ export const studentService = {
 
   async unsaveTask(taskId: number): Promise<void> {
     await api.delete(`/students/tasks/${taskId}/save`);
+  },
+
+  async verifyDocument(file: File): Promise<{ message: string, profile: StudentProfile }> {
+    const formData = new FormData();
+    formData.append('document', file);
+
+    const response = await api.post<ApiResponse<{ profile: StudentProfile }>>(
+      '/students/verify-document', 
+      formData,
+      {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      }
+    );
+    
+    return {
+      message: response.data.message || 'Öğrenci belgeniz başarıyla doğrulandı.',
+      profile: response.data.data.profile,
+    };
   }
 };

@@ -25,6 +25,7 @@ export interface StudentProfile {
     profile_image_url?: string | null;
     major?: string | null;
     graduation_year?: number | null;
+    is_verified?: boolean;
     availability_status?: string | null;
     categories_of_interest?: string | null;
     skills: StudentSkill[];
