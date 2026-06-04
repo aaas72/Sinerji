@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
-import SearchFilter, { SearchFilters } from "@/components/ui/SearchFilter";
 import TasksBoard from "@/components/features/tasks/TasksBoard";
+import TasksFilterHeader from "@/components/features/tasks/TasksFilterHeader";
 import { useToast } from "@/context/ToastContext";
 import PageLoadingSkeleton from "@/components/ui/PageLoadingSkeleton";
 import { Task } from "@/components/features/tasks/types";
@@ -37,6 +37,29 @@ export default function StudentDashboard() {
   const [recommendedError, setRecommendedError] = useState("");
   const [viewMode, setViewMode] = useState<"all" | "recommended">("all");
   const [error, setError] = useState("");
+
+  // Filters State
+  const [searchQuery, setSearchQuery] = useState("");
+  const [selectedWorkTypes, setSelectedWorkTypes] = useState<string[]>([]);
+  const [selectedRewardTypes, setSelectedRewardTypes] = useState<string[]>([]);
+
+  const toggleWorkType = (type: string) => {
+    setSelectedWorkTypes((prev) =>
+      prev.includes(type) ? prev.filter((t) => t !== type) : [...prev, type]
+    );
+  };
+
+  const toggleRewardType = (reward: string) => {
+    setSelectedRewardTypes((prev) =>
+      prev.includes(reward) ? prev.filter((r) => r !== reward) : [...prev, reward]
+    );
+  };
+
+  const resetFilters = () => {
+    setSelectedWorkTypes([]);
+    setSelectedRewardTypes([]);
+    setSearchQuery("");
+  };
 
   const mapBackendTask = (t: any): Task => ({
     id: t.id.toString(),
@@ -74,13 +97,10 @@ export default function StudentDashboard() {
 
   const name = user?.full_name || "Öğrenci";
 
-  const fetchTasks = async (filters?: SearchFilters) => {
+  const fetchTasks = async () => {
     setIsLoading(true);
     try {
-      const backendTasks = await taskService.getTasks({
-        search: filters?.keyword,
-        category: filters?.category,
-      });
+      const backendTasks = await taskService.getTasks();
       setTasks(backendTasks.map(mapBackendTask));
     } catch (err) {
       console.error(err);
@@ -106,13 +126,6 @@ export default function StudentDashboard() {
     }
   };
 
-  // Duplicate useEffect removed to avoid calling hooks conditionally
-
-  const handleSearch = (filters: SearchFilters) => {
-    setViewMode("all");
-    fetchTasks(filters);
-  };
-
   const visibleTasks = viewMode === "recommended" ? recommendedTasks : tasks;
 
   if (isLoading && tasks.length === 0) return <PageLoadingSkeleton />;
@@ -124,9 +137,22 @@ export default function StudentDashboard() {
     );
 
   return (
-    <div className="w-full h-full bg-[#faf9f6]">
+    <div className="w-full h-[calc(100vh-64px)] flex flex-col bg-[#faf9f6]">
+      <TasksFilterHeader
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
+        selectedWorkTypes={selectedWorkTypes}
+        toggleWorkType={toggleWorkType}
+        selectedRewardTypes={selectedRewardTypes}
+        toggleRewardType={toggleRewardType}
+        resetFilters={resetFilters}
+        viewMode={viewMode}
+        setViewAllTasks={() => setViewMode("all")}
+        fetchRecommendedTasks={fetchRecommendedTasks}
+        isRecommendedLoading={isRecommendedLoading}
+      />
       {recommendedError && (
-        <div className="mx-auto app-container px-6 pt-4">
+        <div className="mx-auto app-container px-6 pt-4 flex-shrink-0">
           <p className="rounded-xl border border-red-100 bg-red-50 px-4 py-3 text-xs text-red-600">
             {recommendedError}
           </p>
@@ -138,6 +164,9 @@ export default function StudentDashboard() {
         setViewAllTasks={() => setViewMode("all")}
         fetchRecommendedTasks={fetchRecommendedTasks}
         isRecommendedLoading={isRecommendedLoading}
+        searchQuery={searchQuery}
+        selectedWorkTypes={selectedWorkTypes}
+        selectedRewardTypes={selectedRewardTypes}
       />
     </div>
   );
