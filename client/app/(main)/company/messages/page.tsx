@@ -11,20 +11,28 @@ import { Skeleton } from "@/components/ui/Skeleton";
 import ListSkeleton from "@/components/ui/ListSkeleton";
 import PageLoadingSkeleton from "@/components/ui/PageLoadingSkeleton";
 import { useSocket } from "@/context/SocketContext";
+import { useToast } from "@/context/ToastContext";
 
 function CompanyMessagesContent() {
   const { user } = useAuthStore();
   const searchParams = useSearchParams();
   const preSelectedStudentId = searchParams.get("studentId");
   const { socket, connected } = useSocket();
+  const { showToast } = useToast();
 
   const [contacts, setContacts] = useState<Contact[]>([]);
   const [activeContact, setActiveContact] = useState<Contact | null>(null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
+  const [searchTerm, setSearchTerm] = useState("");
   const [loadingContacts, setLoadingContacts] = useState(true);
   const [loadingMessages, setLoadingMessages] = useState(false);
   
+  const handleCopyMessage = (content: string) => {
+    navigator.clipboard.writeText(content);
+    showToast("Mesaj panoya kopyalandı.", "success");
+  };
+
   useEffect(() => {
     const fetchContacts = async () => {
       try {
@@ -113,6 +121,9 @@ function CompanyMessagesContent() {
   };
 
   let lastDate = "";
+  const filteredContacts = contacts.filter((contact) =>
+    contact.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
 
   return (
     <div className="w-full max-w-[1280px] mx-auto px-6 md:px-16 py-16 h-[calc(100vh-80px)] flex flex-col">
@@ -128,6 +139,8 @@ function CompanyMessagesContent() {
               <input 
                 type="text" 
                 placeholder="Öğrenci ara..." 
+                value={searchTerm}
+                onChange={(e) => setSearchTerm(e.target.value)}
                 className="pl-9 pr-4 py-2.5 rounded-[50px] bg-gray-50 border border-transparent text-sm focus:bg-white focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all w-full"
               />
             </div>
@@ -135,11 +148,11 @@ function CompanyMessagesContent() {
           <div className="flex-1 overflow-y-auto custom-scrollbar">
             {loadingContacts ? (
               <div className="p-4"><ListSkeleton count={4} /></div>
-            ) : contacts.length === 0 ? (
+            ) : filteredContacts.length === 0 ? (
               <div className="flex-1 min-h-[300px]">
                 <EmptyState icon={FiMessageSquare} title="Kişi Bulunamadı" message="Henüz mesajınız yok." />
               </div>
-            ) : contacts.map((contact) => {
+            ) : filteredContacts.map((contact) => {
               const timeStr = new Date(contact.lastMessageTime).toLocaleTimeString('tr-TR', { hour: '2-digit', minute: '2-digit' });
               return (
               <button
@@ -243,7 +256,7 @@ function CompanyMessagesContent() {
                         {isMe && (
                           <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity mr-2">
                             <button className="p-1.5 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-full" title="Yanıtla"><FiCornerUpLeft size={14} /></button>
-                            <button className="p-1.5 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-full" title="Kopyala"><FiCopy size={14} /></button>
+                            <button onClick={() => handleCopyMessage(msg.content)} className="p-1.5 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-full" title="Kopyala"><FiCopy size={14} /></button>
                             <button className="p-1.5 text-red-400 hover:text-red-600 hover:bg-red-50 rounded-full" title="Sil"><FiTrash2 size={14} /></button>
                           </div>
                         )}
@@ -263,7 +276,7 @@ function CompanyMessagesContent() {
                         {!isMe && (
                           <div className="flex items-center gap-1 opacity-0 group-hover:opacity-100 transition-opacity ml-2">
                             <button className="p-1.5 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-full" title="Yanıtla"><FiCornerUpLeft size={14} /></button>
-                            <button className="p-1.5 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-full" title="Kopyala"><FiCopy size={14} /></button>
+                            <button onClick={() => handleCopyMessage(msg.content)} className="p-1.5 text-gray-400 hover:text-gray-700 hover:bg-gray-100 rounded-full" title="Kopyala"><FiCopy size={14} /></button>
                           </div>
                         )}
                       </div>

@@ -10,6 +10,8 @@ import TaskCard from '@/components/features/tasks/TaskCard';
 import SectionCard from "@/components/ui/cards/SectionCard";
 import { FiMapPin, FiGlobe, FiBriefcase, FiMail, FiEdit2, FiStar, FiTrendingUp } from "react-icons/fi";
 
+import PageLoadingSkeleton from "@/components/ui/PageLoadingSkeleton";
+
 export default function CompanyProfilePage() {
   const params = useParams();
   const router = useRouter();
@@ -47,11 +49,7 @@ export default function CompanyProfilePage() {
   }, [params.id]);
 
   if (loading) {
-    return (
-      <div className="min-h-screen mt-12 app-container flex justify-center items-center text-gray-500">
-        Yükleniyor...
-      </div>
-    );
+    return <PageLoadingSkeleton />;
   }
 
   if (!profile) {
