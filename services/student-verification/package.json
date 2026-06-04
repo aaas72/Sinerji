@@ -1,0 +1,24 @@
+{
+  "name": "sinerji-student-verification",
+  "version": "1.0.0",
+  "description": "Standalone microservice for verifying Turkish university student documents (YÖK Öğrenci Belgesi) via e-Devlet portal",
+  "main": "src/server.js",
+  "scripts": {
+    "start": "node src/server.js",
+    "dev": "node --watch src/server.js"
+  },
+  "keywords": ["sinerji", "student-verification", "yok", "e-devlet"],
+  "author": "Sinerji Team",
+  "license": "UNLICENSED",
+  "private": true,
+  "dependencies": {
+    "cors": "^2.8.5",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "express-rate-limit": "^7.5.0",
+    "helmet": "^8.1.0",
+    "multer": "^1.4.5-lts.1",
+    "pdf-parse": "^1.1.1",
+    "puppeteer": "^24.2.1"
+  }
+}

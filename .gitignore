@@ -18,3 +18,4 @@ __pycache__/
 
 
 ai-matching-service/models/
+tests/*.pdf
