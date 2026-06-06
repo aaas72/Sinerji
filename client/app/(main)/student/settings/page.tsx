@@ -21,6 +21,7 @@ import SectionCard from "@/components/ui/cards/SectionCard";
 import { FormInput, FormButton } from "@/components/ui/form";
 import Breadcrumb from "@/components/ui/Breadcrumb";
 import { studentService } from "@/services/student.service";
+import { useSocket } from "@/context/SocketContext";
 
 // Shared Toggle component
 function Toggle({
@@ -53,6 +54,7 @@ function Toggle({
 }
 
 export default function StudentSettingsPage() {
+  const { socket, connected } = useSocket();
   const { showToast } = useToast();
   const { user, logout, checkAuth } = useAuthStore();
   const router = useRouter();
@@ -60,6 +62,26 @@ export default function StudentSettingsPage() {
   /* Verification State */
   const [verifyLoading, setVerifyLoading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
+
+  useEffect(() => {
+    if (!socket || !connected) return;
+
+    const handleVerificationResult = async (data: { success: boolean; message: string }) => {
+      setVerifyLoading(false);
+      if (data.success) {
+        showToast("Tebrikler! Hesabınız başarıyla doğrulandı.", "success");
+        await checkAuth(); // Refresh profile state (is_verified, university, major)
+      } else {
+        showToast(data.message || "Doğrulama işlemi başarısız oldu.", "error");
+      }
+    };
+
+    socket.on('verification_result', handleVerificationResult);
+
+    return () => {
+      socket.off('verification_result', handleVerificationResult);
+    };
+  }, [socket, connected]);
 
   const handleVerifyDocument = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -74,11 +96,10 @@ export default function StudentSettingsPage() {
     try {
       const res = await studentService.verifyDocument(file);
       showToast(res.message, "success");
-      await checkAuth(); // Refresh profile state
     } catch (err: any) {
       showToast(err.response?.data?.message || err.message || "Doğrulama işlemi başarısız oldu.", "error");
-    } finally {
       setVerifyLoading(false);
+    } finally {
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
       }

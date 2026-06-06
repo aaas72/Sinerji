@@ -38,6 +38,7 @@ const OPERATION_TIMEOUT = 45_000;
  * Puppeteer launch arguments optimized for cloud/container environments.
  * These flags are essential for running Chrome in Docker, Render, Heroku, etc.
  */
+
 const BROWSER_ARGS = [
   "--no-sandbox",
   "--disable-setuid-sandbox",
@@ -169,11 +170,12 @@ async function verifyOnEDevlet(tcKimlik, barkod) {
     // If we reached the 'belge=goster' page or see 'Dosyayı İndir', it's valid!
     if (url.includes("belge=goster") || resultText.includes("Dosyayı İndir")) {
       logger.info("Document verified successfully via e-Devlet");
+      const parsedData = parseVerificationResult(resultText, resultHtml);
       return { 
         verified: true, 
-        studentName: null, // Microservice just returns verification status, main server has the name
-        university: null, 
-        program: null, 
+        studentName: parsedData.studentName,
+        university: parsedData.university, 
+        program: parsedData.program, 
         studentStatus: "AKTIF", 
         rawMessage: "Document successfully verified on e-Devlet." 
       };

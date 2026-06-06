@@ -300,37 +300,39 @@ export class StudentService {
       const response = await axios.post(verifyUrl, formData, {
         headers: {
           ...formData.getHeaders(),
-          // Optional: 'x-api-key': process.env.VERIFY_SERVICE_API_KEY
+          'x-api-key': process.env.VERIFY_SERVICE_API_KEY || 'ea390e48c4638df2f35a14cd7bd1f7808c9670d0b3996f8c0993aed7d104b2c5'
         },
       });
 
       const data = response.data;
+      const statusRaw = data.status ? data.status.toUpperCase() : '';
+      const isAktif = statusRaw.includes('AKTIF') || statusRaw.includes('AKTİF');
 
-      if (data.success && data.verified) {
-        // Verification succeeded! Update student profile
-        const updatedProfile = await prisma.studentProfile.update({
-          where: { user_id: userId },
-          data: {
-            is_verified: true,
-            university: data.university || profile.university,
-            major: data.program || profile.major,
-            // You can also capture full_name if you want to strictly match it
-          },
-        });
-
-        return {
-          success: true,
-          message: 'Student verified successfully',
-          profile: updatedProfile,
-        };
-      } else {
-        throw new AppError(data.error || data.message || 'Verification failed', 400);
+      if (!data.success || !isAktif) {
+        throw new AppError(data.message || data.error || 'Verification failed', 400);
       }
+
+      // Verification succeeded! Update student profile
+      const updatedProfile = await prisma.studentProfile.update({
+        where: { user_id: userId },
+        data: {
+          is_verified: true,
+          university: data.university || profile.university,
+          major: data.program || profile.major,
+        },
+      });
+
+      return {
+        success: true,
+        message: 'Student verified successfully',
+        profile: updatedProfile,
+      };
     } catch (error: any) {
       if (error instanceof AppError) throw error;
       
       const errMsg = error.response?.data?.error || error.response?.data?.message || error.message;
-      throw new AppError(`Verification service error: ${errMsg}`, 500);
+      const status = error.response?.status || 500;
+      throw new AppError(`Verification service error: ${errMsg}`, status);
     }
   }
 }

@@ -2,6 +2,9 @@ import { Request, Response, NextFunction } from 'express';
 import { StudentService } from '../services/student.service';
 import { updateStudentProfileSchema, addSkillSchema } from '../utils/validation';
 import { AppError } from '../utils/AppError';
+import { userSockets, getIO } from '../socket';
+import { notificationService } from '../services/notification.service';
+import logger from '../utils/logger';
 
 const studentService = new StudentService();
 import { MatchingService } from '../services/matching.service';
@@ -213,15 +216,73 @@ export const verifyStudentDocument = async (req: Request, res: Response, next: N
       return next(new AppError('Only PDF files are allowed', 400));
     }
 
-    const result = await studentService.verifyDocument(req.user.id, file.buffer, file.originalname, file.mimetype);
+    const userId = req.user.id;
+    const fileBuffer = file.buffer;
+    const fileName = file.originalname;
+    const fileMimeType = file.mimetype;
 
-    res.status(200).json({
+    // Respond immediately with 202 Accepted
+    res.status(202).json({
       status: 'success',
-      message: result.message,
-      data: {
-        profile: result.profile,
-      },
+      message: 'Belgeniz başarıyla yüklendi. e-Devlet sorgulaması arka planda yürütülüyor. Lütfen bekleyin...',
     });
+
+    // Run verification in the background
+    (async () => {
+      try {
+        const result = await studentService.verifyDocument(userId, fileBuffer, fileName, fileMimeType);
+        
+        // Notify user via Socket.io if online
+        const socketId = userSockets.get(userId);
+        if (socketId) {
+          try {
+            const io = getIO();
+            io.to(socketId).emit('verification_result', {
+              success: true,
+              message: result.message,
+              profile: result.profile,
+            });
+          } catch (socketErr) {
+            logger.error('Failed to emit verification success via socket:', socketErr);
+          }
+        }
+
+        // Create a persistent success notification
+        await notificationService.createNotification(
+          userId,
+          'Hesabınız Doğrulandı',
+          `Öğrenci belgeniz e-Devlet üzerinden başarıyla doğrulandı. Üniversite: ${result.profile.university || ''}`,
+          'success',
+          '/student/settings'
+        );
+      } catch (error: any) {
+        logger.error(`Async verification failed for user ${userId}:`, error);
+
+        // Notify user via Socket.io of failure if online
+        const socketId = userSockets.get(userId);
+        if (socketId) {
+          try {
+            const io = getIO();
+            io.to(socketId).emit('verification_result', {
+              success: false,
+              message: error.message || 'Verification failed',
+            });
+          } catch (socketErr) {
+            logger.error('Failed to emit verification failure via socket:', socketErr);
+          }
+        }
+
+        // Create a persistent error notification
+        await notificationService.createNotification(
+          userId,
+          'Doğrulama Başarısız',
+          `Öğrenci belgesi doğrulanırken bir hata oluştu: ${error.message}`,
+          'error',
+          '/student/settings'
+        );
+      }
+    })();
+
   } catch (error) {
     next(error);
   }
