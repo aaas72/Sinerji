@@ -84,5 +84,11 @@ export const studentService = {
     return {
       message: response.data.message || 'Öğrenci belgeniz başarıyla yüklendi. İşlem arka planda yürütülüyor.',
     };
+  },
+
+  async registerBankDetails(data: { name: string; surname: string; email: string; gsmNumber: string; identityNumber: string; iban: string; address: string }): Promise<StudentProfile> {
+    const response = await api.post<ApiResponse<ProfileData>>('/students/bank-setup', data);
+    return response.data.data.profile;
   }
 };
+

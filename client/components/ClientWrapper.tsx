@@ -1,10 +1,12 @@
 "use client";
 import AuthHydrator from "@/components/auth/AuthHydrator";
+import GlobalLoaderOverlay from "@/components/ui/GlobalLoaderOverlay";
 import React from "react";
 
 export default function ClientWrapper({ children }: { children: React.ReactNode }) {
   return <>
     <AuthHydrator />
+    <GlobalLoaderOverlay />
     {children}
   </>;
 }

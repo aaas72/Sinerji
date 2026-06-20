@@ -21,6 +21,11 @@ export const submissionService = {
         return response.data.data.submissions;
     },
 
+    async getSubmission(submissionId: number): Promise<Submission> {
+        const response = await api.get<ApiResponse<SubmissionResponse>>(`/submissions/${submissionId}`);
+        return response.data.data.submission;
+    },
+
     async updateSubmission(submissionId: number, status: 'approved' | 'rejected'): Promise<Submission> {
         const response = await api.patch<ApiResponse<SubmissionResponse>>(`/submissions/${submissionId}`, { status });
         return response.data.data.submission;
@@ -29,4 +34,9 @@ export const submissionService = {
         const response = await api.post<ApiResponse<SubmissionResponse>>(`/submissions/task/${taskId}`, data);
         return response.data.data.submission;
     },
+    async paySubmission(submissionId: number, cardData: { cardHolderName: string; cardNumber: string; expireMonth: string; expireYear: string; cvv: string }): Promise<Submission> {
+        const response = await api.post<ApiResponse<SubmissionResponse>>(`/submissions/${submissionId}/pay`, cardData);
+        return response.data.data.submission;
+    },
 };
+

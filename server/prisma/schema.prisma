@@ -40,6 +40,8 @@ model StudentProfile {
   graduation_year        Int?
   major                  String?
   is_verified            Boolean          @default(false)
+  last_verified_at       DateTime?
+  sub_merchant_key       String?
   recommendations        Recommendation[]
   savedTasks             SavedTask[]
   user                   User             @relation(fields: [user_id], references: [id])
@@ -144,6 +146,9 @@ model Submission {
   estimated_delivery_days Int?
   proposed_budget         String?
   ai_match_details        Json?
+  payment_id              String?
+  payment_transaction_id  String?
+  payment_status          String?        @default("unpaid")
   review                  Review?
   student                 StudentProfile @relation(fields: [student_user_id], references: [user_id])
   task                    Task           @relation(fields: [task_id], references: [id])

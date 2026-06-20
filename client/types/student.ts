@@ -28,6 +28,7 @@ export interface StudentProfile {
     is_verified?: boolean;
     availability_status?: string | null;
     categories_of_interest?: string | null;
+    sub_merchant_key?: string | null;
     skills: StudentSkill[];
     recommendations?: any[]; // We can define a proper type for Recommendation later if needed
     submissions?: any[]; // We can define a proper type for Submission later if needed

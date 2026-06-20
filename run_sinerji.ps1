@@ -16,11 +16,15 @@ Start-Process powershell -ArgumentList "-NoExit", "-Command", "cd client; npm ru
 # 3. Start AI Matching Service
 Write-Host "[3/4] Starting AI Matching Service (FastAPI)..." -ForegroundColor Green
 # Using the python executable directly from the virtual environment to ensure uvicorn runs correctly
-Start-Process powershell -ArgumentList "-NoExit", "-Command", "cd ai-matching-service; .\.venv\Scripts\python.exe -m uvicorn main:app --host 0.0.0.0 --port 8001 --reload" -WindowStyle Normal
+Start-Process powershell -ArgumentList "-NoExit", "-Command", "cd services/ai-matching-service; .\.venv\Scripts\python.exe -m uvicorn main:app --host 0.0.0.0 --port 8001 --reload" -WindowStyle Normal
 
 # 4. Start Student Verification Microservice
-Write-Host "[4/4] Starting Student Verification Microservice..." -ForegroundColor Green
+Write-Host "[4/5] Starting Student Verification Microservice..." -ForegroundColor Green
 Start-Process powershell -ArgumentList "-NoExit", "-Command", "cd services/student-verification; npm run dev" -WindowStyle Normal
+
+# 5. Start Payment Microservice
+Write-Host "[5/5] Starting Payment Microservice (Express/Iyzico)..." -ForegroundColor Green
+Start-Process powershell -ArgumentList "-NoExit", "-Command", "cd services/payment-service; npm run dev" -WindowStyle Normal
 
 Write-Host ""
 Write-Host "All components are starting in separate terminal windows." -ForegroundColor Yellow

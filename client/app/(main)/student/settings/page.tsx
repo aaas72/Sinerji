@@ -14,7 +14,8 @@ import {
   FiUser,
   FiMail,
   FiCheckCircle,
-  FiUploadCloud
+  FiUploadCloud,
+  FiCreditCard
 } from "react-icons/fi";
 import { useToast } from "@/context/ToastContext";
 import SectionCard from "@/components/ui/cards/SectionCard";
@@ -59,29 +60,53 @@ export default function StudentSettingsPage() {
   const { user, logout, checkAuth } = useAuthStore();
   const router = useRouter();
 
+  /* Bank Settings Form */
+  const [bankLoading, setBankLoading] = useState(false);
+  const [bankForm, setBankForm] = useState({
+    name: "",
+    surname: "",
+    email: "",
+    gsmNumber: "",
+    identityNumber: "",
+    iban: "",
+    address: ""
+  });
+
+  // Pre-fill student info if user info is available
+  useEffect(() => {
+    if (user) {
+      const names = user.studentProfile?.full_name?.split(" ") || [];
+      const name = names[0] || "";
+      const surname = names.slice(1).join(" ") || "";
+      setBankForm({
+        name,
+        surname,
+        email: user.email || "",
+        gsmNumber: user.studentProfile?.phone || "+90",
+        identityNumber: "",
+        iban: "",
+        address: ""
+      });
+    }
+  }, [user]);
+
+  const handleBankSetup = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setBankLoading(true);
+    try {
+      await studentService.registerBankDetails(bankForm);
+      showToast("Banka hesabınız Iyzico sistemine başarıyla tanımlandı.", "success");
+      await checkAuth(); // Refresh profile state to show success box
+    } catch (err: any) {
+      showToast(err.response?.data?.message || err.message || "Banka bilgileri kaydedilemedi.", "error");
+    } finally {
+      setBankLoading(false);
+    }
+  };
+
   /* Verification State */
   const [verifyLoading, setVerifyLoading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
-
-  useEffect(() => {
-    if (!socket || !connected) return;
-
-    const handleVerificationResult = async (data: { success: boolean; message: string }) => {
-      setVerifyLoading(false);
-      if (data.success) {
-        showToast("Tebrikler! Hesabınız başarıyla doğrulandı.", "success");
-        await checkAuth(); // Refresh profile state (is_verified, university, major)
-      } else {
-        showToast(data.message || "Doğrulama işlemi başarısız oldu.", "error");
-      }
-    };
-
-    socket.on('verification_result', handleVerificationResult);
-
-    return () => {
-      socket.off('verification_result', handleVerificationResult);
-    };
-  }, [socket, connected]);
 
   const handleVerifyDocument = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -93,13 +118,15 @@ export default function StudentSettingsPage() {
     }
 
     setVerifyLoading(true);
+    
     try {
       const res = await studentService.verifyDocument(file);
-      showToast(res.message, "success");
+      showToast(res.message || "Tebrikler! Hesabınız başarıyla doğrulandı.", "success");
+      await checkAuth(); // Refresh profile state (is_verified, university, major)
     } catch (err: any) {
       showToast(err.response?.data?.message || err.message || "Doğrulama işlemi başarısız oldu.", "error");
-      setVerifyLoading(false);
     } finally {
+      setVerifyLoading(false);
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
       }
@@ -180,20 +207,24 @@ export default function StudentSettingsPage() {
                     <FiCheckCircle size={20} />
                     <span>Hesabınız başarıyla doğrulandı!</span>
                   </div>
-                  <div className="text-sm">
+                  <div className="text-sm space-y-1">
+                    <p><strong>Öğrenci Adı:</strong> {user.studentProfile.full_name}</p>
                     <p><strong>Üniversite:</strong> {user.studentProfile.university}</p>
                     <p><strong>Bölüm:</strong> {user.studentProfile.major}</p>
-                    <p className="mt-2 text-xs opacity-80">Bu bilgiler devlet sisteminden otomatik çekilmiştir ve güvenliğiniz için değiştirilemez.</p>
+                    {user.studentProfile.last_verified_at && (
+                      <p><strong>Son Doğrulama Tarihi:</strong> {new Date(user.studentProfile.last_verified_at).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
+                    )}
+                    <p className="mt-2 text-xs opacity-80 pt-2 border-t border-[#a5d6a7]">Bu bilgiler devlet sisteminden otomatik çekilmiştir ve güvenliğiniz için değiştirilemez.</p>
                   </div>
                 </div>
               ) : (
                 <div className="flex flex-col gap-4">
-                  <div className="bg-amber-50 border border-amber-200 text-amber-800 p-4 rounded-xl text-sm leading-relaxed">
-                    <strong>Doğrulama Adımları:</strong>
-                    <ol className="list-decimal list-inside mt-2 space-y-1">
-                      <li>e-Devlet kapısına giriş yapın ve <strong>YÖK Öğrenci Belgesi Sorgulama</strong> sayfasına gidin.</li>
+                  <div className="bg-transparent border border-[#dfded6] text-[#565e74] p-5 rounded-xl text-sm leading-relaxed">
+                    <strong className="text-[#0b1c30] text-base">Doğrulama Adımları:</strong>
+                    <ol className="list-decimal list-inside mt-3 space-y-2">
+                      <li>e-Devlet kapısına giriş yapın ve <strong className="text-[#0b1c30]">YÖK Öğrenci Belgesi Sorgulama</strong> sayfasına gidin.</li>
                       <li>Barkodlu yeni bir belge oluşturun (Belge tarihi 1 haftadan eski olmamalıdır).</li>
-                      <li>Oluşturulan <strong>PDF dosyasını</strong> indirip buraya yükleyin.</li>
+                      <li>Oluşturulan <strong className="text-[#0b1c30]">PDF dosyasını</strong> indirip buraya yükleyin.</li>
                     </ol>
                   </div>
                   
@@ -216,6 +247,111 @@ export default function StudentSettingsPage() {
                     </FormButton>
                   </div>
                 </div>
+              )}
+            </div>
+          </SectionCard>
+        )}
+
+        {/* Banka Hesabı Tanımlama */}
+        {user?.role === 'student' && (
+          <SectionCard
+            icon={FiCreditCard}
+            title="Banka Hesabı Tanımlama"
+            description="Tamamladığınız görevlerin ödemelerini doğrudan banka hesabınıza alabilmek için Iyzico entegrasyonu için banka bilgilerinizi tanımlayın."
+          >
+            <div className="max-w-2xl">
+              {user.studentProfile?.sub_merchant_key ? (
+                <div className="bg-[#e0f2f1] border border-[#80cbc4] text-[#004d40] p-4 rounded-xl flex flex-col gap-2">
+                  <div className="flex items-center gap-2 font-bold text-base">
+                    <FiCheckCircle size={20} />
+                    <span>Iyzico Banka Hesabınız Tanımlandı!</span>
+                  </div>
+                  <div className="text-sm space-y-1">
+                    <p><strong>Merchant Anahtarı:</strong> {user.studentProfile.sub_merchant_key}</p>
+                    <p className="mt-2 text-xs opacity-80 pt-2 border-t border-[#80cbc4]">Bütçe ödemeleriniz Iyzico Marketplace sistemi üzerinden bu hesaba yönlendirilecektir. Değişiklik yapmak için destek ekibi ile iletişime geçin.</p>
+                  </div>
+                </div>
+              ) : (
+                <form onSubmit={handleBankSetup} className="space-y-4">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <FormInput
+                      label="Ad"
+                      value={bankForm.name}
+                      onChange={(e) => setBankForm({ ...bankForm, name: e.target.value })}
+                      placeholder="Öğrencinin Adı"
+                      className="!rounded-full pl-5"
+                      required
+                    />
+                    <FormInput
+                      label="Soyad"
+                      value={bankForm.surname}
+                      onChange={(e) => setBankForm({ ...bankForm, surname: e.target.value })}
+                      placeholder="Öğrencinin Soyadı"
+                      className="!rounded-full pl-5"
+                      required
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <FormInput
+                      label="E-posta"
+                      type="email"
+                      value={bankForm.email}
+                      onChange={(e) => setBankForm({ ...bankForm, email: e.target.value })}
+                      placeholder="ogrenci@email.com"
+                      className="!rounded-full pl-5"
+                      required
+                    />
+                    <FormInput
+                      label="Telefon (+90 ile)"
+                      value={bankForm.gsmNumber}
+                      onChange={(e) => setBankForm({ ...bankForm, gsmNumber: e.target.value })}
+                      placeholder="+905555555555"
+                      className="!rounded-full pl-5"
+                      required
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <FormInput
+                      label="T.C. Kimlik Numarası (TCKN)"
+                      value={bankForm.identityNumber}
+                      onChange={(e) => setBankForm({ ...bankForm, identityNumber: e.target.value })}
+                      placeholder="11111111111"
+                      maxLength={11}
+                      className="!rounded-full pl-5"
+                      required
+                    />
+                    <FormInput
+                      label="IBAN"
+                      value={bankForm.iban}
+                      onChange={(e) => setBankForm({ ...bankForm, iban: e.target.value })}
+                      placeholder="TR000000000000000000000000"
+                      className="!rounded-full pl-5"
+                      required
+                    />
+                  </div>
+
+                  <FormInput
+                    label="Adres"
+                    value={bankForm.address}
+                    onChange={(e) => setBankForm({ ...bankForm, address: e.target.value })}
+                    placeholder="Adres bilgisi (Iyzico KYC doğrulama için gereklidir)"
+                    className="!rounded-full pl-5"
+                    required
+                  />
+
+                  <div className="pt-2">
+                    <FormButton
+                      type="submit"
+                      isLoading={bankLoading}
+                      disabled={bankLoading}
+                      className="!rounded-full px-8"
+                    >
+                      Banka Bilgilerini Kaydet
+                    </FormButton>
+                  </div>
+                </form>
               )}
             </div>
           </SectionCard>

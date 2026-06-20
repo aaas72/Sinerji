@@ -1,7 +1,8 @@
 "use client";
 
 import { Submission } from "@/types/submission";
-import { FiCalendar, FiChevronRight, FiAward } from "react-icons/fi";
+import { FiCalendar, FiChevronRight, FiAward, FiLock, FiCreditCard, FiClock } from "react-icons/fi";
+import { FaUniversity } from "react-icons/fa";
 import StatusBadge from "@/components/ui/badges/StatusBadge";
 
 interface ApplicantCardProps {
@@ -55,9 +56,9 @@ export default function ApplicantCard({ submission, onClick }: ApplicantCardProp
             AI Uyumlu %{formattedScore}
           </div>
 
-          {/* Fill bar – clips its own light text to only show on green */}
+          {/* Fill bar – clips its own light text to only show on gradient */}
           <div
-            className="absolute inset-y-0 left-0 bg-gradient-to-r from-[#00342b] to-[#005c4b] transition-all duration-700 ease-out overflow-hidden"
+            className="absolute inset-y-0 left-0 bg-gradient-to-r from-[#00342b] to-[#e28743] transition-all duration-700 ease-out overflow-hidden"
             style={{ width: `${scoreNum}%` }}
           >
             {/* Layer 2 – light text stretched to full bar width so it stays centered */}
@@ -79,29 +80,35 @@ export default function ApplicantCard({ submission, onClick }: ApplicantCardProp
             <div className="w-16 h-16 avatar-gradient rounded-xl flex items-center justify-center text-white text-2xl font-bold shadow-lg shrink-0">
               {submission.student.full_name.charAt(0).toUpperCase()}
             </div>
+            <div className="flex items-center gap-1 text-[10px] font-bold text-[#565e74] mt-1 shrink-0">
+              <FiClock size={12} className="text-gray-400" />
+              <span>{new Date(submission.submitted_at || Date.now()).toLocaleDateString("tr-TR")}</span>
+            </div>
           </div>
 
           <div className="mb-3">
-            <h3 className="text-base font-bold text-[#00342b] group-hover:text-[#004d40] transition-colors line-clamp-1">
+            <h3 className="text-base font-bold text-[#00342b] group-hover:text-[#e28743] transition-colors line-clamp-1">
               {submission.student.full_name}
             </h3>
-            <p className="text-xs text-[#565e74] mt-0.5 line-clamp-1">
-              {submission.student.university || "Üniversite belirtilmemiş"}
+            <p className="text-xs text-[#565e74] mt-0.5 line-clamp-1 flex items-center gap-1.5">
+              <FaUniversity className="text-gray-400 w-3 h-3 shrink-0" />
+              <span>{submission.student.university || "Üniversite belirtilmemiş"}</span>
             </p>
           </div>
 
           <div className="flex flex-wrap gap-1.5 mb-4">
-            {submission.proposed_budget && (
-              <span className="bg-[#eff4ff] text-[#3f465c] px-2.5 py-1 rounded-lg text-[10px] font-bold border border-[#bfc9c4]/20">
-                ₺{submission.proposed_budget} Bütçe
+            {submission.payment_status === "escrow_locked" && (
+              <span className="bg-yellow-50 text-yellow-800 px-2.5 py-1 rounded-lg text-[10px] font-bold border border-yellow-200 flex items-center gap-1">
+                <FiLock className="w-3 h-3 shrink-0" /> Escrow Kilitli
               </span>
             )}
-            {submission.estimated_delivery_days && (
-              <span className="bg-[#eff4ff] text-[#3f465c] px-2.5 py-1 rounded-lg text-[10px] font-bold border border-[#bfc9c4]/20">
-                {submission.estimated_delivery_days} Gün Teslim
+            {submission.payment_status === "released" && (
+              <span className="bg-[#e28743]/5 text-[#e28743] px-2.5 py-1 rounded-lg text-[10px] font-bold border border-[#e28743]/20 flex items-center gap-1">
+                <FiCreditCard className="w-3 h-3 shrink-0" /> Ödendi
               </span>
             )}
           </div>
+
 
           <div className="pt-3 border-t border-[#dfded6]/30 mb-4">
             <p className="text-gray-500 text-xs italic line-clamp-2 leading-relaxed">
@@ -112,17 +119,14 @@ export default function ApplicantCard({ submission, onClick }: ApplicantCardProp
 
         <div className="flex items-center justify-between pt-3 border-t border-[#dfded6]/20 mt-auto">
           <div className="flex items-center gap-3 text-[10px] font-bold text-[#565e74]">
-            <span className="flex items-center gap-1">
-              <FiCalendar size={12} />
-              {new Date(submission.submitted_at || Date.now()).toLocaleDateString("tr-TR")}
-            </span>
             <StatusBadge status={submission.status} />
           </div>
-          <button className="text-[#00342b] font-bold text-xs flex items-center gap-1 group-hover:translate-x-1 transition-transform cursor-pointer bg-transparent border-0 outline-none">
+          <button className="text-[#00342b] group-hover:text-[#e28743] font-bold text-xs flex items-center gap-1 group-hover:translate-x-1 transition-transform cursor-pointer bg-transparent border-0 outline-none">
             İncele <FiChevronRight className="w-3.5 h-3.5" />
           </button>
         </div>
       </div>
+
     </div>
   );
 }

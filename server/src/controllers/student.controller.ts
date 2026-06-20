@@ -221,69 +221,71 @@ export const verifyStudentDocument = async (req: Request, res: Response, next: N
     const fileName = file.originalname;
     const fileMimeType = file.mimetype;
 
-    // Respond immediately with 202 Accepted
-    res.status(202).json({
+    const result = await studentService.verifyDocument(userId, fileBuffer, fileName, fileMimeType);
+    
+    // Create a persistent success notification
+    await notificationService.createNotification(
+      userId,
+      'Hesabınız Doğrulandı',
+      `Öğrenci belgeniz e-Devlet üzerinden başarıyla doğrulandı. Üniversite: ${result.profile.university || ''}`,
+      'success',
+      '/student/settings'
+    );
+
+    res.status(200).json({
       status: 'success',
-      message: 'Belgeniz başarıyla yüklendi. e-Devlet sorgulaması arka planda yürütülüyor. Lütfen bekleyin...',
+      message: 'Tebrikler! Hesabınız başarıyla doğrulandı.',
+      data: {
+        profile: result.profile
+      }
     });
 
-    // Run verification in the background
-    (async () => {
-      try {
-        const result = await studentService.verifyDocument(userId, fileBuffer, fileName, fileMimeType);
-        
-        // Notify user via Socket.io if online
-        const socketId = userSockets.get(userId);
-        if (socketId) {
-          try {
-            const io = getIO();
-            io.to(socketId).emit('verification_result', {
-              success: true,
-              message: result.message,
-              profile: result.profile,
-            });
-          } catch (socketErr) {
-            logger.error('Failed to emit verification success via socket:', socketErr);
-          }
-        }
+  } catch (error: any) {
+    // If it fails, also create a persistent error notification
+    if (req.user?.id) {
+      await notificationService.createNotification(
+        req.user.id,
+        'Doğrulama Başarısız',
+        `Öğrenci belgesi doğrulanırken bir hata oluştu: ${error.message}`,
+        'error',
+        '/student/settings'
+      ).catch(err => logger.error('Failed to create error notification:', err));
+    }
+    next(error);
+  }
+};
 
-        // Create a persistent success notification
-        await notificationService.createNotification(
-          userId,
-          'Hesabınız Doğrulandı',
-          `Öğrenci belgeniz e-Devlet üzerinden başarıyla doğrulandı. Üniversite: ${result.profile.university || ''}`,
-          'success',
-          '/student/settings'
-        );
-      } catch (error: any) {
-        logger.error(`Async verification failed for user ${userId}:`, error);
+export const registerBankDetails = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    if (!req.user || req.user.role !== 'student') {
+      return next(new AppError('Only students can set up bank details', 403));
+    }
 
-        // Notify user via Socket.io of failure if online
-        const socketId = userSockets.get(userId);
-        if (socketId) {
-          try {
-            const io = getIO();
-            io.to(socketId).emit('verification_result', {
-              success: false,
-              message: error.message || 'Verification failed',
-            });
-          } catch (socketErr) {
-            logger.error('Failed to emit verification failure via socket:', socketErr);
-          }
-        }
+    const { name, surname, email, gsmNumber, identityNumber, iban, address } = req.body;
 
-        // Create a persistent error notification
-        await notificationService.createNotification(
-          userId,
-          'Doğrulama Başarısız',
-          `Öğrenci belgesi doğrulanırken bir hata oluştu: ${error.message}`,
-          'error',
-          '/student/settings'
-        );
+    if (!name || !surname || !email || !gsmNumber || !identityNumber || !iban || !address) {
+      return next(new AppError('Tüm banka ve kimlik bilgileri gereklidir.', 400));
+    }
+
+    const updatedProfile = await studentService.registerBankDetails(req.user.id, {
+      name,
+      surname,
+      email,
+      gsmNumber,
+      identityNumber,
+      iban,
+      address
+    });
+
+    res.status(200).json({
+      status: 'success',
+      message: 'Banka hesabı başarıyla tanımlandı.',
+      data: {
+        profile: updatedProfile
       }
-    })();
-
+    });
   } catch (error) {
     next(error);
   }
 };
+

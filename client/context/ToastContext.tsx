@@ -4,15 +4,15 @@ import React, { createContext, useContext, useState, ReactNode, useCallback } fr
 import Toast, { ToastType } from "@/components/ui/Toast";
 
 interface ToastContextType {
-  showToast: (message: string, type: ToastType) => void;
+  showToast: (message: string | ReactNode, type: ToastType) => void;
 }
 
 const ToastContext = createContext<ToastContextType | undefined>(undefined);
 
 export function ToastProvider({ children }: { children: ReactNode }) {
-  const [toast, setToast] = useState<{ message: string; type: ToastType } | null>(null);
+  const [toast, setToast] = useState<{ message: string | ReactNode; type: ToastType } | null>(null);
 
-  const showToast = useCallback((message: string, type: ToastType) => {
+  const showToast = useCallback((message: string | ReactNode, type: ToastType) => {
     setToast({ message, type });
   }, []);
 

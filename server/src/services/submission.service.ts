@@ -42,6 +42,10 @@ export class SubmissionService {
         throw new AppError('Hesabınız doğrulanmamış. Lütfen başvurmadan önce e-Devlet Öğrenci Belgeniz ile profilinizi doğrulayın.', 403);
     }
 
+    if (!student.sub_merchant_key) {
+        throw new AppError('Banka hesap (IBAN) bilgileriniz girilmemiş. Lütfen başvurmadan önce profil ayarlarınızdan IBAN adresinizi tanımlayın.', 400);
+    }
+
     // Check if already submitted
     const existingSubmission = await prisma.submission.findFirst({
       where: {
@@ -163,9 +167,35 @@ export class SubmissionService {
           throw new AppError('Not authorized to update this submission', 403);
       }
 
+      let paymentStatusUpdate = undefined;
+      
+      if (status === 'approved' && submission.payment_status === 'escrow_locked' && submission.payment_transaction_id) {
+          const paymentServiceUrl = process.env.PAYMENT_SERVICE_URL || 'http://localhost:5001';
+          const axios = require('axios');
+          
+          try {
+              const releaseResponse = await axios.post(`${paymentServiceUrl}/api/payments/release`, {
+                  paymentTransactionId: submission.payment_transaction_id
+              });
+              
+              if (!releaseResponse.data || !releaseResponse.data.success) {
+                  throw new AppError(releaseResponse.data?.error || 'Ödeme serbest bırakılamadı.', 400);
+              }
+              
+              paymentStatusUpdate = 'released';
+          } catch (error: any) {
+              if (error instanceof AppError) throw error;
+              const errMsg = error.response?.data?.error || error.message;
+              throw new AppError(`Ödeme serbest bırakma işlemi microservice tarafında başarısız oldu: ${errMsg}`, error.response?.status || 500);
+          }
+      }
+
       return prisma.submission.update({
           where: { id: submissionId },
-          data: { status },
+          data: { 
+              status,
+              ...(paymentStatusUpdate ? { payment_status: paymentStatusUpdate } : {})
+          },
           include: {
               student: {
                   include: { user: { select: { email: true } } }
@@ -175,4 +205,90 @@ export class SubmissionService {
           }
       });
   }
+
+  async paySubmission(submissionId: number, companyUserId: number, cardData: any, buyerEmail: string) {
+    const submission = await prisma.submission.findUnique({
+      where: { id: submissionId },
+      include: {
+        task: {
+          include: {
+            company: true
+          }
+        },
+        student: true
+      }
+    });
+
+    if (!submission) {
+      throw new AppError('Submission not found', 404);
+    }
+
+    if (submission.task.company_user_id !== companyUserId) {
+      throw new AppError('Not authorized to pay for this submission', 403);
+    }
+
+    if (submission.payment_status === 'escrow_locked' || submission.payment_status === 'released') {
+      throw new AppError('Ödeme zaten yapıldı veya serbest bırakıldı.', 400);
+    }
+
+    const subMerchantKey = submission.student.sub_merchant_key;
+    if (!subMerchantKey) {
+      throw new AppError('Öğrenci henüz banka hesabı (Sub-Merchant) tanımlamamış. Ödeme alınamaz.', 400);
+    }
+
+    // Determine the price. Use proposed_budget or task.budget
+    const priceStr = submission.proposed_budget || submission.task.budget || submission.task.reward_amount || '0';
+    const parsedPrice = parseFloat(priceStr);
+
+    if (isNaN(parsedPrice) || parsedPrice <= 0) {
+      throw new AppError('Geçersiz görev bütçesi.', 400);
+    }
+
+    const buyer = {
+      id: `company_${submission.task.company.user_id}`,
+      name: submission.task.company.company_name.split(' ')[0] || 'Şirket',
+      surname: submission.task.company.company_name.split(' ').slice(1).join(' ') || 'Temsilcisi',
+      email: buyerEmail || 'company@sinerji.com',
+      gsmNumber: '+905555555555',
+      address: submission.task.company.location || 'Istanbul, Turkey'
+    };
+
+    const paymentServiceUrl = process.env.PAYMENT_SERVICE_URL || 'http://localhost:5001';
+    const axios = require('axios');
+
+    try {
+      const response = await axios.post(`${paymentServiceUrl}/api/payments/checkout`, {
+        ...cardData,
+        price: parsedPrice.toString(),
+        buyer,
+        subMerchantKey
+      });
+
+      if (!response.data || !response.data.success) {
+        throw new AppError(response.data?.error || 'Ödeme işlemi başarısız.', 400);
+      }
+
+      const { paymentId, paymentTransactionId } = response.data;
+
+      const updatedSubmission = await prisma.submission.update({
+        where: { id: submissionId },
+        data: {
+          payment_id: paymentId,
+          payment_transaction_id: paymentTransactionId,
+          payment_status: 'escrow_locked'
+        },
+        include: {
+          task: true,
+          student: true
+        }
+      });
+
+      return updatedSubmission;
+    } catch (error: any) {
+      if (error instanceof AppError) throw error;
+      const errMsg = error.response?.data?.error || error.message;
+      throw new AppError(`Ödeme işlemi microservice tarafında başarısız oldu: ${errMsg}`, error.response?.status || 500);
+    }
+  }
 }
+

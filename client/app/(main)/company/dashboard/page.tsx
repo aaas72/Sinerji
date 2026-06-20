@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   FiBriefcase,
   FiUsers,
@@ -42,7 +43,7 @@ interface DashboardStats {
     id: number;
     status: string;
     submitted_at: string;
-    task: { title: string };
+    task: { id: number; title: string };
     student: { full_name: string; user: { email: string } };
   }[];
 }
@@ -57,6 +58,7 @@ function formatDate(iso: string) {
 }
 
 export default function CompanyDashboardPage() {
+  const router = useRouter();
   const [profile, setProfile] = useState<CompanyProfile | null>(null);
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
@@ -180,7 +182,11 @@ export default function CompanyDashboardPage() {
                   .slice(0, 2);
 
                 return (
-                  <div key={app.id} className="p-4 flex items-center group cursor-pointer bg-transparent border border-transparent hover:rounded-none hover-card-effect">
+                  <div
+                    key={app.id}
+                    onClick={() => router.push(`/company/tasks/${app.task.id}/applicants/${app.id}`)}
+                    className="p-4 flex items-center group cursor-pointer bg-transparent border border-transparent hover:rounded-none hover-card-effect"
+                  >
                     <div className="flex items-center gap-4 min-w-0 flex-1">
                       {/* Avatar with fallback initials */}
                       <div className="w-12 h-12 rounded-full bg-[#00342b]/5 border border-[#dfded6] flex items-center justify-center text-[#00342b] font-bold text-sm shrink-0">

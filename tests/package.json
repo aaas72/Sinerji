@@ -15,6 +15,7 @@
   "description": "",
   "devDependencies": {
     "@types/node": "^25.3.3",
+    "dotenv": "^17.4.2",
     "ts-node": "^10.9.2",
     "typescript": "^5.9.3"
   }

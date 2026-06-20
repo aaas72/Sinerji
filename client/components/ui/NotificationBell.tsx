@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from 'react';
 import { FiBell, FiCheck } from 'react-icons/fi';
 import api from '@/services/api';
 import { useSocket } from '@/context/SocketContext';
+import { useAuthStore } from '@/hooks/useAuth';
 import Link from 'next/link';
 
 interface Notification {
@@ -21,22 +22,31 @@ export default function NotificationBell() {
   const [unreadCount, setUnreadCount] = useState(0);
   const [isOpen, setIsOpen] = useState(false);
   const { socket, connected } = useSocket();
+  const { isAuthenticated, user } = useAuthStore();
   const dropdownRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
+    if (!isAuthenticated || !user) {
+      setNotifications([]);
+      setUnreadCount(0);
+      return;
+    }
+
     // Fetch initial notifications
     const fetchNotifications = async () => {
       try {
         const response = await api.get('/notifications');
         setNotifications(response.data.data.notifications);
         setUnreadCount(response.data.data.unreadCount);
-      } catch (error) {
-        console.error('Failed to fetch notifications', error);
+      } catch (error: any) {
+        if (error?.statusCode !== 401) {
+          console.error('Failed to fetch notifications', error);
+        }
       }
     };
 
     fetchNotifications();
-  }, []);
+  }, [isAuthenticated, user]);
 
   useEffect(() => {
     if (!socket || !connected) return;
@@ -74,8 +84,10 @@ export default function NotificationBell() {
       await api.patch(`/notifications/${id}/read`);
       setNotifications(notifications.map(n => n.id === id ? { ...n, is_read: true } : n));
       setUnreadCount(prev => Math.max(0, prev - 1));
-    } catch (error) {
-      console.error(error);
+    } catch (error: any) {
+      if (error?.statusCode !== 401) {
+        console.error(error);
+      }
     }
   };
 
@@ -84,10 +96,16 @@ export default function NotificationBell() {
       await api.patch(`/notifications/read-all`);
       setNotifications(notifications.map(n => ({ ...n, is_read: true })));
       setUnreadCount(0);
-    } catch (error) {
-      console.error(error);
+    } catch (error: any) {
+      if (error?.statusCode !== 401) {
+        console.error(error);
+      }
     }
   };
+
+  if (!isAuthenticated || !user) {
+    return null;
+  }
 
   return (
     <div className="relative" ref={dropdownRef}>

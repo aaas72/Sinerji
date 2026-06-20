@@ -1,6 +1,6 @@
 import express from 'express';
 import multer from 'multer';
-import { getAllStudents, getMyProfile, updateMyProfile, addSkill, removeSkill, getMyStats, getMatchingStudentsForTask, saveTask, unsaveTask, getSavedTasks, getStudentProfile, verifyStudentDocument } from '../controllers/student.controller';
+import { getAllStudents, getMyProfile, updateMyProfile, addSkill, removeSkill, getMyStats, getMatchingStudentsForTask, saveTask, unsaveTask, getSavedTasks, getStudentProfile, verifyStudentDocument, registerBankDetails } from '../controllers/student.controller';
 import { protect, restrictTo } from '../middlewares/auth.middleware';
 
 const router = express.Router();
@@ -10,6 +10,8 @@ const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 5 *
 router.use(protect);
 
 router.post('/verify-document', restrictTo('student'), upload.single('document'), verifyStudentDocument);
+router.post('/bank-setup', restrictTo('student'), registerBankDetails);
+
 
 router.get('/', restrictTo('company', 'student'), getAllStudents);
 

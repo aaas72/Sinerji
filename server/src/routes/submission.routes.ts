@@ -17,7 +17,9 @@ router.get('/task/:taskId', restrictTo('company'), submissionController.getTaskS
 // Shared/Individual route
 router.get('/:id', submissionController.getSubmission);
 
-// Company: update submission status
+// Company: update submission status and process payment
 router.patch('/:id', restrictTo('company'), submissionController.updateSubmission);
+router.post('/:id/pay', restrictTo('company'), submissionController.paySubmission);
 
 export default router;
+

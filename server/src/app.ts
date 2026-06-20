@@ -25,6 +25,7 @@ import messageRoutes from './routes/message.routes';
 import notificationRoutes from './routes/notification.routes';
 import uploadRoutes from './routes/upload.routes';
 
+// Load environment variables early
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
 const app = express();
@@ -119,4 +120,6 @@ const server = app.listen(PORT, () => {
 // Initialize Socket.io
 initSocket(server);
 
+// Trigger reload after env update
 export default app;
+

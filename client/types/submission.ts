@@ -8,6 +8,9 @@ export interface Submission {
     proposed_budget?: string | null;
     estimated_delivery_days?: number | null;
     ai_match_score?: number | null;
+    payment_id?: string | null;
+    payment_transaction_id?: string | null;
+    payment_status?: string | null;
     ai_match_details?: {
         score: number;
         hard_score?: number;
@@ -33,6 +36,7 @@ export interface Submission {
         full_name: string;
         university?: string | null;
         bio?: string | null;
+        sub_merchant_key?: string | null;
         user: {
             email: string;
         };
@@ -43,3 +47,4 @@ export interface Submission {
         feedback: string | null;
     } | null;
 }
+

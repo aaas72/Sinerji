@@ -22,6 +22,7 @@ import { useAuthStore } from "@/hooks/useAuth";
 import { useAuthModal } from "@/hooks/useAuthModal";
 import { usePathname, useRouter } from "next/navigation";
 import { cn } from "@/utils/cn";
+import { useGlobalLoader } from "@/hooks/useGlobalLoader";
 
 type MenuItem = {
   href: string;
@@ -97,6 +98,7 @@ export default function Navbar({ authenticated, userName, role }: NavbarProps) {
 
   const { user, isAuthenticated, logout, _hasHydrated } = useAuthStore();
   const { openLogin, openRegister } = useAuthModal();
+  const { showLoader, hideLoader } = useGlobalLoader();
   const pathname = usePathname();
 
   const isAuth = isAuthenticated && !!user;
@@ -125,8 +127,12 @@ export default function Navbar({ authenticated, userName, role }: NavbarProps) {
 
   const router = useRouter();
   const handleLogout = () => {
-    logout();
-    router.replace("/");
+    showLoader("Çıkış yapılıyor...");
+    setTimeout(() => {
+      logout();
+      router.replace("/");
+      hideLoader();
+    }, 1500);
   };
 
   const [menuOpen, setMenuOpen] = useState(false);

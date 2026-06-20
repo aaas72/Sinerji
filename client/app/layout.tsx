@@ -27,7 +27,7 @@ export const metadata: Metadata = {
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="tr" dir="ltr">
-      <body className={`${inter.variable} ${outfit.variable} font-body text-text`}>
+      <body className={`${inter.variable} ${outfit.variable} font-body text-text`} suppressHydrationWarning={true}>
         <ToastProvider>
           <ClientWrapper>{children}</ClientWrapper>
         </ToastProvider>

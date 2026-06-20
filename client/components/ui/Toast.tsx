@@ -1,12 +1,12 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useState, ReactNode } from "react";
 import { FiCheckCircle, FiAlertCircle, FiX, FiInfo } from "react-icons/fi";
 
 export type ToastType = "success" | "error" | "info" | "warning";
 
 interface ToastProps {
-  message: string;
+  message: string | ReactNode;
   type: ToastType;
   onClose: () => void;
 }
@@ -18,15 +18,13 @@ export default function Toast({ message, type, onClose }: ToastProps) {
     // Trigger enter animation
     requestAnimationFrame(() => setIsVisible(true));
 
-    if (type === "success") {
-      const timer = setTimeout(() => {
-        setIsVisible(false);
-        // Wait for exit animation to finish before calling onClose
-        setTimeout(onClose, 300);
-      }, 3500); // 3.5 seconds for success
+    const timer = setTimeout(() => {
+      setIsVisible(false);
+      // Wait for exit animation to finish before calling onClose
+      setTimeout(onClose, 300);
+    }, 4500); // 4.5 seconds for all toasts
 
-      return () => clearTimeout(timer);
-    }
+    return () => clearTimeout(timer);
   }, [type, onClose]);
 
   const handleClose = () => {

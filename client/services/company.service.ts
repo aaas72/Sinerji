@@ -31,6 +31,7 @@ interface CompanyStats {
     status: string;
     submitted_at: string;
     task: {
+      id: number;
       title: string;
     };
     student: {

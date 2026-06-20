@@ -37,6 +37,9 @@ export interface User {
         bio?: string | null;
         profile_image_url?: string | null;
         is_verified?: boolean;
+        last_verified_at?: string | null;
+        phone?: string | null;
+        sub_merchant_key?: string | null;
     } | null;
     companyProfile?: {
         user_id: number;

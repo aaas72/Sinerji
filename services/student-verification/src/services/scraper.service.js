@@ -331,14 +331,14 @@ function parseVerificationResult(text, html) {
 
   // University / Program extraction
   const uniPatterns = [
-    /(?:Üniversite|Kurum)\s*:?\s*([^\n\r]+)/i,
-    /(?:Yükseköğretim\s+Kurumu)\s*:?\s*([^\n\r]+)/i,
+    /(?:^|\n)\s*(?:Üniversite|Kurum|Yükseköğretim\s+Kurumu)\b\s*[:\n]\s*([^\n\r]+)/i,
+    /(?:Üniversite|Kurum)\s*:\s*([^\n\r]+)/i, // Fallback
   ];
 
   let university = null;
   for (const pattern of uniPatterns) {
     const match = text.match(pattern);
-    if (match) {
+    if (match && !match[1].includes('işbirliği ile e-Devlet')) {
       university = match[1].trim();
       break;
     }
@@ -346,8 +346,8 @@ function parseVerificationResult(text, html) {
 
   // Program / Department extraction
   const programPatterns = [
-    /(?:Program|Bölüm|Fakülte)\s*:?\s*([^\n\r]+)/i,
-    /(?:Birim)\s*:?\s*([^\n\r]+)/i,
+    /(?:^|\n)\s*(?:Program|Bölüm|Fakülte|Birim)\b\s*[:\n]\s*([^\n\r]+)/i,
+    /(?:Program|Bölüm|Fakülte|Birim)\s*:\s*([^\n\r]+)/i, // Fallback
   ];
 
   let program = null;

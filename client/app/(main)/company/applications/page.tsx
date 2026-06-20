@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import PrimaryButton from "@/components/ui/PrimaryButton";
 import StatusBadge from "@/components/ui/badges/StatusBadge";
 import { FiFileText, FiCalendar, FiSearch, FiChevronDown, FiX, FiClock, FiCheckCircle, FiXCircle, FiLoader, FiAlertCircle } from "react-icons/fi";
@@ -30,6 +31,7 @@ interface ApplicationData {
 }
 
 export default function ApplicationsPage() {
+  const router = useRouter();
   const [activeTab, setActiveTab] = useState("all");
   const [searchTerm, setSearchTerm] = useState("");
   const [sortBy, setSortBy] = useState("newest");

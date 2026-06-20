@@ -126,4 +126,41 @@ export class SubmissionController {
           next(error);
       }
   }
+
+  async paySubmission(req: Request, res: Response, next: NextFunction) {
+      try {
+          const companyUserId = req.user!.id;
+          const submissionId = parseInt(req.params.id);
+          const { cardHolderName, cardNumber, expireMonth, expireYear, cvv } = req.body;
+
+          if (!cardHolderName || !cardNumber || !expireMonth || !expireYear || !cvv) {
+              throw new AppError('Tüm kart bilgileri gereklidir.', 400);
+          }
+
+          const submission = await submissionService.paySubmission(
+              submissionId,
+              companyUserId,
+              { cardHolderName, cardNumber, expireMonth, expireYear, cvv },
+              req.user!.email
+          );
+
+          // Notify student that payment is escrowed
+          await notificationService.createNotification(
+              submission.student_user_id,
+              'Bütçe Güvence Altına Alındı',
+              `"${submission.task.title}" görevi için bütçe şirketi tarafından güvenceye alındı (Escrow kilitlendi).`,
+              'success',
+              '/student/applications'
+          );
+
+          res.status(200).json({
+              status: 'success',
+              message: 'Bütçe başarıyla Escrow\'da kilitlendi.',
+              data: { submission }
+          });
+      } catch (error) {
+          next(error);
+      }
+  }
 }
+

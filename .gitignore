@@ -17,5 +17,5 @@ __pycache__/
 .vscode/
 
 
-ai-matching-service/models/
+services/ai-matching-service/models/
 tests/*.pdf

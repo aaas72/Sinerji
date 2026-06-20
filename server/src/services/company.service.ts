@@ -153,6 +153,7 @@ export class CompanyService {
         submitted_at: true,
         task: {
           select: {
+            id: true,
             title: true,
           },
         },

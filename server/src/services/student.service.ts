@@ -319,6 +319,7 @@ export class StudentService {
           is_verified: true,
           university: data.university || profile.university,
           major: data.program || profile.major,
+          last_verified_at: new Date(),
         },
       });
 
@@ -332,7 +333,39 @@ export class StudentService {
       
       const errMsg = error.response?.data?.error || error.response?.data?.message || error.message;
       const status = error.response?.status || 500;
-      throw new AppError(`Verification service error: ${errMsg}`, status);
+
+      if (errMsg && errMsg.includes('BARKOD_NOT_FOUND')) {
+        throw new AppError('Yüklediğiniz belgede barkod bulunamadı. Lütfen e-Devlet üzerinden aldığınız barkodlu resmi PDF dosyasını yükleyin.', 400);
+      }
+
+      throw new AppError(`Doğrulama işlemi başarısız oldu: ${errMsg}`, status);
+    }
+  }
+
+  async registerBankDetails(userId: number, bankData: any) {
+    const paymentServiceUrl = process.env.PAYMENT_SERVICE_URL || 'http://localhost:5001';
+    const axios = require('axios');
+
+    try {
+      const response = await axios.post(`${paymentServiceUrl}/api/payments/sub-merchant`, bankData);
+
+      if (!response.data || !response.data.success || !response.data.subMerchantKey) {
+        throw new AppError(response.data?.error || 'Ödeme servisi ile iletişim kurulamadı.', 400);
+      }
+
+      const subMerchantKey = response.data.subMerchantKey;
+
+      const updatedProfile = await prisma.studentProfile.update({
+        where: { user_id: userId },
+        data: { sub_merchant_key: subMerchantKey },
+      });
+
+      return updatedProfile;
+    } catch (error: any) {
+      if (error instanceof AppError) throw error;
+      const errMsg = error.response?.data?.error || error.message;
+      throw new AppError(`Banka hesabı kaydedilemedi: ${errMsg}`, error.response?.status || 500);
     }
   }
 }
+

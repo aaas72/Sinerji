@@ -1,16 +1,18 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, usePathname } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchema, registerSchema, LoginFormData, RegisterFormData, User } from "@/types/auth";
 import { authService } from "@/services/auth.service";
 import { useAuthStore } from "@/hooks/useAuth";
 import { useAuthModal } from "@/hooks/useAuthModal";
+import { useGlobalLoader } from "@/hooks/useGlobalLoader";
 import PrimaryButton from "@/components/ui/PrimaryButton";
 import Input from "@/components/ui/Input";
 import Tabs from "@/components/ui/Tabs";
+import SynergyLoader from "@/components/ui/SynergyLoader";
 import {
   FiX,
   FiCheckCircle,
@@ -22,9 +24,22 @@ import {
 
 export default function AuthModal() {
   const router = useRouter();
+  const pathname = usePathname();
   const { isOpen, view, close, switchView } = useAuthModal();
   const loginAction = useAuthStore((state) => state.login);
   const overlayRef = useRef<HTMLDivElement>(null);
+  const { showLoader, hideLoader } = useGlobalLoader();
+  const prevPathname = useRef(pathname);
+
+  useEffect(() => {
+    if (prevPathname.current !== pathname) {
+      if (isOpen) {
+        close();
+        hideLoader();
+      }
+      prevPathname.current = pathname;
+    }
+  }, [pathname, isOpen, close, hideLoader]);
 
   useEffect(() => {
     const handleKey = (e: KeyboardEvent) => {
@@ -48,13 +63,16 @@ export default function AuthModal() {
 
   const handleSuccess = (user: User) => {
     loginAction(user);
-    close();
+    showLoader("Başarılı!", "Yönlendiriliyor...");
     
-    // استخدام window.location.href بدلاً من router.push لضمان إعادة تحميل الصفحة
-    // والتأكد من أن المتصفح يتعرف على الـ Cookies الجديدة قبل طلب البيانات في لوحة التحكم
-    const userRole = user.role.toLowerCase();
-    const destination = userRole === "student" ? "/student" : "/company/dashboard";
-    window.location.href = destination;
+    setTimeout(() => {
+      const userRole = user.role.toLowerCase();
+      const destination = userRole === "student" ? "/student" : "/company/dashboard";
+      
+      router.push(destination);
+      router.refresh();
+      // لا نغلق النافذة هنا، بل نتركها مفتوحة وتغلق تلقائياً عند تغير المسار
+    }, 1500);
   };
 
 
@@ -187,6 +205,7 @@ function LoginForm({
 }) {
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const { showLoader, hideLoader } = useGlobalLoader();
 
   const {
     register,
@@ -198,11 +217,16 @@ function LoginForm({
 
   const onSubmit = async (data: LoginFormData) => {
     setIsLoading(true);
+    showLoader("Giriş yapılıyor...");
     setError("");
     try {
-      const { user } = await authService.login(data);
+      const [{ user }] = await Promise.all([
+        authService.login(data),
+        new Promise((resolve) => setTimeout(resolve, 3000))
+      ]);
       onSuccess(user);
     } catch (err: unknown) {
+      hideLoader();
       const message =
         err instanceof Error
           ? err.message
@@ -274,6 +298,7 @@ function RegisterForm({
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [role, setRole] = useState<"student" | "company">("student");
+  const { showLoader, hideLoader } = useGlobalLoader();
 
   const {
     register,
@@ -294,11 +319,16 @@ function RegisterForm({
 
   const onSubmit = async (data: RegisterFormData) => {
     setIsLoading(true);
+    showLoader("Kayıt olunuyor...");
     setError("");
     try {
-      const { user } = await authService.register(data);
+      const [{ user }] = await Promise.all([
+        authService.register(data),
+        new Promise((resolve) => setTimeout(resolve, 3000))
+      ]);
       onSuccess(user);
     } catch (err: unknown) {
+      hideLoader();
       const message =
         err instanceof Error
           ? err.message
