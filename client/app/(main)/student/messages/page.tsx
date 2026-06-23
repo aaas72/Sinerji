@@ -200,7 +200,7 @@ function StudentMessagesContent() {
         </div>
 
         {/* Right Chat Area */}
-        <div className="flex-1 flex flex-col overflow-hidden relative">
+        <div className="flex-1 flex flex-col overflow-hidden relative bg-[#F1F0EA]">
           {activeContact ? (
             <>
               {/* Chat Header */}
