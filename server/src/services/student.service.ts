@@ -3,6 +3,9 @@ import prisma from '../lib/prisma';
 import { AppError } from '../utils/AppError';
 import { updateStudentProfileSchema, addSkillSchema } from '../utils/validation';
 import { z } from 'zod';
+import { MailService } from './mail.service';
+
+const mailService = new MailService();
 
 
 
@@ -367,5 +370,98 @@ export class StudentService {
       throw new AppError(`Banka hesabı kaydedilemedi: ${errMsg}`, error.response?.status || 500);
     }
   }
-}
 
+  async sendUniversityEmailVerification(userId: number, email: string) {
+    if (!email || !email.toLowerCase().endsWith('.edu.tr')) {
+      throw new AppError('Lütfen geçerli bir üniversite e-posta adresi (.edu.tr) girin.', 400);
+    }
+
+    // Check if the university email is already verified by another user
+    const existingVerifiedEmail = await prisma.studentProfile.findFirst({
+      where: {
+        university_email: email.toLowerCase(),
+        is_university_email_verified: true,
+        NOT: {
+          user_id: userId,
+        },
+      },
+    });
+
+    if (existingVerifiedEmail) {
+      throw new AppError('Bu üniversite e-posta adresi başka bir öğrenci tarafından zaten doğrulanmış.', 400);
+    }
+
+    const profile = await prisma.studentProfile.findUnique({
+      where: { user_id: userId },
+    });
+
+    if (!profile) {
+      throw new AppError('Öğrenci profili bulunamadı.', 404);
+    }
+
+    const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
+
+    await prisma.studentProfile.update({
+      where: { user_id: userId },
+      data: {
+        university_email: email.toLowerCase(),
+        university_email_verification_code: verificationCode,
+        university_email_code_sent_at: new Date(),
+        is_university_email_verified: false,
+      },
+    });
+
+    // Send email asynchronously so we don't block the HTTP request
+    mailService.sendVerificationCode(
+      email.toLowerCase(),
+      verificationCode,
+      profile.full_name || 'Öğrenci'
+    ).catch((err) => {
+      console.error('[StudentService] Failed to send verification email asynchronously:', err);
+    });
+
+    return {
+      success: true,
+      message: 'Doğrulama kodu başarıyla gönderildi.',
+      code: verificationCode, // Returned for dev test
+    };
+  }
+
+  async verifyUniversityEmail(userId: number, code: string) {
+    const profile = await prisma.studentProfile.findUnique({
+      where: { user_id: userId },
+    });
+
+    if (!profile) {
+      throw new AppError('Öğrenci profili bulunamadı.', 404);
+    }
+
+    if (!profile.university_email_verification_code || profile.university_email_verification_code !== code) {
+      throw new AppError('Geçersiz veya süresi dolmuş doğrulama kodu.', 400);
+    }
+
+    // Expiration check: 3 minutes (180,000 milliseconds)
+    const expirationLimit = 3 * 60 * 1000;
+    if (profile.university_email_code_sent_at) {
+      const timePassed = Date.now() - new Date(profile.university_email_code_sent_at).getTime();
+      if (timePassed > expirationLimit) {
+        throw new AppError('Doğrulama kodunun süresi dolmuş (3 dakika). Lütfen yeni bir kod isteyin.', 400);
+      }
+    }
+
+    const updated = await prisma.studentProfile.update({
+      where: { user_id: userId },
+      data: {
+        is_university_email_verified: true,
+        university_email_verification_code: null,
+        university_email_code_sent_at: null,
+      },
+    });
+
+    return {
+      success: true,
+      message: 'Üniversite e-posta adresiniz başarıyla doğrulandı.',
+      profile: updated,
+    };
+  }
+}

@@ -176,9 +176,10 @@ export default function ApplyPage() {
   }
 
   const isVerified = profile.is_verified;
+  const isUniEmailVerified = profile.is_university_email_verified;
   const hasIban = !!profile.sub_merchant_key;
 
-  if (!isVerified || !hasIban) {
+  if (!isVerified || !isUniEmailVerified || !hasIban) {
     return (
       <div className="max-w-5xl mx-auto px-6 py-16 mt-10 flex flex-col md:flex-row items-center justify-center gap-12 md:gap-16 select-none">
         {/* Left Column: Graphic/Illustration */}
@@ -197,22 +198,43 @@ export default function ApplyPage() {
               Eksik Doğrulama veya IBAN Bilgisi!
             </h2>
             <p className="text-sm text-[#565e74] font-medium leading-relaxed">
-              Görevlere başvurabilmek için profilinizin e-Devlet Öğrenci Belgesi ile doğrulanmış olması ve banka hesap bilgilerinizin (IBAN) girilmiş olması gerekmektedir.
+              Görevlere başvurabilmek için profilinizin e-Devlet Öğrenci Belgesi ve üniversite e-postası ile doğrulanmış olması ve banka hesap bilgilerinizin (IBAN) girilmiş olması gerekmektedir.
             </p>
           </div>
 
           {/* Checklist */}
           <div className="flex flex-col gap-3.5 w-full font-medium py-1">
-            {!isVerified && (
+            {!isVerified ? (
               <div className="flex items-center gap-3 text-red-500 justify-center md:justify-start">
                 <FiX className="w-5 h-5 shrink-0 stroke-[2.5]" />
                 <span className="text-xs font-bold tracking-wide">Öğrenci Belgesi Yüklenmemiş veya Doğrulanmamış</span>
               </div>
+            ) : (
+              <div className="flex items-center gap-3 text-emerald-650 justify-center md:justify-start">
+                <FiCheckCircle className="w-5 h-5 shrink-0 text-emerald-600" />
+                <span className="text-xs font-bold tracking-wide text-emerald-700">Öğrenci Belgesi Doğrulanmış</span>
+              </div>
             )}
-            {!hasIban && (
+            {!isUniEmailVerified ? (
+              <div className="flex items-center gap-3 text-red-500 justify-center md:justify-start">
+                <FiX className="w-5 h-5 shrink-0 stroke-[2.5]" />
+                <span className="text-xs font-bold tracking-wide">Üniversite E-postası (.edu.tr) Doğrulanmamış</span>
+              </div>
+            ) : (
+              <div className="flex items-center gap-3 text-emerald-650 justify-center md:justify-start">
+                <FiCheckCircle className="w-5 h-5 shrink-0 text-emerald-600" />
+                <span className="text-xs font-bold tracking-wide text-emerald-700">Üniversite E-postası Doğrulanmış</span>
+              </div>
+            )}
+            {!hasIban ? (
               <div className="flex items-center gap-3 text-red-500 justify-center md:justify-start">
                 <FiX className="w-5 h-5 shrink-0 stroke-[2.5]" />
                 <span className="text-xs font-bold tracking-wide">Banka Bilgileri (IBAN) Girilmemiş</span>
+              </div>
+            ) : (
+              <div className="flex items-center gap-3 text-emerald-650 justify-center md:justify-start">
+                <FiCheckCircle className="w-5 h-5 shrink-0 text-emerald-600" />
+                <span className="text-xs font-bold tracking-wide text-emerald-700">Banka Bilgileri Girilmiş</span>
               </div>
             )}
           </div>

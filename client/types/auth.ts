@@ -38,6 +38,8 @@ export interface User {
         profile_image_url?: string | null;
         is_verified?: boolean;
         last_verified_at?: string | null;
+        university_email?: string | null;
+        is_university_email_verified?: boolean;
         phone?: string | null;
         sub_merchant_key?: string | null;
     } | null;

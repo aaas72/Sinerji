@@ -39,9 +39,13 @@ model StudentProfile {
   categories_of_interest String?
   graduation_year        Int?
   major                  String?
-  is_verified            Boolean          @default(false)
-  last_verified_at       DateTime?
-  sub_merchant_key       String?
+  is_verified                        Boolean          @default(false)
+  last_verified_at                   DateTime?
+  university_email                   String?
+  is_university_email_verified       Boolean          @default(false)
+  university_email_verification_code String?
+  university_email_code_sent_at       DateTime?
+  sub_merchant_key                   String?
   recommendations        Recommendation[]
   savedTasks             SavedTask[]
   user                   User             @relation(fields: [user_id], references: [id])

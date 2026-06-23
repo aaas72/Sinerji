@@ -89,6 +89,20 @@ export const studentService = {
   async registerBankDetails(data: { name: string; surname: string; email: string; gsmNumber: string; identityNumber: string; iban: string; address: string }): Promise<StudentProfile> {
     const response = await api.post<ApiResponse<ProfileData>>('/students/bank-setup', data);
     return response.data.data.profile;
+  },
+
+  async sendUniversityEmailVerification(email: string): Promise<{ success: boolean; message: string; code?: string }> {
+    const response = await api.post<ApiResponse<{ code?: string }>>('/students/verify-university-email/send', { email });
+    return {
+      success: response.data.status === 'success',
+      message: response.data.message || 'Doğrulama kodu e-postanıza gönderildi.',
+      code: response.data.data?.code,
+    };
+  },
+
+  async verifyUniversityEmail(code: string): Promise<StudentProfile> {
+    const response = await api.post<ApiResponse<ProfileData>>('/students/verify-university-email/confirm', { code });
+    return response.data.data.profile;
   }
 };
 

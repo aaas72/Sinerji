@@ -289,3 +289,51 @@ export const registerBankDetails = async (req: Request, res: Response, next: Nex
   }
 };
 
+export const sendUniversityEmailVerification = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    if (!req.user || req.user.role !== 'student') {
+      return next(new AppError('Sadece öğrenciler üniversite e-postası doğrulayabilir', 403));
+    }
+
+    const { email } = req.body;
+    if (!email) {
+      return next(new AppError('Üniversite e-posta adresi gereklidir.', 400));
+    }
+
+    const result = await studentService.sendUniversityEmailVerification(req.user.id, email);
+
+    res.status(200).json({
+      status: 'success',
+      message: result.message,
+      data: {}
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+
+export const verifyUniversityEmail = async (req: Request, res: Response, next: NextFunction) => {
+  try {
+    if (!req.user || req.user.role !== 'student') {
+      return next(new AppError('Sadece öğrenciler üniversite e-postası doğrulayabilir', 403));
+    }
+
+    const { code } = req.body;
+    if (!code) {
+      return next(new AppError('Doğrulama kodu gereklidir.', 400));
+    }
+
+    const result = await studentService.verifyUniversityEmail(req.user.id, code);
+
+    res.status(200).json({
+      status: 'success',
+      message: result.message,
+      data: {
+        profile: result.profile
+      }
+    });
+  } catch (error) {
+    next(error);
+  }
+};
+

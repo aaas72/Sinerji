@@ -26,6 +26,8 @@ export interface StudentProfile {
     major?: string | null;
     graduation_year?: number | null;
     is_verified?: boolean;
+    university_email?: string | null;
+    is_university_email_verified?: boolean;
     availability_status?: string | null;
     categories_of_interest?: string | null;
     sub_merchant_key?: string | null;

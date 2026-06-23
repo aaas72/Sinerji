@@ -83,7 +83,10 @@ export default function AuthModal() {
       onClick={handleOverlayClick}
       className="fixed inset-0 z-100 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4 animate-fadeIn"
     >
-      <div className="relative w-full max-w-4xl bg-[#faf9f6] rounded-2xl shadow-2xl overflow-hidden animate-slideUp flex max-h-[90vh]">
+      <div
+        style={{ backgroundColor: "#faf9f6" }}
+        className="relative w-full max-w-4xl rounded-2xl shadow-2xl overflow-hidden animate-slideUp flex max-h-[90vh]"
+      >
         {/* ─── Left Panel ─── */}
         <div className="hidden lg:flex lg:w-[45%] bg-linear-to-br from-[#004d40] to-[#00695c] text-white p-10 flex-col justify-center relative overflow-hidden shrink-0">
           {/* Background decorations */}
@@ -121,7 +124,10 @@ export default function AuthModal() {
         </div>
 
         {/* ─── Right Panel (Form) ─── */}
-        <div className="flex-1 flex flex-col overflow-y-auto custom-scrollbar">
+        <div
+          style={{ backgroundColor: "#faf9f6" }}
+          className="flex-1 flex flex-col overflow-y-auto custom-scrollbar"
+        >
           {/* Close button */}
           <button
             onClick={close}
@@ -253,7 +259,7 @@ function LoginForm({
         <Input
           type="email"
           {...register("email")}
-          className="px-4 py-3 bg-gray-50/50 text-sm"
+          className="px-4 py-3 bg-white text-sm"
           placeholder="ornek@email.com"
           error={!!errors.email}
         />
@@ -269,7 +275,7 @@ function LoginForm({
         <Input
           type="password"
           {...register("password")}
-          className="px-4 py-3 bg-gray-50/50 text-sm"
+          className="px-4 py-3 bg-white text-sm"
           placeholder="••••••••"
           error={!!errors.password}
         />
@@ -363,7 +369,7 @@ function RegisterForm({
         <Input
           type="email"
           {...register("email")}
-          className="px-4 py-3 bg-gray-50/50 text-sm"
+          className="px-4 py-3 bg-white text-sm"
           placeholder="ornek@email.com"
           error={!!errors.email}
         />
@@ -375,7 +381,7 @@ function RegisterForm({
         <Input
           type="password"
           {...register("password")}
-          className="px-4 py-3 bg-gray-50/50 text-sm"
+          className="px-4 py-3 bg-white text-sm"
           placeholder="••••••••"
           error={!!errors.password}
         />
@@ -389,7 +395,7 @@ function RegisterForm({
             <Input
               type="text"
               {...register("full_name")}
-              className="px-4 py-3 bg-gray-50/50 text-sm"
+              className="px-4 py-3 bg-white text-sm"
               placeholder="Ahmet Yılmaz"
               error={!!errors.full_name}
             />
@@ -400,7 +406,7 @@ function RegisterForm({
             <Input
               type="text"
               {...register("university")}
-              className="px-4 py-3 bg-gray-50/50 text-sm"
+              className="px-4 py-3 bg-white text-sm"
               placeholder="Üniversite Adı"
               error={!!errors.university}
             />
@@ -415,7 +421,7 @@ function RegisterForm({
             <Input
               type="text"
               {...register("company_name")}
-              className="px-4 py-3 bg-gray-50/50 text-sm"
+              className="px-4 py-3 bg-white text-sm"
               placeholder="Tech Corp"
               error={!!errors.company_name}
             />
@@ -426,7 +432,7 @@ function RegisterForm({
             <Input
               type="url"
               {...register("website_url")}
-              className="px-4 py-3 bg-gray-50/50 text-sm"
+              className="px-4 py-3 bg-white text-sm"
               placeholder="https://example.com"
               error={!!errors.website_url}
             />

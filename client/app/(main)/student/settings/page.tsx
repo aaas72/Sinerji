@@ -14,6 +14,7 @@ import {
   FiUser,
   FiMail,
   FiCheckCircle,
+  FiCheck,
   FiUploadCloud,
   FiCreditCard
 } from "react-icons/fi";
@@ -90,6 +91,10 @@ export default function StudentSettingsPage() {
     }
   }, [user]);
 
+  const [showDevletEdit, setShowDevletEdit] = useState(false);
+  const [showEmailEdit, setShowEmailEdit] = useState(false);
+  const [showBankEdit, setShowBankEdit] = useState(false);
+
   const handleBankSetup = async (e: React.FormEvent) => {
     e.preventDefault();
     setBankLoading(true);
@@ -97,6 +102,7 @@ export default function StudentSettingsPage() {
       await studentService.registerBankDetails(bankForm);
       showToast("Banka hesabınız Iyzico sistemine başarıyla tanımlandı.", "success");
       await checkAuth(); // Refresh profile state to show success box
+      setShowBankEdit(false);
     } catch (err: any) {
       showToast(err.response?.data?.message || err.message || "Banka bilgileri kaydedilemedi.", "error");
     } finally {
@@ -123,6 +129,7 @@ export default function StudentSettingsPage() {
       const res = await studentService.verifyDocument(file);
       showToast(res.message || "Tebrikler! Hesabınız başarıyla doğrulandı.", "success");
       await checkAuth(); // Refresh profile state (is_verified, university, major)
+      setShowDevletEdit(false);
     } catch (err: any) {
       showToast(err.response?.data?.message || err.message || "Doğrulama işlemi başarısız oldu.", "error");
     } finally {
@@ -130,6 +137,62 @@ export default function StudentSettingsPage() {
       if (fileInputRef.current) {
         fileInputRef.current.value = "";
       }
+    }
+  };
+
+  /* University Email Verification State */
+  const [uniEmail, setUniEmail] = useState("");
+  const [emailCode, setEmailCode] = useState("");
+  const [codeSent, setCodeSent] = useState(false);
+  const [emailLoading, setEmailLoading] = useState(false);
+  const [devCode, setDevCode] = useState("");
+
+  useEffect(() => {
+    if (user?.studentProfile?.university_email) {
+      setUniEmail(user.studentProfile.university_email);
+    }
+  }, [user]);
+
+  const handleSendEmailCode = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (!uniEmail || !uniEmail.toLowerCase().endsWith(".edu.tr")) {
+      showToast("Lütfen geçerli bir üniversite e-posta adresi (.edu.tr) girin.", "error");
+      return;
+    }
+    setEmailLoading(true);
+    try {
+      const res = await studentService.sendUniversityEmailVerification(uniEmail);
+      showToast(res.message, "success");
+      setCodeSent(true);
+      if (res.code) {
+        setDevCode(res.code);
+      }
+    } catch (err: any) {
+      showToast(err.response?.data?.message || err.message || "Kod gönderilemedi.", "error");
+    } finally {
+      setEmailLoading(false);
+    }
+  };
+
+  const handleVerifyEmailCode = async (e: React.MouseEvent) => {
+    e.preventDefault();
+    if (!emailCode) {
+      showToast("Lütfen 6 haneli doğrulama kodunu girin.", "error");
+      return;
+    }
+    setEmailLoading(true);
+    try {
+      await studentService.verifyUniversityEmail(emailCode);
+      showToast("Üniversite e-postanız başarıyla doğrulandı!", "success");
+      setCodeSent(false);
+      setEmailCode("");
+      setDevCode("");
+      setShowEmailEdit(false);
+      await checkAuth();
+    } catch (err: any) {
+      showToast(err.response?.data?.message || err.message || "E-posta doğrulama başarısız oldu.", "error");
+    } finally {
+      setEmailLoading(false);
     }
   };
 
@@ -193,61 +256,230 @@ export default function StudentSettingsPage() {
 
       <div className="w-full space-y-8">
 
-        {/* ⓪ Öğrenci Kimlik Doğrulaması */}
+        {/* ⓪ Öğrenci Kimlik Doğrulaması (Çift Aşamalı) */}
         {user?.role === 'student' && (
           <SectionCard
-            icon={user.studentProfile?.is_verified ? FiCheckCircle : FiUploadCloud}
-            title="Öğrenci Kimlik Doğrulaması"
-            description="Platformdaki iş ve staj ilanlarına başvurabilmek için e-Devlet Öğrenci Belgeniz ile hesabınızı doğrulamanız gerekmektedir."
+            icon={(user.studentProfile?.is_verified && user.studentProfile?.is_university_email_verified) ? FiCheckCircle : FiUploadCloud}
+            title="Öğrenci Kimlik Doğrulaması (Çift Aşamalı)"
+            description="Platformdaki iş ve staj ilanlarına başvurabilmek için hem e-Devlet Öğrenci Belgenizi hem de üniversite e-posta adresinizi doğrulamanız gerekmektedir."
           >
-            <div className="max-w-2xl">
-              {user.studentProfile?.is_verified ? (
-                <div className="bg-[#e8f5e9] border border-[#a5d6a7] text-[#1b5e20] p-4 rounded-xl flex flex-col gap-2">
-                  <div className="flex items-center gap-2 font-bold text-base">
-                    <FiCheckCircle size={20} />
-                    <span>Hesabınız başarıyla doğrulandı!</span>
+            <div className="max-w-2xl space-y-8">
+              {/* Adım 1: e-Devlet Belgesi */}
+              <div className="border-b border-[#dfded6]/60 pb-6">
+                <h4 className="font-extrabold text-sm text-[#00342b] uppercase tracking-wide mb-3 flex items-center gap-2">
+                  <span className="text-[#004d40] font-bold">1.</span>
+                  e-Devlet Akademik Belge Doğrulaması
+                </h4>
+                {user.studentProfile?.is_verified && !showDevletEdit ? (
+                  <div className="bg-gradient-to-br from-[#f2f8f6] to-[#e6edea] border border-[#b2cfc8]/40 p-5 rounded-2xl flex flex-col sm:flex-row items-start gap-4 shadow-[0_4px_20px_rgba(0,77,64,0.02)] transition-all hover:shadow-[0_4px_25px_rgba(0,77,64,0.05)]">
+                    <div className="w-10 h-10 rounded-full bg-[#004d40]/10 flex items-center justify-center shrink-0 shadow-[0_0_12px_rgba(0,77,64,0.1)]">
+                      <svg className="w-5 h-5 text-[#004d40]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3.5}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                      </svg>
+                    </div>
+                    <div className="flex-1 space-y-3">
+                      <div>
+                        <h5 className="font-bold text-sm text-[#00342b]">Akademik Belge Doğrulandı</h5>
+                        <p className="text-xs text-[#565e74] mt-0.5">e-Devlet üzerinden YÖK öğrenci belgeniz başarıyla onaylandı.</p>
+                      </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 pt-2.5 border-t border-[#dfded6]/40 text-xs">
+                        <div>
+                          <span className="text-[10px] uppercase tracking-wider text-[#8b91a0] font-semibold">Öğrenci Adı</span>
+                          <p className="font-bold text-[#0b1c30] mt-0.5">{user.studentProfile.full_name}</p>
+                        </div>
+                        <div>
+                          <span className="text-[10px] uppercase tracking-wider text-[#8b91a0] font-semibold">Üniversite</span>
+                          <p className="font-bold text-[#0b1c30] mt-0.5">{user.studentProfile.university}</p>
+                        </div>
+                        <div className="sm:col-span-2">
+                          <span className="text-[10px] uppercase tracking-wider text-[#8b91a0] font-semibold">Bölüm / Program</span>
+                          <p className="font-bold text-[#0b1c30] mt-0.5">{user.studentProfile.major}</p>
+                        </div>
+                      </div>
+                      <div className="pt-2 border-t border-[#dfded6]/40 flex justify-end">
+                        <button
+                          type="button"
+                          onClick={() => setShowDevletEdit(true)}
+                          className="text-xs font-bold text-[#004d40] hover:text-[#00342b] hover:underline"
+                        >
+                          Belgeyi Yeniden Yükle / Güncelle
+                        </button>
+                      </div>
+                    </div>
                   </div>
-                  <div className="text-sm space-y-1">
-                    <p><strong>Öğrenci Adı:</strong> {user.studentProfile.full_name}</p>
-                    <p><strong>Üniversite:</strong> {user.studentProfile.university}</p>
-                    <p><strong>Bölüm:</strong> {user.studentProfile.major}</p>
-                    {user.studentProfile.last_verified_at && (
-                      <p><strong>Son Doğrulama Tarihi:</strong> {new Date(user.studentProfile.last_verified_at).toLocaleDateString('tr-TR', { day: 'numeric', month: 'long', year: 'numeric' })}</p>
+                ) : (
+                  <div className="space-y-4">
+                    <div className="bg-gradient-to-br from-[#ffffff] to-[#fafaf9] border border-[#dfded6]/60 p-5 rounded-2xl shadow-[0_2px_12px_rgba(0,0,0,0.01)] text-xs leading-relaxed space-y-3">
+                      <strong className="text-sm font-bold text-[#00342b]">İşlem Adımları:</strong>
+                      <ul className="space-y-2 mt-2 text-[#565e74]">
+                        <li className="flex items-start gap-2">
+                          <span className="w-4 h-4 rounded-full bg-[#004d40]/10 text-[#004d40] text-[10px] font-bold flex items-center justify-center shrink-0 mt-0.5">1</span>
+                          <span>e-Devlet'ten barkodlu <strong>YÖK Öğrenci Belgesi</strong> oluşturun.</span>
+                        </li>
+                        <li className="flex items-start gap-2">
+                          <span className="w-4 h-4 rounded-full bg-[#004d40]/10 text-[#004d40] text-[10px] font-bold flex items-center justify-center shrink-0 mt-0.5">2</span>
+                          <span>İndirdiğiniz <strong>PDF dosyasını</strong> buraya yükleyin.</span>
+                        </li>
+                      </ul>
+                    </div>
+                    <div>
+                      <input
+                        type="file"
+                        accept="application/pdf"
+                        className="hidden"
+                        ref={fileInputRef}
+                        onChange={handleVerifyDocument}
+                      />
+                      <div className="flex gap-2">
+                        <FormButton 
+                          type="button" 
+                          onClick={() => fileInputRef.current?.click()}
+                          isLoading={verifyLoading}
+                          disabled={verifyLoading}
+                          className="!rounded-full px-6 text-xs"
+                        >
+                          {verifyLoading ? "e-Devlet üzerinden doğrulanıyor..." : "YÖK PDF Belgesi Yükle"}
+                        </FormButton>
+                        {showDevletEdit && (
+                          <FormButton
+                            type="button"
+                            onClick={() => setShowDevletEdit(false)}
+                            variant="outline"
+                            className="!rounded-full px-6 text-xs"
+                          >
+                            İptal
+                          </FormButton>
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              {/* Adım 2: Üniversite E-postası */}
+              <div>
+                <h4 className="font-extrabold text-sm text-[#00342b] uppercase tracking-wide mb-3 flex items-center gap-2">
+                  <span className="text-[#004d40] font-bold">2.</span>
+                  Üniversite E-posta Doğrulaması (.edu.tr)
+                </h4>
+                {user.studentProfile?.is_university_email_verified && !showEmailEdit ? (
+                  <div className="bg-gradient-to-br from-[#f2f8f6] to-[#e6edea] border border-[#b2cfc8]/40 p-5 rounded-2xl flex flex-col sm:flex-row items-start gap-4 shadow-[0_4px_20px_rgba(0,77,64,0.02)] transition-all hover:shadow-[0_4px_25px_rgba(0,77,64,0.05)]">
+                    <div className="w-10 h-10 rounded-full bg-[#004d40]/10 flex items-center justify-center shrink-0 shadow-[0_0_12px_rgba(0,77,64,0.1)]">
+                      <svg className="w-5 h-5 text-[#004d40]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3.5}>
+                        <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                      </svg>
+                    </div>
+                    <div className="flex-1 space-y-3">
+                      <div>
+                        <h5 className="font-bold text-sm text-[#00342b]">Üniversite E-postası Doğrulandı</h5>
+                        <p className="text-xs text-[#565e74] mt-0.5">Resmi üniversite e-posta adresiniz (.edu.tr) aktif durumdadır.</p>
+                      </div>
+                      <div className="pt-2.5 border-t border-[#dfded6]/40 text-xs">
+                        <span className="text-[10px] uppercase tracking-wider text-[#8b91a0] font-semibold">Kayıtlı E-posta Adresi</span>
+                        <p className="font-bold text-[#0b1c30] mt-0.5">{user.studentProfile?.university_email}</p>
+                      </div>
+                      <div className="pt-2 border-t border-[#dfded6]/40 flex justify-end">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setUniEmail(user.studentProfile?.university_email || "");
+                            setShowEmailEdit(true);
+                          }}
+                          className="text-xs font-bold text-[#004d40] hover:text-[#00342b] hover:underline"
+                        >
+                          E-postayı Değiştir / Güncelle
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="space-y-4">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 items-end">
+                      <FormInput
+                        label="Üniversite E-posta Adresi (.edu.tr)"
+                        type="email"
+                        value={uniEmail}
+                        onChange={(e) => setUniEmail(e.target.value)}
+                        placeholder="ogrenci@universite.edu.tr"
+                        className="!rounded-full pl-5 text-xs"
+                        disabled={codeSent}
+                      />
+                      {!codeSent ? (
+                        <div className="flex gap-2">
+                          <FormButton
+                            type="button"
+                            onClick={handleSendEmailCode}
+                            isLoading={emailLoading}
+                            disabled={emailLoading || !uniEmail.endsWith('.edu.tr')}
+                            className="!rounded-full px-6 text-xs"
+                          >
+                            Doğrulama Kodu Gönder
+                          </FormButton>
+                          {showEmailEdit && (
+                            <FormButton
+                              type="button"
+                              onClick={() => setShowEmailEdit(false)}
+                              variant="outline"
+                              className="!rounded-full px-6 text-xs"
+                            >
+                              İptal
+                            </FormButton>
+                          )}
+                        </div>
+                      ) : (
+                        <div className="flex gap-2">
+                          <FormButton
+                            type="button"
+                            onClick={() => { setCodeSent(false); setDevCode(""); }}
+                            variant="outline"
+                            className="!rounded-full px-6 text-xs"
+                          >
+                            E-postayı Değiştir
+                          </FormButton>
+                          {showEmailEdit && (
+                            <FormButton
+                              type="button"
+                              onClick={() => { setCodeSent(false); setShowEmailEdit(false); setDevCode(""); }}
+                              variant="outline"
+                              className="!rounded-full px-6 text-xs"
+                            >
+                              İptal
+                            </FormButton>
+                          )}
+                        </div>
+                      )}
+                    </div>
+
+                    {codeSent && (
+                      <div className="bg-gradient-to-br from-[#ffffff] to-[#fafaf9] border border-[#dfded6]/60 p-5 rounded-2xl shadow-[0_2px_12px_rgba(0,0,0,0.01)] animate-slideDown space-y-4">
+                        <div>
+                          <h4 className="text-sm font-bold text-[#00342b]">Doğrulama Kodunu Girin</h4>
+                          <p className="text-xs text-[#565e74] mt-1">Lütfen e-posta adresinize gönderilen 6 haneli kodu aşağıdaki alana girin.</p>
+                        </div>
+                        
+                        <div className="flex flex-col sm:flex-row gap-4 items-end">
+                          <FormInput
+                            label="Doğrulama Kodu"
+                            value={emailCode}
+                            onChange={(e) => setEmailCode(e.target.value)}
+                            placeholder="123456"
+                            maxLength={6}
+                            className="!rounded-full pl-5 text-xs"
+                          />
+                          <FormButton
+                            type="button"
+                            onClick={handleVerifyEmailCode}
+                            isLoading={emailLoading}
+                            className="!rounded-full px-8 text-xs bg-[#004d40] hover:bg-[#00342b]"
+                          >
+                            Kodu Doğrula
+                          </FormButton>
+                        </div>
+                      </div>
                     )}
-                    <p className="mt-2 text-xs opacity-80 pt-2 border-t border-[#a5d6a7]">Bu bilgiler devlet sisteminden otomatik çekilmiştir ve güvenliğiniz için değiştirilemez.</p>
                   </div>
-                </div>
-              ) : (
-                <div className="flex flex-col gap-4">
-                  <div className="bg-transparent border border-[#dfded6] text-[#565e74] p-5 rounded-xl text-sm leading-relaxed">
-                    <strong className="text-[#0b1c30] text-base">Doğrulama Adımları:</strong>
-                    <ol className="list-decimal list-inside mt-3 space-y-2">
-                      <li>e-Devlet kapısına giriş yapın ve <strong className="text-[#0b1c30]">YÖK Öğrenci Belgesi Sorgulama</strong> sayfasına gidin.</li>
-                      <li>Barkodlu yeni bir belge oluşturun (Belge tarihi 1 haftadan eski olmamalıdır).</li>
-                      <li>Oluşturulan <strong className="text-[#0b1c30]">PDF dosyasını</strong> indirip buraya yükleyin.</li>
-                    </ol>
-                  </div>
-                  
-                  <div className="mt-2">
-                    <input
-                      type="file"
-                      accept="application/pdf"
-                      className="hidden"
-                      ref={fileInputRef}
-                      onChange={handleVerifyDocument}
-                    />
-                    <FormButton 
-                      type="button" 
-                      onClick={() => fileInputRef.current?.click()}
-                      isLoading={verifyLoading}
-                      disabled={verifyLoading}
-                      className="!rounded-full px-8"
-                    >
-                      {verifyLoading ? "e-Devlet üzerinden doğrulanıyor..." : "YÖK PDF Belgesi Yükle"}
-                    </FormButton>
-                  </div>
-                </div>
-              )}
+                )}
+              </div>
             </div>
           </SectionCard>
         )}
@@ -260,15 +492,34 @@ export default function StudentSettingsPage() {
             description="Tamamladığınız görevlerin ödemelerini doğrudan banka hesabınıza alabilmek için Iyzico entegrasyonu için banka bilgilerinizi tanımlayın."
           >
             <div className="max-w-2xl">
-              {user.studentProfile?.sub_merchant_key ? (
-                <div className="bg-[#e0f2f1] border border-[#80cbc4] text-[#004d40] p-4 rounded-xl flex flex-col gap-2">
-                  <div className="flex items-center gap-2 font-bold text-base">
-                    <FiCheckCircle size={20} />
-                    <span>Iyzico Banka Hesabınız Tanımlandı!</span>
+              {user.studentProfile?.sub_merchant_key && !showBankEdit ? (
+                <div className="bg-gradient-to-br from-[#f2f8f6] to-[#e6edea] border border-[#b2cfc8]/40 p-5 rounded-2xl flex flex-col sm:flex-row items-start gap-4 shadow-[0_4px_20px_rgba(0,77,64,0.02)] transition-all hover:shadow-[0_4px_25px_rgba(0,77,64,0.05)]">
+                  <div className="w-10 h-10 rounded-full bg-[#004d40]/10 flex items-center justify-center shrink-0 shadow-[0_0_12px_rgba(0,77,64,0.1)]">
+                    <svg className="w-5 h-5 text-[#004d40]" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3.5}>
+                      <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                    </svg>
                   </div>
-                  <div className="text-sm space-y-1">
-                    <p><strong>Merchant Anahtarı:</strong> {user.studentProfile.sub_merchant_key}</p>
-                    <p className="mt-2 text-xs opacity-80 pt-2 border-t border-[#80cbc4]">Bütçe ödemeleriniz Iyzico Marketplace sistemi üzerinden bu hesaba yönlendirilecektir. Değişiklik yapmak için destek ekibi ile iletişime geçin.</p>
+                  <div className="flex-1 space-y-3">
+                    <div>
+                      <h5 className="font-bold text-sm text-[#00342b]">Iyzico Banka Hesabınız Tanımlandı!</h5>
+                      <p className="text-xs text-[#565e74] mt-0.5">Ödemeleriniz Iyzico Marketplace sistemi üzerinden bu hesaba aktarılacaktır.</p>
+                    </div>
+                    <div className="pt-2.5 border-t border-[#dfded6]/40 text-xs space-y-2">
+                      <div>
+                        <span className="text-[10px] uppercase tracking-wider text-[#8b91a0] font-semibold">Merchant Anahtarı</span>
+                        <p className="font-bold text-[#0b1c30] mt-0.5">{user.studentProfile.sub_merchant_key}</p>
+                      </div>
+                      <p className="text-[11px] text-[#565e74] leading-relaxed pt-1">Bütçe ödemeleriniz bu hesap üzerinden yönetilir. Değişiklik yapmak için destek ekibi ile iletişime geçebilirsiniz.</p>
+                    </div>
+                    <div className="pt-2 border-t border-[#dfded6]/40 flex justify-end">
+                      <button
+                        type="button"
+                        onClick={() => setShowBankEdit(true)}
+                        className="text-xs font-bold text-[#004d40] hover:text-[#00342b] hover:underline"
+                      >
+                        Banka Bilgilerini Güncelle
+                      </button>
+                    </div>
                   </div>
                 </div>
               ) : (
@@ -341,7 +592,7 @@ export default function StudentSettingsPage() {
                     required
                   />
 
-                  <div className="pt-2">
+                  <div className="pt-2 flex gap-2">
                     <FormButton
                       type="submit"
                       isLoading={bankLoading}
@@ -350,6 +601,16 @@ export default function StudentSettingsPage() {
                     >
                       Banka Bilgilerini Kaydet
                     </FormButton>
+                    {showBankEdit && (
+                      <FormButton
+                        type="button"
+                        onClick={() => setShowBankEdit(false)}
+                        variant="outline"
+                        className="!rounded-full px-6 text-xs"
+                      >
+                        İptal
+                      </FormButton>
+                    )}
                   </div>
                 </form>
               )}
