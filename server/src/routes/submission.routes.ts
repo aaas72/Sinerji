@@ -10,6 +10,7 @@ router.use(protect);
 // Student routes
 router.post('/task/:taskId', restrictTo('student'), submissionController.createSubmission);
 router.get('/my', restrictTo('student'), submissionController.getMySubmissions);
+router.post('/:id/submit-work', restrictTo('student'), submissionController.submitWork);
 
 // Company routes
 router.get('/task/:taskId', restrictTo('company'), submissionController.getTaskSubmissions);

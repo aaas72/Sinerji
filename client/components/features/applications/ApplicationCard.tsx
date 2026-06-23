@@ -5,7 +5,7 @@ import SkillBadge from "@/components/ui/SkillBadge";
 import { useRouter } from "next/navigation";
 import StatusBadge from "@/components/ui/badges/StatusBadge";
 
-export type ApplicationStatus =| "Bekliyor"| "İnceleniyor"| "Kabul Edildi"| "Reddedildi";
+export type ApplicationStatus =| "Bekliyor"| "İnceleniyor"| "Kabul Edildi"| "Reddedildi"| "Tamamlandı";
 
 export type RewardType =
   | "Money"
@@ -16,6 +16,7 @@ export type RewardType =
   | "Product"
   | "Service";
 type ApplicationCardProps = {
+  id: number;
   title: string;
   tags: string[];
   companyName: string;
@@ -34,9 +35,9 @@ const getStatusText = (status: ApplicationStatus) => {
     case "Kabul Edildi":
       return "Başvuru Kabul Edildi";
     case "Reddedildi":
-
-    
       return "Başvuru Reddedildi";
+    case "Tamamlandı":
+      return "Başvuru Tamamlandı";
     default:
       return status;
   }
@@ -64,6 +65,7 @@ const getRewardDetails = (type: RewardType) => {
 };
 
 export default function ApplicationCard({
+  id,
   title,
   tags,
   companyName,
@@ -76,7 +78,7 @@ export default function ApplicationCard({
   const reward = rewardType ? getRewardDetails(rewardType) : null;
 
   return (
-    <div className="bg-transparent border border-[#dfded6] rounded-2xl p-6 hover:rounded-none relative group hover-card-effect transition-all">
+    <div className="bg-white border border-[#dfded6] rounded-2xl p-6 hover:rounded-none relative group hover-card-effect transition-all">
       {/* Top Section: Title and Reward */}
       <div className="flex justify-between items-start mb-4 select-none">
         <h3 className="text-xl font-bold tracking-tight text-[#00342b] group-hover:text-[#004d40] transition-colors leading-snug max-w-[80%]">
@@ -113,9 +115,23 @@ export default function ApplicationCard({
         </div>
 
         <div className="w-full md:w-auto text-right flex items-center justify-end gap-3">
+          {(status === "Kabul Edildi" || status === "İnceleniyor" || status === "Reddedildi" || status === "Tamamlandı") && (
+            <button 
+              onClick={(e) => {
+                e.stopPropagation();
+                router.push(`/student/applications/${id}`);
+              }}
+              className="text-white bg-[#00342b] hover:bg-[#004d40] px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-all text-[11px] font-bold"
+            >
+              Çalışma Alanı
+            </button>
+          )}
           {companyId && (
             <button 
-              onClick={() => router.push(`/student/messages?companyId=${companyId}`)}
+              onClick={(e) => {
+                e.stopPropagation();
+                router.push(`/student/messages?companyId=${companyId}`);
+              }}
               className="text-[#004d40] hover:text-[#00342b] border border-[#004d40]/20 hover:border-[#004d40]/50 bg-[#004d40]/5 hover:bg-[#004d40]/10 px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-all text-[11px]"
             >
               Mesaj Gönder

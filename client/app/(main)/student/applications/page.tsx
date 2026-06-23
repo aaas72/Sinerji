@@ -128,6 +128,7 @@ export default function ApplicationsPage() {
             {filteredApplications.map((app) => (
               <ApplicationCard
                 key={app.id}
+                id={app.id}
                 title={app.title}
                 tags={app.tags}
                 companyName={app.companyName}

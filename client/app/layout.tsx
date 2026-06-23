@@ -21,7 +21,7 @@ const inter = Inter({
 
 export const metadata: Metadata = {
   title: "Sinerji - Çalışarak Yeteneklerini Kanıtla",
-  description: "Öğrenciler ve şirketler için yetenek tabanlı görev ve staj platformu.",
+  description: "Öğrenciler ve şirketler/yetenekler tabanlı görev ve staj platformu.",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {

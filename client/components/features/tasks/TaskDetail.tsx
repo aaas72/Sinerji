@@ -115,7 +115,7 @@ export default function TaskDetail({ task, isSaved = false, onToggleSave }: Task
       </div>
 
       {/* 2. Premium Horizontal Metadata Divider Bar */}
-      <div className="border-y border-[#f1f0ea] py-4 mb-6 flex flex-wrap items-center justify-between gap-4 flex-shrink-0 text-xs">
+      <div className="border-y border-[#dfded6] py-4 mb-6 flex flex-wrap items-center justify-between gap-4 flex-shrink-0 text-xs">
         <div className="flex flex-wrap items-center gap-6">
           {/* Reward Info */}
           <div className="flex items-center gap-2">
@@ -246,7 +246,7 @@ export default function TaskDetail({ task, isSaved = false, onToggleSave }: Task
         </div>
 
         {/* 6. Sticky High-Contrast CTA Apply Footer */}
-        <div className="pt-6 border-t border-[#f1f0ea] flex items-center justify-between gap-4 mt-8">
+        <div className="pt-6 border-t border-[#dfded6] flex items-center justify-between gap-4 mt-8">
           <div>
             <p className="text-[10px] font-bold text-gray-400 uppercase tracking-wider">Bu Göreve Başvur</p>
             <p className="text-xs text-gray-500 mt-0.5">Sinerji ile kariyerinde fark yarat.</p>

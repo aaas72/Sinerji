@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import { useParams, useRouter } from "next/navigation";
 import Link from "next/link";
+import confetti from "canvas-confetti";
 import MainSection from "@/components/layout/MainSection";
 import Breadcrumb from "@/components/ui/Breadcrumb";
 import StepsTracker, { StepItem } from "@/components/ui/StepsTracker";
@@ -99,6 +100,14 @@ export default function SubmissionDetailPage() {
         status === "approved" ? "Başvuru onaylandı ve bütçe öğrenciye aktarıldı." : "Başvuru reddedildi.",
         status === "approved" ? "success" : "error"
       );
+      if (status === "approved") {
+        confetti({
+          particleCount: 150,
+          spread: 80,
+          origin: { y: 0.6 },
+          colors: ['#00342b', '#004d40', '#e28743', '#dfded6']
+        });
+      }
       if (status === "rejected") {
         router.push(`/company/tasks/${taskId}/applicants`);
       }
@@ -393,169 +402,198 @@ export default function SubmissionDetailPage() {
                 </div>
 
               {/* SECTION 3: Decision & Payment Workflow */}
-              {submission.status === "pending" ? (
+              {submission.status === "pending" || submission.status === "accepted" || submission.status === "submitted" ? (
                 <section className="space-y-6 pt-6 border-t border-[#DFDED6]">
-                  <h3 className="text-base font-bold text-[#00342b]">Güvenli Ödeme ve Karar Süreci</h3>
-                  
-                  {/* 1. Banking check: Student must have bank details */}
-                  {!studentHasBank && (
-                    <div className="text-xs text-[#00342b] flex items-start gap-2.5 pl-0 py-1">
-                      <FiAlertCircle className="w-5 h-5 text-[#e28743] shrink-0 mt-0.5" />
-                      <div>
-                        <span className="font-bold block text-[#e28743]">Ödeme Tanımlanamaz</span>
-                        Aday henüz banka hesabı (Sub-Merchant) tanımlamamıştır. Bu adaya bütçe kilitleme işlemi yapılamaz.
-                      </div>
-                    </div>
-                  )}
-
-                  {/* 2. If student has bank details but payment not locked yet */}
-                  {studentHasBank && !isPaid && !isReleased && (
-                    <div className="relative overflow-hidden">
-                      {/* Button Container */}
-                      <div
-                        className={`transition-all duration-500 ease-in-out transform ${
-                          showPayForm
-                            ? "max-h-0 opacity-0 pointer-events-none -translate-y-8 overflow-hidden"
-                            : "max-h-[250px] opacity-100 translate-y-0"
-                        }`}
-                      >
-                        <div className="flex flex-col gap-3 pb-4">
-                          <div className="text-xs text-[#00342b] flex items-start gap-2.5 pl-0 py-1">
-                            <FiInfo className="w-5 h-5 text-[#e28743] shrink-0 mt-0.5" />
-                            <div>
-                              <span className="font-bold block text-[#e28743]">Güvenli Escrow Ödemesi</span>
-                              Görevi onaylamadan önce bütçeyi güvenceye almanız gerekmektedir. Ödeme Iyzico Sandbox havuzunda kilitlenir, teslimat onaylandığında öğrenciye aktarılır.
-                            </div>
+                  {submission.status === "pending" && (
+                    <>
+                      <h3 className="text-base font-bold text-[#00342b]">Güvenli Ödeme ve Karar Süreci</h3>
+                      
+                      {/* 1. Banking check: Student must have bank details */}
+                      {!studentHasBank && (
+                        <div className="text-xs text-[#00342b] flex items-start gap-2.5 pl-0 py-1">
+                          <FiAlertCircle className="w-5 h-5 text-[#e28743] shrink-0 mt-0.5" />
+                          <div>
+                            <span className="font-bold block text-[#e28743]">Ödeme Tanımlanamaz</span>
+                            Aday henüz banka hesabı (Sub-Merchant) tanımlamamıştır. Bu adaya bütçe kilitleme işlemi yapılamaz.
                           </div>
-                          <button
-                            onClick={() => setShowPayForm(true)}
-                            className="w-fit py-3.5 px-8 bg-[#00342b] text-white rounded-full font-bold text-sm shadow-lg shadow-[#00342b]/20 hover:bg-[#004d40] transition-all active:scale-95 flex items-center justify-center gap-2 cursor-pointer"
-                          >
-                            <FiCreditCard className="w-3.5 h-3.5" />
-                            Bütçeyi Escrow'da Kilitle ({budgetAmount} TL)
-                          </button>
                         </div>
-                      </div>
+                      )}
 
-                      {/* Card Details Form Container */}
-                      <div
-                        className={`transition-all duration-500 ease-in-out transform origin-bottom ${
-                          showPayForm
-                            ? "max-h-[800px] opacity-100 translate-y-0 pointer-events-auto"
-                            : "max-h-0 opacity-0 translate-y-8 overflow-hidden pointer-events-none"
-                        }`}
-                      >
-                        <form onSubmit={handlePayEscrow} className="space-y-4 pb-4">
-                          <div className="space-y-4 pt-2">
-                            <div className="flex justify-between items-center pb-2 border-b border-[#dfded6]">
-                              <span className="text-xs font-bold text-[#00342b] uppercase">Kart Bilgileri</span>
+                      {/* 2. If student has bank details but payment not locked yet */}
+                      {studentHasBank && !isPaid && !isReleased && (
+                        <div className="relative overflow-hidden">
+                          {/* Button Container */}
+                          <div
+                            className={`transition-all duration-500 ease-in-out transform ${
+                              showPayForm
+                                ? "max-h-0 opacity-0 pointer-events-none -translate-y-8 overflow-hidden"
+                                : "max-h-[250px] opacity-100 translate-y-0"
+                            }`}
+                          >
+                            <div className="flex flex-col gap-3 pb-4">
+                              <div className="text-xs text-[#00342b] flex items-start gap-2.5 pl-0 py-1">
+                                <FiInfo className="w-5 h-5 text-[#e28743] shrink-0 mt-0.5" />
+                                <div>
+                                  <span className="font-bold block text-[#e28743]">Güvenli Escrow Ödemesi</span>
+                                  Görevi onaylamadan önce bütçeyi güvenceye almanız gerekmektedir. Ödeme Iyzico Sandbox havuzunda kilitlenir, teslimat onaylandığında öğrenciye aktarılır.
+                                </div>
+                              </div>
                               <button
-                                type="button"
-                                onClick={autoFillTestCard}
-                                className="text-[10px] text-[#e28743] hover:underline font-bold"
+                                onClick={() => setShowPayForm(true)}
+                                className="w-fit py-3.5 px-8 bg-[#00342b] relative overflow-hidden text-white rounded-full font-bold text-sm shadow-lg shadow-[#00342b]/20 hover:bg-[#004d40] transition-all active:scale-95 cursor-pointer group"
                               >
-                                ⚡ Test Kartını Doldur
+                                <div className="relative z-10 flex items-center justify-center gap-2">
+                                  <FiCreditCard className="w-3.5 h-3.5" />
+                                  Bütçeyi Escrow'da Kilitle ({budgetAmount} TL)
+                                </div>
                               </button>
                             </div>
-                            
-                            <div className="grid grid-cols-1 gap-4">
-                              <FormInput
-                                label="Kart Sahibi"
-                                type="text"
-                                required
-                                placeholder="Alexander Sinerji"
-                                value={cardForm.cardHolderName}
-                                onChange={(e) => setCardForm({ ...cardForm, cardHolderName: e.target.value })}
-                                inputSize="sm"
-                                className="bg-white !rounded-full px-5 border-[#DFDED6] focus:border-[#004d40] focus:ring-2 focus:ring-[#004d40]/20"
-                              />
-                              <FormInput
-                                label="Kart Numarası"
-                                type="text"
-                                required
-                                placeholder="0000 0000 0000 0000"
-                                maxLength={16}
-                                value={cardForm.cardNumber}
-                                onChange={(e) => setCardForm({ ...cardForm, cardNumber: e.target.value })}
-                                inputSize="sm"
-                                className="bg-white !rounded-full px-5 border-[#DFDED6] focus:border-[#004d40] focus:ring-2 focus:ring-[#004d40]/20"
-                                icon={FiCreditCard}
-                                iconPosition="right"
-                              />
-                            </div>
+                          </div>
 
-                            <div className="grid grid-cols-2 gap-4">
-                              <div className="space-y-1.5">
-                                <label className="text-xs font-bold text-[#00342b] select-none">Son Kullanma</label>
-                                <div className="grid grid-cols-2 gap-2">
+                          {/* Card Details Form Container */}
+                          <div
+                            className={`transition-all duration-500 ease-in-out transform origin-bottom ${
+                              showPayForm
+                                ? "max-h-[800px] opacity-100 translate-y-0 pointer-events-auto"
+                                : "max-h-0 opacity-0 translate-y-8 overflow-hidden pointer-events-none"
+                            }`}
+                          >
+                            <form onSubmit={handlePayEscrow} className="space-y-4 pb-4">
+                              <div className="space-y-4 pt-2">
+                                <div className="flex justify-between items-center pb-2 border-b border-[#dfded6]">
+                                  <span className="text-xs font-bold text-[#00342b] uppercase">Kart Bilgileri</span>
+                                  <button
+                                    type="button"
+                                    onClick={autoFillTestCard}
+                                    className="text-[10px] text-[#e28743] hover:underline font-bold"
+                                  >
+                                    ⚡ Test Kartını Doldur
+                                  </button>
+                                </div>
+                                
+                                <div className="grid grid-cols-1 gap-4">
                                   <FormInput
+                                    label="Kart Sahibi"
                                     type="text"
                                     required
-                                    placeholder="AA"
-                                    maxLength={2}
-                                    value={cardForm.expireMonth}
-                                    onChange={(e) => setCardForm({ ...cardForm, expireMonth: e.target.value })}
+                                    placeholder="Alexander Sinerji"
+                                    value={cardForm.cardHolderName}
+                                    onChange={(e) => setCardForm({ ...cardForm, cardHolderName: e.target.value })}
                                     inputSize="sm"
-                                    className="bg-white text-center !rounded-full px-2 border-[#DFDED6] focus:border-[#004d40] focus:ring-2 focus:ring-[#004d40]/20"
+                                    className="bg-white !rounded-full px-5 border-[#DFDED6] focus:border-[#004d40] focus:ring-2 focus:ring-[#004d40]/20"
                                   />
                                   <FormInput
+                                    label="Kart Numarası"
                                     type="text"
                                     required
-                                    placeholder="YY"
-                                    maxLength={2}
-                                    value={cardForm.expireYear}
-                                    onChange={(e) => setCardForm({ ...cardForm, expireYear: e.target.value })}
+                                    placeholder="0000 0000 0000 0000"
+                                    maxLength={16}
+                                    value={cardForm.cardNumber}
+                                    onChange={(e) => setCardForm({ ...cardForm, cardNumber: e.target.value })}
                                     inputSize="sm"
-                                    className="bg-white text-center !rounded-full px-2 border-[#DFDED6] focus:border-[#004d40] focus:ring-2 focus:ring-[#004d40]/20"
+                                    className="bg-white !rounded-full px-5 border-[#DFDED6] focus:border-[#004d40] focus:ring-2 focus:ring-[#004d40]/20"
+                                    icon={FiCreditCard}
+                                    iconPosition="right"
+                                  />
+                                </div>
+
+                                <div className="grid grid-cols-2 gap-4">
+                                  <div className="space-y-1.5">
+                                    <label className="text-xs font-bold text-[#00342b] select-none">Son Kullanma</label>
+                                    <div className="grid grid-cols-2 gap-2">
+                                      <FormInput
+                                        type="text"
+                                        required
+                                        placeholder="AA"
+                                        maxLength={2}
+                                        value={cardForm.expireMonth}
+                                        onChange={(e) => setCardForm({ ...cardForm, expireMonth: e.target.value })}
+                                        inputSize="sm"
+                                        className="bg-white text-center !rounded-full px-2 border-[#DFDED6] focus:border-[#004d40] focus:ring-2 focus:ring-[#004d40]/20"
+                                      />
+                                      <FormInput
+                                        type="text"
+                                        required
+                                        placeholder="YY"
+                                        maxLength={2}
+                                        value={cardForm.expireYear}
+                                        onChange={(e) => setCardForm({ ...cardForm, expireYear: e.target.value })}
+                                        inputSize="sm"
+                                        className="bg-white text-center !rounded-full px-2 border-[#DFDED6] focus:border-[#004d40] focus:ring-2 focus:ring-[#004d40]/20"
+                                      />
+                                    </div>
+                                  </div>
+                                  <FormInput
+                                    label="CVV"
+                                    type="password"
+                                    required
+                                    placeholder="***"
+                                    maxLength={3}
+                                    value={cardForm.cvv}
+                                    onChange={(e) => setCardForm({ ...cardForm, cvv: e.target.value })}
+                                    inputSize="sm"
+                                    className="bg-white text-center !rounded-full px-5 border-[#DFDED6] focus:border-[#004d40] focus:ring-2 focus:ring-[#004d40]/20"
                                   />
                                 </div>
                               </div>
-                              <FormInput
-                                label="CVV"
-                                type="password"
-                                required
-                                placeholder="***"
-                                maxLength={3}
-                                value={cardForm.cvv}
-                                onChange={(e) => setCardForm({ ...cardForm, cvv: e.target.value })}
-                                inputSize="sm"
-                                className="bg-white text-center !rounded-full px-5 border-[#DFDED6] focus:border-[#004d40] focus:ring-2 focus:ring-[#004d40]/20"
-                              />
-                            </div>
-                          </div>
 
-                          <div className="flex gap-3">
-                            <button
-                              type="button"
-                              onClick={() => setShowPayForm(false)}
-                              className="w-fit px-8 py-3.5 border border-[#dfded6] text-[#565e74] rounded-full font-bold text-xs bg-white hover:bg-gray-50 transition-all active:scale-95 cursor-pointer"
-                            >
-                              İptal
-                            </button>
-                            <button
-                              type="submit"
-                              disabled={payLoading}
-                              className="w-fit px-8 py-3.5 bg-[#00342b] text-white rounded-full font-bold text-xs hover:bg-[#004d40] transition-all active:scale-95 flex items-center justify-center gap-1.5 disabled:opacity-50 cursor-pointer"
-                            >
-                              <FiCheck className="w-3.5 h-3.5" />
-                              {payLoading ? "Ödeniyor..." : `Ödemeyi Tamamla`}
-                            </button>
+                              <div className="flex gap-3">
+                                <button
+                                  type="button"
+                                  onClick={() => setShowPayForm(false)}
+                                  className="w-fit px-8 py-3.5 border border-[#dfded6] text-[#565e74] rounded-full font-bold text-xs bg-white hover:bg-gray-50 transition-all active:scale-95 cursor-pointer"
+                                >
+                                  İptal
+                                </button>
+                                <button
+                                  type="submit"
+                                  disabled={payLoading}
+                                  className="w-fit px-8 py-3.5 bg-[#00342b] relative overflow-hidden text-white rounded-full font-bold text-xs hover:bg-[#004d40] transition-all active:scale-95 disabled:opacity-50 cursor-pointer group"
+                                >
+                                  <div className="relative z-10 flex items-center justify-center gap-1.5">
+                                    <FiCheck className="w-3.5 h-3.5" />
+                                    {payLoading ? "Ödeniyor..." : `Ödemeyi Tamamla`}
+                                  </div>
+                                </button>
+                              </div>
+                            </form>
                           </div>
-                        </form>
+                        </div>
+                      )}
+                    </>
+                  )}
+
+                  {submission.status === "accepted" && (
+                    <div className="bg-[#00342b]/5 border border-[#00342b]/20 p-8 rounded-2xl flex flex-col items-center justify-center text-center gap-4">
+                      <div className="w-16 h-16 bg-[#00342b] text-white rounded-full flex items-center justify-center text-3xl shadow-lg">
+                        <FiClock />
+                      </div>
+                      <div>
+                        <h4 className="text-lg font-bold text-[#00342b]">Öğrencinin Teslimatı Bekleniyor</h4>
+                        <p className="text-sm text-[#00342b]/80 mt-2 max-w-sm">
+                          Bütçe başarıyla güvence altına alındı. Öğrenci çalışmayı teslim ettiğinde burada inceleyip onaylayabilirsiniz.
+                        </p>
                       </div>
                     </div>
                   )}
 
-                  {/* 3. If payment is locked in Escrow, show approval buttons */}
-                  {isPaid && (
-                    <div className="space-y-3">
-                      <div className="text-xs text-[#00342b] flex items-start gap-2.5 pl-0 py-1">
-                        <FiCheckCircle className="w-5 h-5 text-[#e28743] shrink-0 mt-0.5" />
+                  {submission.status === "submitted" && (
+                    <div className="space-y-6">
+                      <div className="bg-[#e28743]/10 border border-[#e28743]/30 p-8 rounded-2xl flex flex-col items-center justify-center text-center gap-4">
+                        <div className="w-16 h-16 bg-[#e28743] text-white rounded-full flex items-center justify-center text-3xl shadow-lg">
+                          <FiCheckCircle />
+                        </div>
                         <div>
-                          <span className="font-bold block text-[#e28743]">Bütçe Escrow'da Güvende</span>
-                          Ödemeniz başarıyla kilitlenmiştir. Çalışmayı onayladığınızda bütçe öğrenciye aktarılacaktır. Reddederseniz bütçe iade edilecektir.
+                          <h4 className="text-lg font-bold text-[#e28743]">Çalışma Teslim Edildi</h4>
+                          <p className="text-sm text-[#e28743]/80 mt-2 max-w-sm">
+                            Öğrenci çalışmayı teslim etti. Lütfen inceleyin ve ödemeyi serbest bırakın.
+                          </p>
+                        </div>
+                        <div className="mt-4 px-4 py-2 bg-white rounded-lg border border-[#e28743]/20 text-xs font-bold text-gray-600 truncate max-w-full">
+                          Teslim Edilen Link: <a href={submission.submission_content || undefined} target="_blank" className="text-blue-500 hover:underline">{submission.submission_content}</a>
                         </div>
                       </div>
+
                       <div className="flex gap-3">
                         <button
                           onClick={() => handleStatusChange("rejected")}
@@ -568,10 +606,12 @@ export default function SubmissionDetailPage() {
                         <button
                           onClick={() => handleStatusChange("approved")}
                           disabled={actionLoading === "approved"}
-                          className="flex-1 py-3.5 bg-[#00342b] text-white rounded-full font-bold shadow-lg shadow-[#00342b]/20 hover:bg-[#004d40] transition-all active:scale-95 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                          className="flex-1 py-3.5 bg-[#00342b] relative overflow-hidden text-white rounded-full font-bold shadow-lg shadow-[#00342b]/20 hover:bg-[#004d40] transition-all active:scale-95 disabled:opacity-50 cursor-pointer group"
                         >
-                          <FiCheck className="w-4 h-4" />
-                          {actionLoading === "approved" ? "İşleniyor..." : "Onayla ve Öde"}
+                          <div className="relative z-10 flex items-center justify-center gap-2">
+                            <FiCheck className="w-4 h-4" />
+                            {actionLoading === "approved" ? "İşleniyor..." : "Onayla ve Öde"}
+                          </div>
                         </button>
                       </div>
                     </div>

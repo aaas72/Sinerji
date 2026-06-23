@@ -46,5 +46,13 @@ export interface Submission {
         rating: number | null;
         feedback: string | null;
     } | null;
+    task?: {
+        id: number;
+        title: string;
+        budget?: string | null;
+        company?: {
+            company_name: string;
+        };
+    };
 }
 

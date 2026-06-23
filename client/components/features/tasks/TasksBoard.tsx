@@ -127,9 +127,9 @@ export default function TasksBoard({
 
   return (
     <div className="w-full bg-[#faf9f6] px-6 py-2 flex items-start justify-center">
-      <div className="w-full app-container bg-white rounded-t-none rounded-b-2xl border border-[#f1f0ea] shadow-2xs flex flex-col md:flex-row items-start">
+      <div className="w-full app-container bg-white rounded-t-none rounded-b-2xl rounded-bl-2xl rounded-br-2xl border border-[#dfded6] shadow-2xs flex flex-col md:flex-row items-start">
         {/* Left Column: Master Opportunity List */}
-        <div className="w-full md:w-[450px] lg:w-[490px] flex flex-col border-r border-[#f1f0ea] bg-white px-6 py-6 shrink-0">
+        <div className="w-full md:w-[450px] lg:w-[490px] flex flex-col border-r border-[#dfded6] bg-white px-6 py-6 shrink-0 rounded-bl-2xl">
           
           {/* Scrollable list */}
           <div className="space-y-4 px-2 -mx-2 pb-8 pt-1">

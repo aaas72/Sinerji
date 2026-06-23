@@ -275,12 +275,19 @@ export class SubmissionService {
         data: {
           payment_id: paymentId,
           payment_transaction_id: paymentTransactionId,
-          payment_status: 'escrow_locked'
+          payment_status: 'escrow_locked',
+          status: 'accepted'
         },
         include: {
           task: true,
           student: true
         }
+      });
+
+      // Update Task status to in_progress
+      await prisma.task.update({
+        where: { id: submission.task_id },
+        data: { status: 'in_progress' }
       });
 
       return updatedSubmission;
@@ -289,6 +296,33 @@ export class SubmissionService {
       const errMsg = error.response?.data?.error || error.message;
       throw new AppError(`Ödeme işlemi microservice tarafında başarısız oldu: ${errMsg}`, error.response?.status || 500);
     }
+  }
+
+  async submitWork(submissionId: number, studentUserId: number, workLink: string) {
+    const submission = await prisma.submission.findUnique({
+      where: { id: submissionId },
+      include: { task: true }
+    });
+
+    if (!submission) throw new AppError('Submission not found', 404);
+    if (submission.student_user_id !== studentUserId) {
+      throw new AppError('Not authorized', 403);
+    }
+    if (submission.status !== 'accepted') {
+      throw new AppError('Görev henüz kabul edilmemiş veya zaten teslim edilmiş', 400);
+    }
+
+    return prisma.submission.update({
+      where: { id: submissionId },
+      data: {
+        status: 'submitted',
+        submission_content: workLink
+      },
+      include: {
+        task: true,
+        student: true
+      }
+    });
   }
 }
 

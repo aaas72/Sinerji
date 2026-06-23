@@ -19,19 +19,39 @@ html {
   scroll-behavior: smooth;
 }
 
-html,
 body {
   height: 100%;
+  background-color: var(--color-body-bg);
+  position: relative;
+}
+
+body::before {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  background-image: url("/3841782_80534%20%5BConverted%5D.png");
+  background-repeat: no-repeat;
+  background-position: center top;
+  background-size: cover;
+  opacity: 0.05; /* background opacity set to 0.5 as requested */
+  pointer-events: none;
 }
 
 body {
   margin: 0;
-  background-color: var(--color-body-bg);
   color: var(--color-secondary);
   font-family: var(--font-inter), system-ui, -apple-system, "Segoe UI", Roboto,
     Ubuntu, Cantarell, "Noto Sans", "Helvetica Neue", Arial, "Apple Color Emoji",
     "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
 }
+
+/* جعل كلاس الخلفية الافتراضية شفافاً لكي يظهر النمط في الخلفية بالكامل */
+.bg-\[\#faf9f6\] {
+  background-color: transparent !important;
+}
+
+
 
 .bg-section {
   background-color: var(--color-section-bg);
@@ -87,7 +107,9 @@ h6 {
   font-family: var(--font-outfit), var(--font-inter), sans-serif;
 }
 
-.font-body {
+.font-
+
+body {
   font-family: var(--font-inter), system-ui, -apple-system, "Segoe UI", Roboto,
     Ubuntu, Cantarell, "Noto Sans", "Helvetica Neue", Arial, "Apple Color Emoji",
     "Segoe UI Emoji", "Segoe UI Symbol", sans-serif;
@@ -236,6 +258,20 @@ h6 {
     pointer-events: none;
 }
 
+/* تأثير الـ Noise المدمج مع الهيدر */
+.hero-gradient::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)'/%3E%3C/svg%3E");
+    background-repeat: repeat;
+    background-size: 250px 250px;
+    opacity: 0.45;
+    mix-blend-mode: overlay;
+    pointer-events: none;
+    z-index: 0;
+}
+
 @layer components {
   .app-container {
     @apply w-full max-w-[1100px] mx-auto;
@@ -255,4 +291,4 @@ h6 {
 
 .animate-fade-up {
   animation: subtleFadeUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-}
+}

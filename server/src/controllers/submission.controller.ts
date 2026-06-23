@@ -162,5 +162,36 @@ export class SubmissionController {
           next(error);
       }
   }
+
+  async submitWork(req: Request, res: Response, next: NextFunction) {
+      try {
+          const studentId = req.user!.id;
+          const submissionId = parseInt(req.params.id);
+          const { workLink } = req.body;
+
+          if (!workLink) {
+              throw new AppError('Çalışma linki (workLink) gereklidir.', 400);
+          }
+
+          const submission = await submissionService.submitWork(submissionId, studentId, workLink);
+
+          // Notify company
+          await notificationService.createNotification(
+              submission.task.company_user_id,
+              'Görev Teslim Edildi',
+              `"${submission.task.title}" görevi için çalışan çalışmasını teslim etti. Lütfen inceleyin.`,
+              'info',
+              `/company/tasks/${submission.task_id}/applicants/${submission.id}`
+          );
+
+          res.status(200).json({
+              status: 'success',
+              message: 'Çalışma başarıyla teslim edildi.',
+              data: { submission }
+          });
+      } catch (error) {
+          next(error);
+      }
+  }
 }
 

@@ -38,5 +38,9 @@ export const submissionService = {
         const response = await api.post<ApiResponse<SubmissionResponse>>(`/submissions/${submissionId}/pay`, cardData);
         return response.data.data.submission;
     },
+    async submitWork(submissionId: number, workLink: string): Promise<Submission> {
+        const response = await api.post<ApiResponse<SubmissionResponse>>(`/submissions/${submissionId}/submit-work`, { workLink });
+        return response.data.data.submission;
+    },
 };
 

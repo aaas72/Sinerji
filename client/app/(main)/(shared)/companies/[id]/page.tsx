@@ -63,7 +63,7 @@ export default function CompanyProfilePage() {
   return (
     <div className="min-h-screen mt-12 app-container pb-12 px-4 app-container">
       {/* ── Premium Hero Card ─────────────────────────────────────────────────────── */}
-      <div className="relative overflow-hidden rounded-[24px] bg-gradient-to-br from-[#004d40] to-[#0f172a] text-white mb-8 shadow-md">
+      <div className="relative overflow-hidden rounded-[24px] hero-gradient text-white mb-8 shadow-md">
         {/* Decorative elements */}
         <div className="absolute top-0 right-0 w-64 h-64 bg-[#e28743] opacity-10 blur-3xl rounded-full -mr-20 -mt-20 pointer-events-none" />
 
