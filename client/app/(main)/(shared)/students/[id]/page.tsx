@@ -125,6 +125,10 @@ export default function ProfilePage() {
 
   const skillsData = transformSkills(profile.skills);
 
+  const completedTasksCount = profile.submissions?.length || 0;
+  const ratings = profile.submissions?.map((s: any) => s.review?.rating).filter((r: any) => typeof r === 'number') || [];
+  const averageRating = ratings.length > 0 ? (ratings.reduce((a: number, b: number) => a + b, 0) / ratings.length).toFixed(1) : "0.0";
+
   return (
     <div className="w-full max-w-[1280px] mx-auto px-6 md:px-16 py-16 flex flex-col gap-8">
 
@@ -166,6 +170,20 @@ export default function ProfilePage() {
                 {profile.university && <span className="opacity-50">•</span>}
                 {profile.university && profile.university}
               </p>
+              
+              {completedTasksCount > 0 && (
+                <div className="flex flex-wrap items-center gap-3 pt-1">
+                  <div className="flex items-center gap-1.5 px-3 py-1.5 bg-[#e28743]/10 text-[#e28743] rounded-lg border border-[#e28743]/20" title="Ortalama Puan">
+                    <FiStar className="fill-current w-4 h-4" />
+                    <span className="text-sm font-bold">{averageRating}</span>
+                    <span className="text-[11px] font-semibold opacity-70 mt-0.5">/ 5.0</span>
+                  </div>
+                  <div className="flex items-center gap-1.5 px-3 py-1.5 bg-[#004d40]/10 text-[#004d40] rounded-lg border border-[#004d40]/20" title="Tamamlanan Görevler">
+                    <FiCheckCircle className="w-4 h-4" />
+                    <span className="text-sm font-bold">{completedTasksCount} Görev Tamamlandı</span>
+                  </div>
+                </div>
+              )}
             </div>
           </div>
 
