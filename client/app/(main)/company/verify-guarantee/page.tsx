@@ -98,9 +98,8 @@ export default function CompanyVerifyGuaranteePage() {
       {error && (
         <div className="max-w-3xl mx-auto w-full animate-fadeIn">
           <SectionCard title="Doğrulama Başarısız" icon={FiXCircle} accent={true}>
-            <div className="flex flex-col items-center justify-center text-center py-6">
-              <FiXCircle className="text-red-500 w-16 h-16 mb-4" />
-              <p className="text-red-600 font-semibold text-lg">{error}</p>
+            <div className="flex flex-col items-center justify-center text-center py-4">
+              <p className="text-red-600 font-semibold text-[15px]">{error}</p>
             </div>
           </SectionCard>
         </div>
@@ -109,12 +108,9 @@ export default function CompanyVerifyGuaranteePage() {
       {data && (
         <div className="max-w-3xl mx-auto w-full animate-fadeIn">
           <SectionCard title="Geçerli Sertifika" icon={FiCheckCircle} className="border-[#004d40]/30 bg-gradient-to-br from-[#004d40]/5 to-transparent">
-            <div className="flex flex-col items-center text-center mb-8 pt-4">
-              <div className="w-20 h-20 bg-[#004d40]/10 rounded-full flex items-center justify-center mb-4">
-                <FiCheckCircle className="text-[#004d40] w-10 h-10" />
-              </div>
-              <h3 className="text-2xl font-bold text-[#00342b]">Doğrulanmış Başarı</h3>
-              <p className="text-[#004d40] font-semibold mt-2">
+            <div className="flex flex-col items-center text-center mb-6 pt-2">
+              <h3 className="text-lg font-bold text-[#00342b]">Doğrulanmış Başarı</h3>
+              <p className="text-[#565e74] text-[13px] font-medium mt-1">
                 Bu belge Sinerji platformu tarafından resmi olarak onaylanmıştır.
               </p>
             </div>
