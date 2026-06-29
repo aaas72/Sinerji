@@ -31,6 +31,17 @@ export default function CompanyVerifyGuaranteePage() {
 
     try {
       const res = await submissionService.verifyGuarantee(token.trim());
+      
+      const isRecommendation = res.rewardType?.toLowerCase() === 'recommendation';
+      const isCertificateOrInternship = res.rewardType?.toLowerCase() === 'certificate' || res.rewardType?.toLowerCase() === 'internship';
+
+      if (activeTab === 'certificate' && !isCertificateOrInternship) {
+        throw new Error('Geçersiz veya süresi dolmuş sertifika kodu.');
+      }
+      if (activeTab === 'recommendation' && !isRecommendation) {
+        throw new Error('Geçersiz veya süresi dolmuş sertifika kodu.');
+      }
+
       setData(res);
     } catch (err: any) {
       setError(err.response?.data?.message || 'Geçersiz veya süresi dolmuş sertifika kodu.');
