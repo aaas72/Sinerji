@@ -15,7 +15,7 @@ import {
   FiX,
   FiList,
   FiMessageSquare,
-  FiCheckCircle,
+  FiShield,
 } from "react-icons/fi";
 import PrimaryButton from "@/components/ui/PrimaryButton";
 import NotificationBell from "@/components/ui/NotificationBell";
@@ -190,7 +190,7 @@ export default function CompanyNavbar() {
                     className="flex items-center gap-2 px-4 py-2 text-xs font-semibold text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors"
                     onClick={() => setIsDropdownOpen(false)}
                   >
-                    <FiCheckCircle size={14} />
+                    <FiShield size={14} />
                     Belge Doğrula
                   </Link>
                   <Link
