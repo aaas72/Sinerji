@@ -107,7 +107,7 @@ export default function CompanyVerifyGuaranteePage() {
 
       {data && (
         <div className="max-w-3xl mx-auto w-full animate-fadeIn">
-          <SectionCard title="Geçerli Sertifika" icon={FiCheckCircle} className="border-[#004d40]/30 bg-gradient-to-br from-[#004d40]/5 to-transparent">
+          <SectionCard title="Geçerli Sertifika" icon={() => null} className="border-[#004d40]/30 bg-gradient-to-br from-[#004d40]/5 to-transparent">
             <div className="flex flex-col items-center text-center mb-6 pt-2">
               <h3 className="text-lg font-bold text-[#00342b]">Doğrulanmış Başarı</h3>
               <p className="text-[#565e74] text-[13px] font-medium mt-1">
