@@ -47,10 +47,10 @@ export default function CompanyVerifyGuaranteePage() {
   return (
     <div className="w-full max-w-[1280px] mx-auto px-6 md:px-16 py-16 flex flex-col gap-8 animate-fadeIn">
       <div className="mb-8 text-center flex flex-col items-center">
-        <h1 className="text-[32px] md:text-[40px] font-black text-[#00342b] tracking-tight mb-4">
+        <h1 className="text-2xl md:text-3xl font-black text-[#00342b] tracking-tight mb-3">
           Doğrulama Sistemi
         </h1>
-        <p className="text-[#565e74] text-base md:text-lg max-w-2xl text-center leading-relaxed">
+        <p className="text-[#565e74] text-sm md:text-[15px] max-w-xl text-center leading-relaxed">
           Öğrencilerin sunduğu Sinerji Staj, Sertifika veya Tavsiye garanti kodlarını buradan doğrulayabilirsiniz.
         </p>
 
