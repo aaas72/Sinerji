@@ -97,11 +97,9 @@ export default function CompanyVerifyGuaranteePage() {
 
       {error && (
         <div className="max-w-3xl mx-auto w-full animate-fadeIn">
-          <SectionCard title="Doğrulama Başarısız" icon={FiXCircle} accent={true}>
-            <div className="flex flex-col items-center justify-center text-center py-4">
-              <p className="text-red-600 font-semibold text-[15px]">{error}</p>
-            </div>
-          </SectionCard>
+          <div className="text-center py-6">
+            <p className="text-[#565e74] font-medium text-[15px]">{error}</p>
+          </div>
         </div>
       )}
 
