@@ -271,22 +271,25 @@ export default function ProfilePage() {
                           </span>
                         </div>
                         
-                        <h4 className="text-[#004d40] font-semibold text-sm mb-3 flex items-center gap-1.5">
+                        <h4 className="text-[#004d40] font-semibold text-sm flex items-center gap-1.5">
                           <FiAward className="w-4 h-4" /> {submission.task.company.company_name}
                         </h4>
-                        
-                        <p className="text-[#565e74] text-sm leading-relaxed">
-                          {submission.task.description}
-                        </p>
 
                         {submission.review && (
-                          <div className="border-t border-[#f1f0ea] pt-4 mt-4 flex items-center justify-between">
-                            <span className="text-[10px] font-extrabold uppercase tracking-widest text-[#565e74]">Değerlendirme</span>
-                            <div className="flex gap-1 text-[#e28743]">
-                              {Array.from({ length: 5 }).map((_, i) => (
-                                <FiStar key={i} className={`w-4 h-4 ${i < submission.review.rating ? 'fill-current' : 'opacity-20'}`} />
-                              ))}
+                          <div className="border-t border-[#f1f0ea] pt-4 mt-4 flex flex-col gap-3">
+                            <div className="flex items-center justify-between">
+                              <span className="text-[10px] font-extrabold uppercase tracking-widest text-[#565e74]">Değerlendirme</span>
+                              <div className="flex gap-1 text-[#e28743]">
+                                {Array.from({ length: 5 }).map((_, i) => (
+                                  <FiStar key={i} className={`w-4 h-4 ${i < submission.review.rating ? 'fill-current' : 'opacity-20'}`} />
+                                ))}
+                              </div>
                             </div>
+                            {submission.review.feedback && (
+                              <p className="text-[#565e74] text-[13px] italic leading-relaxed">
+                                "{submission.review.feedback}"
+                              </p>
+                            )}
                           </div>
                         )}
                       </div>
