@@ -6,11 +6,13 @@ import { FiSearch, FiCheckCircle, FiXCircle, FiAward } from 'react-icons/fi';
 import SectionCard from '@/components/ui/cards/SectionCard';
 import PrimaryButton from '@/components/ui/PrimaryButton';
 import Input from '@/components/ui/Input';
+import Tabs from '@/components/ui/Tabs';
 
 export default function CompanyVerifyGuaranteePage() {
   const [token, setToken] = useState('');
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState('certificate');
   const [data, setData] = useState<{
     studentName: string;
     companyName: string;
@@ -37,15 +39,34 @@ export default function CompanyVerifyGuaranteePage() {
     }
   };
 
+  const tabs = [
+    { id: 'certificate', label: 'Sertifika & Staj' },
+    { id: 'recommendation', label: 'Tavsiye' },
+  ];
+
   return (
     <div className="w-full max-w-[1280px] mx-auto px-6 md:px-16 py-16 flex flex-col gap-8 animate-fadeIn">
       <div className="mb-8 text-center flex flex-col items-center">
         <h1 className="text-[32px] md:text-[40px] font-black text-[#00342b] tracking-tight mb-4">
-          Sertifika Doğrulama
+          Doğrulama Sistemi
         </h1>
         <p className="text-[#565e74] text-base md:text-lg max-w-2xl text-center leading-relaxed">
           Öğrencilerin sunduğu Sinerji Staj, Sertifika veya Tavsiye garanti kodlarını buradan doğrulayabilirsiniz.
         </p>
+
+        <div className="mt-8 flex justify-center w-full">
+          <Tabs
+            tabs={tabs}
+            activeTab={activeTab}
+            onTabChange={(id) => {
+              setActiveTab(id);
+              setError(null);
+              setData(null);
+              setToken('');
+            }}
+            className="md:justify-center"
+          />
+        </div>
       </div>
 
       <div className="max-w-3xl mx-auto w-full">
