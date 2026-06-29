@@ -191,7 +191,7 @@ export default function CompanyNavbar() {
                     onClick={() => setIsDropdownOpen(false)}
                   >
                     <FiCheckCircle size={14} />
-                    Sertifika Doğrula
+                    Belge Doğrula
                   </Link>
                   <Link
                     href="/company/settings"
@@ -248,7 +248,7 @@ export default function CompanyNavbar() {
               onClick={() => setIsMobileMenuOpen(false)}
               className="text-[13px] font-medium transition-all py-2.5 border-b border-gray-50/60 block text-gray-500 hover:text-gray-900"
             >
-              Sertifika Doğrula
+              Belge Doğrula
             </Link>
             <button
               onClick={handleLogout}
