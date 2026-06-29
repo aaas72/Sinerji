@@ -107,13 +107,12 @@ export default function CompanyVerifyGuaranteePage() {
 
       {data && (
         <div className="max-w-3xl mx-auto w-full animate-fadeIn">
-          <div className="rounded-2xl border border-[#004d40]/30 bg-gradient-to-br from-[#004d40]/5 to-transparent p-6 md:p-8 transition-all duration-300">
-            <div className="flex flex-col items-center text-center mb-6">
-              <h3 className="text-lg font-bold text-[#00342b]">Doğrulanmış Başarı</h3>
-              <p className="text-[#565e74] text-[13px] font-medium mt-1">
-                Bu belge Sinerji platformu tarafından resmi olarak onaylanmıştır.
-              </p>
-            </div>
+          <div className="mt-4 flex flex-col items-center text-center mb-6">
+            <h3 className="text-lg font-bold text-[#00342b]">Doğrulanmış Başarı</h3>
+            <p className="text-[#565e74] text-[13px] font-medium mt-1">
+              Bu belge Sinerji platformu tarafından resmi olarak onaylanmıştır.
+            </p>
+          </div>
 
             <div className="bg-white rounded-md border-[8px] border-[#f1f0ea] p-1.5 shadow-sm w-full relative overflow-hidden mt-4">
               <div className="border border-[#dfded6] p-8 md:p-12 bg-[#faf9f6] flex flex-col items-center text-center relative z-10 min-h-[400px] justify-center">
@@ -174,7 +173,6 @@ export default function CompanyVerifyGuaranteePage() {
                 </div>
               </div>
             </div>
-          </div>
         </div>
       )}
     </div>
