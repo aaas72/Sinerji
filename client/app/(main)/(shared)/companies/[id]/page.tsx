@@ -8,7 +8,7 @@ import { CompanyProfile } from "@/types/company";
 import { Task } from "@/types/task";
 import TaskCard from '@/components/features/tasks/TaskCard';
 import SectionCard from "@/components/ui/cards/SectionCard";
-import { FiMapPin, FiGlobe, FiBriefcase, FiMail, FiEdit2, FiStar, FiTrendingUp } from "react-icons/fi";
+import { FiMapPin, FiGlobe, FiBriefcase, FiMail, FiEdit2, FiStar, FiTrendingUp, FiLayers } from "react-icons/fi";
 
 import PageLoadingSkeleton from "@/components/ui/PageLoadingSkeleton";
 
@@ -184,7 +184,7 @@ export default function CompanyProfilePage() {
         <div className="space-y-8">
           {/* Domains / Fields Component */}
           {profile.industry && profile.industry.trim() !== "" && (
-            <SectionCard title="Faaliyet Alanları" icon={FiMapPin}>
+            <SectionCard title="Faaliyet Alanları" icon={FiLayers}>
               <div className="flex flex-wrap gap-2">
                 {profile.industry.split(',').map((cat: string) => cat.trim()).filter((cat: string) => cat !== "").map((cat: string, idx: number) => (
                   <span key={idx} className="bg-transparent text-[#565e74] px-4 py-2 rounded-full border border-[#f1f0ea] text-xs font-bold hover:border-[#004d40]/30 transition-colors cursor-default select-none">
