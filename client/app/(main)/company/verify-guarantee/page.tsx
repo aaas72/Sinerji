@@ -123,7 +123,11 @@ export default function CompanyVerifyGuaranteePage() {
                 <div className="relative z-10 w-full flex flex-col items-center">
                   {/* Header */}
                   <h4 className="text-[13px] md:text-sm font-extrabold text-[#e28743] tracking-[0.2em] uppercase mb-4">
-                    {data.rewardType === 'Internship' || data.rewardType?.toLowerCase() === 'internship' ? 'Staj Garanti Belgesi' : data.rewardType === 'Certificate' || data.rewardType?.toLowerCase() === 'certificate' ? 'Başarı Sertifikası' : 'Tavsiye Mektubu'}
+                    {data.rewardType?.toLowerCase() === 'internship' 
+                      ? 'Staj Garanti Belgesi' 
+                      : data.rewardType?.toLowerCase() === 'recommendation' 
+                        ? 'Tavsiye Mektubu' 
+                        : 'Başarı Sertifikası'}
                   </h4>
                   
                   <p className="text-[#565e74] text-sm md:text-[15px] mb-8 max-w-lg leading-relaxed">
@@ -156,10 +160,7 @@ export default function CompanyVerifyGuaranteePage() {
                       </p>
                     </div>
                     
-                    <div className="flex flex-col items-center">
-                       <div className="w-10 h-10 bg-[#004d40]/10 rounded-full flex items-center justify-center mb-1.5">
-                         <FiCheckCircle className="text-[#004d40] w-5 h-5" />
-                       </div>
+                    <div className="flex flex-col items-center justify-end pb-1">
                        <p className="text-[10px] font-extrabold text-[#004d40] uppercase tracking-widest">Doğrulandı</p>
                     </div>
 
