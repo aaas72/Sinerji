@@ -179,7 +179,6 @@ export default function ProfilePage() {
                     <span className="text-xs font-semibold opacity-70 mt-0.5">/ 5.0</span>
                   </div>
                   <div className="flex items-center gap-1.5 text-[#004d40]" title="Tamamlanan Görevler">
-                    <FiCheckCircle className="w-5 h-5" />
                     <span className="text-base font-bold">{completedTasksCount} Görev Tamamlandı</span>
                   </div>
                 </div>
