@@ -172,15 +172,15 @@ export default function ProfilePage() {
               </p>
               
               {completedTasksCount > 0 && (
-                <div className="flex flex-wrap items-center gap-3 pt-1">
-                  <div className="flex items-center gap-1.5 px-3 py-1.5 bg-[#e28743]/10 text-[#e28743] rounded-lg border border-[#e28743]/20" title="Ortalama Puan">
-                    <FiStar className="fill-current w-4 h-4" />
-                    <span className="text-sm font-bold">{averageRating}</span>
-                    <span className="text-[11px] font-semibold opacity-70 mt-0.5">/ 5.0</span>
+                <div className="flex flex-wrap items-center gap-5 pt-1">
+                  <div className="flex items-center gap-1.5 text-[#e28743]" title="Ortalama Puan">
+                    <FiStar className="fill-current w-5 h-5" />
+                    <span className="text-base font-bold">{averageRating}</span>
+                    <span className="text-xs font-semibold opacity-70 mt-0.5">/ 5.0</span>
                   </div>
-                  <div className="flex items-center gap-1.5 px-3 py-1.5 bg-[#004d40]/10 text-[#004d40] rounded-lg border border-[#004d40]/20" title="Tamamlanan Görevler">
-                    <FiCheckCircle className="w-4 h-4" />
-                    <span className="text-sm font-bold">{completedTasksCount} Görev Tamamlandı</span>
+                  <div className="flex items-center gap-1.5 text-[#004d40]" title="Tamamlanan Görevler">
+                    <FiCheckCircle className="w-5 h-5" />
+                    <span className="text-base font-bold">{completedTasksCount} Görev Tamamlandı</span>
                   </div>
                 </div>
               )}
@@ -221,48 +221,11 @@ export default function ProfilePage() {
               </SectionCard>
             )}
 
-            {/* Experience & Education */}
-            <SectionCard title="Deneyim & Eğitim" icon={FiBriefcase}>
+            {/* Education */}
+            <SectionCard title="Eğitim Bilgileri" icon={FiBookOpen}>
               <div className="relative pl-6 ml-2 mt-4">
                 {/* Timeline Line */}
-                <div className="absolute left-[20px] top-[24px] bottom-[24px] w-[1px] bg-gradient-to-b from-[#004d40] to-transparent opacity-20 z-0" />
-
-                {/* Submissions (Tasks) */}
-                {profile.submissions && profile.submissions.map((submission: any, index: number) => (
-                  <div key={submission.id} className="relative mb-6 group">
-                    <div className="absolute left-[-32px] top-1 w-6 h-6 rounded-full bg-[#ffffff] border-2 border-[#00342b] flex items-center justify-center z-10">
-                      <div className="w-2 h-2 rounded-full bg-[#00342b]"></div>
-                    </div>
-                    
-                    <div className="bg-transparent border border-[#f1f0ea] rounded-xl p-5 ml-1 transition-all hover:border-[#004d40]/30 hover:shadow-sm">
-                      <div className="flex flex-col sm:flex-row justify-between items-start mb-2">
-                        <h3 className="font-bold text-lg text-[#00342b]">{submission.task.title}</h3>
-                        <span className="text-xs text-[#565e74] font-bold uppercase tracking-wider flex items-center gap-1 shrink-0 mt-1 sm:mt-0 bg-gray-50 px-2 py-1 rounded-md">
-                          <FiCalendar className="w-3.5 h-3.5" /> {new Date(submission.submitted_at).getFullYear()}
-                        </span>
-                      </div>
-                      
-                      <h4 className="text-[#004d40] font-semibold text-sm mb-3 flex items-center gap-1.5">
-                        <FiAward className="w-4 h-4" /> {submission.task.company.company_name}
-                      </h4>
-                      
-                      <p className="text-[#565e74] text-sm leading-relaxed">
-                        {submission.task.description}
-                      </p>
-
-                      {submission.review && (
-                        <div className="border-t border-[#f1f0ea] pt-4 mt-4 flex items-center justify-between">
-                          <span className="text-[10px] font-extrabold uppercase tracking-widest text-[#565e74]">Değerlendirme</span>
-                          <div className="flex gap-1 text-[#e28743]">
-                            {Array.from({ length: 5 }).map((_, i) => (
-                              <FiStar key={i} className={`w-4 h-4 ${i < submission.review.rating ? 'fill-current' : 'opacity-20'}`} />
-                            ))}
-                          </div>
-                        </div>
-                      )}
-                    </div>
-                  </div>
-                ))}
+                <div className="absolute left-[20px] top-[24px] bottom-[24px] w-[1px] bg-gradient-to-b from-[#e28743] to-transparent opacity-20 z-0" />
 
                 {/* Education Node */}
                 <div className="relative group">
@@ -285,6 +248,52 @@ export default function ProfilePage() {
                 </div>
               </div>
             </SectionCard>
+
+            {/* Completed Tasks (Submissions) */}
+            {profile.submissions && profile.submissions.length > 0 && (
+              <SectionCard title="Tamamlanan Görevler" icon={FiCheckCircle}>
+                <div className="relative pl-6 ml-2 mt-4">
+                  {/* Timeline Line */}
+                  <div className="absolute left-[20px] top-[24px] bottom-[24px] w-[1px] bg-gradient-to-b from-[#004d40] to-transparent opacity-20 z-0" />
+
+                  {profile.submissions.map((submission: any, index: number) => (
+                    <div key={submission.id} className="relative mb-6 group">
+                      <div className="absolute left-[-32px] top-1 w-6 h-6 rounded-full bg-[#ffffff] border-2 border-[#00342b] flex items-center justify-center z-10">
+                        <div className="w-2 h-2 rounded-full bg-[#00342b]"></div>
+                      </div>
+                      
+                      <div className="bg-transparent border border-[#f1f0ea] rounded-xl p-5 ml-1 transition-all hover:border-[#004d40]/30 hover:shadow-sm">
+                        <div className="flex flex-col sm:flex-row justify-between items-start mb-2">
+                          <h3 className="font-bold text-lg text-[#00342b]">{submission.task.title}</h3>
+                          <span className="text-xs text-[#565e74] font-bold uppercase tracking-wider flex items-center gap-1 shrink-0 mt-1 sm:mt-0 bg-gray-50 px-2 py-1 rounded-md">
+                            <FiCalendar className="w-3.5 h-3.5" /> {new Date(submission.submitted_at).getFullYear()}
+                          </span>
+                        </div>
+                        
+                        <h4 className="text-[#004d40] font-semibold text-sm mb-3 flex items-center gap-1.5">
+                          <FiAward className="w-4 h-4" /> {submission.task.company.company_name}
+                        </h4>
+                        
+                        <p className="text-[#565e74] text-sm leading-relaxed">
+                          {submission.task.description}
+                        </p>
+
+                        {submission.review && (
+                          <div className="border-t border-[#f1f0ea] pt-4 mt-4 flex items-center justify-between">
+                            <span className="text-[10px] font-extrabold uppercase tracking-widest text-[#565e74]">Değerlendirme</span>
+                            <div className="flex gap-1 text-[#e28743]">
+                              {Array.from({ length: 5 }).map((_, i) => (
+                                <FiStar key={i} className={`w-4 h-4 ${i < submission.review.rating ? 'fill-current' : 'opacity-20'}`} />
+                              ))}
+                            </div>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </SectionCard>
+            )}
 
             {/* Guaranteed Certificates & Recommendations */}
             {profile.submissions && profile.submissions.some((sub: any) => sub.guarantee_token) && (
