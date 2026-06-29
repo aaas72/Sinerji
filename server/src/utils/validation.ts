@@ -54,12 +54,12 @@ export const addSkillSchema = z.object({
 
 export const updateCompanyProfileSchema = z.object({
   company_name: z.string().min(1, "Company name cannot be empty").optional(),
-  description: z.string().max(1000, "Description must be less than 1000 characters").optional(),
-  website_url: z.string().url("Invalid URL format").optional().or(z.literal('')),
-  linkedin_url: z.string().url().optional().or(z.literal('')),
-  industry: z.string().optional(),
-  location: z.string().optional(),
-  logo_url: z.string().url("Invalid URL format").optional().or(z.literal('')),
+  description: z.string().max(1000, "Description must be less than 1000 characters").nullable().optional().or(z.literal('')),
+  website_url: z.string().url("Invalid URL format").nullable().optional().or(z.literal('')),
+  linkedin_url: z.string().url().nullable().optional().or(z.literal('')),
+  industry: z.string().nullable().optional().or(z.literal('')),
+  location: z.string().nullable().optional().or(z.literal('')),
+  logo_url: z.string().url("Invalid URL format").nullable().optional().or(z.literal('')),
 });
 
 // ─── Shared hard-skill object ─────────────────────────────────────────────────

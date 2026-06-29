@@ -1,12 +1,21 @@
 const { z } = require('zod');
 
-const updateCompanyProfileSchema = z.object({
-  linkedin_url: z.string().url().optional().or(z.literal('')),
+const schema = z.object({
+  industry: z.string().nullable().optional(),
+  website_url: z.string().url().nullable().optional().or(z.literal('')),
+  linkedin_url: z.string().url().nullable().optional().or(z.literal('')),
 });
 
-const reqBody = { linkedin_url: "invalid" };
-const validation = updateCompanyProfileSchema.safeParse(reqBody);
+const reqBody = {
+  industry: null,
+  website_url: null,
+  linkedin_url: null
+};
 
-console.log('errors:', validation.error.errors);
-console.log('issues:', validation.error.issues);
-console.log('flatten:', validation.error.flatten());
+const validation = schema.safeParse(reqBody);
+
+if (!validation.success) {
+  console.log(validation.error.issues.map(e => e.message));
+} else {
+  console.log("Success!");
+}
