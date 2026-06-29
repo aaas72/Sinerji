@@ -182,6 +182,19 @@ export default function CompanyProfilePage() {
 
         {/* ── Right column (1/3) ─────────────────────── */}
         <div className="space-y-8">
+          {/* Domains / Fields Component */}
+          {profile.industry && profile.industry.trim() !== "" && (
+            <SectionCard title="Faaliyet Alanları" icon={FiMapPin}>
+              <div className="flex flex-wrap gap-2">
+                {profile.industry.split(',').map((cat: string) => cat.trim()).filter((cat: string) => cat !== "").map((cat: string, idx: number) => (
+                  <span key={idx} className="bg-transparent text-[#565e74] px-4 py-2 rounded-full border border-[#f1f0ea] text-xs font-bold hover:border-[#004d40]/30 transition-colors cursor-default select-none">
+                    {cat}
+                  </span>
+                ))}
+              </div>
+            </SectionCard>
+          )}
+
           {/* Contact Info */}
           <SectionCard icon={FiMail} title="İletişim Bilgileri">
             <div className="space-y-1">
