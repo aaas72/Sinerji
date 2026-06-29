@@ -31,6 +31,11 @@ export default function StatusBadge({ status, customLabel }: StatusBadgeProps) {
     onaylandı: { label: "Onaylandı", icon: FiCheckCircle },
     "i̇nceleniyor": { label: "İnceleniyor", icon: FiClock },
     inceleniyor: { label: "İnceleniyor", icon: FiClock },
+    offered: { label: "Teklif Alındı", icon: FiUserCheck },
+    "teklif alındı": { label: "Teklif Alındı", icon: FiUserCheck },
+    submitted: { label: "İnceleniyor", icon: FiClock },
+    reviewed: { label: "Tamamlandı", icon: FiCheckCircle },
+    "devam ediyor": { label: "Devam Ediyor", icon: FiPlayCircle },
   };
 
   const normalizedStatus = status?.toLowerCase() || "pending";

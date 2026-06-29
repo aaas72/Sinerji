@@ -33,8 +33,10 @@ import {
   FiAlertCircle,
   FiAward,
   FiZap,
+  FiClock,
 } from "react-icons/fi";
 import { reviewService } from "@/services/review.service";
+import PaymentModal from "@/components/features/companies/PaymentModal";
 
 function formatSubmissionContent(content: string | null | undefined, fallback: string): string {
   if (!content) return fallback;
@@ -83,6 +85,7 @@ function ReviewModal({
   const [rating, setRating] = useState(5);
   const [feedback, setFeedback] = useState("");
   const [hasReview, setHasReview] = useState(!!submission.review);
+  const [showPaymentModal, setShowPaymentModal] = useState(false);
 
   useEffect(() => {
     if (submission.review) {
@@ -140,6 +143,17 @@ function ReviewModal({
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 md:p-6 backdrop-blur-sm bg-[#0b1c30]/40 animate-fadeIn">
       {/* backdrop */}
       <div className="absolute inset-0" onClick={onClose} />
+
+      {showPaymentModal && (
+        <PaymentModal 
+          submission={submission}
+          onClose={() => setShowPaymentModal(false)}
+          onSuccess={(updated) => {
+            setShowPaymentModal(false);
+            onUpdate(updated);
+          }}
+        />
+      )}
 
       <div className="relative bg-white rounded-3xl shadow-2xl app-container w-full max-h-[90vh] overflow-hidden flex flex-col md:flex-row z-10 animate-scaleUp">
         {/* close */}
@@ -319,18 +333,47 @@ function ReviewModal({
                   className="flex-1 py-3 border-2 border-[#ba1a1a] text-[#ba1a1a] rounded-full font-bold hover:bg-[#ba1a1a] hover:text-white transition-all active:scale-95 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
                 >
                   <FiX className="w-4 h-4" />
-                  {loading === "rejected" ? "İşleniyor..." : "Reddet"}
+                  Reddet
+                </button>
+                <button
+                  onClick={() => setShowPaymentModal(true)}
+                  disabled={!!loading}
+                  className="flex-1 py-3 bg-[#00342b] text-white rounded-full font-bold shadow-lg shadow-[#00342b]/20 hover:opacity-90 transition-all active:scale-95 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                >
+                  <FiCheck className="w-4 h-4" />
+                  Öğrenciye Teklif Gönder
+                </button>
+              </div>
+            ) : submission.status === "offered" ? (
+              <p className="text-center text-xs text-[#e28743] bg-[#e28743]/10 py-3 rounded-xl border border-[#e28743]/20 font-bold flex items-center justify-center gap-2">
+                <FiClock className="w-4 h-4" />
+                Teklif Gönderildi. Öğrencinin yanıtı bekleniyor...
+              </p>
+            ) : submission.status === "accepted" ? (
+              <p className="text-center text-xs text-[#004d40] bg-[#004d40]/10 py-3 rounded-xl border border-[#004d40]/20 font-bold flex items-center justify-center gap-2">
+                <FiZap className="w-4 h-4" />
+                Öğrenci teklifi kabul etti, görev üzerinde çalışıyor...
+              </p>
+            ) : submission.status === "submitted" ? (
+              <div className="flex gap-3">
+                <button
+                  onClick={() => handle("rejected")}
+                  disabled={!!loading}
+                  className="flex-1 py-3 border-2 border-[#ba1a1a] text-[#ba1a1a] rounded-full font-bold hover:bg-[#ba1a1a] hover:text-white transition-all active:scale-95 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+                >
+                  <FiX className="w-4 h-4" />
+                  {loading === "rejected" ? "İşleniyor..." : "İşi Reddet (Revizyon)"}
                 </button>
                 <button
                   onClick={() => handle("approved")}
                   disabled={!!loading}
                   className="flex-1 py-3 bg-[#00342b] text-white rounded-full font-bold shadow-lg shadow-[#00342b]/20 hover:opacity-90 transition-all active:scale-95 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
                 >
-                  <FiCheck className="w-4 h-4" />
-                  {loading === "approved" ? "İşleniyor..." : "Onayla"}
+                  <FiCheckCircle className="w-4 h-4" />
+                  {loading === "approved" ? "İşleniyor..." : "İşi Onayla (Ödemeyi Serbest Bırak)"}
                 </button>
               </div>
-            ) : submission.status === "approved" ? (
+            ) : submission.status === "approved" || submission.status === "reviewed" ? (
               <div className="space-y-4">
                 <h4 className="text-xs font-bold text-gray-800 flex items-center gap-2">
                   <FiCheckCircle className="text-green-500 w-4 h-4" /> Öğrenci Değerlendirmesi
@@ -592,7 +635,7 @@ export default function TaskApplicantsPage() {
               <ApplicantCard
                 key={submission.id}
                 submission={submission}
-                onClick={() => setSelected(submission)}
+                onClick={() => router.push(`/company/tasks/${task?.id}/applicants/${submission.id}`)}
               />
             ))}
           </div>

@@ -24,6 +24,7 @@ const navLinks = [
   { href: "/company/tasks", label: "Görevlerim" },
   { href: "/company/applications", label: "Başvurular" },
   { href: "/company/explore", label: "Keşfet" },
+  { href: "/company/verify-guarantee", label: "Sertifika Doğrula" },
 ];
 
 export default function CompanyNavbar() {

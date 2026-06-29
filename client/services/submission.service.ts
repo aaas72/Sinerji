@@ -38,9 +38,21 @@ export const submissionService = {
         const response = await api.post<ApiResponse<SubmissionResponse>>(`/submissions/${submissionId}/pay`, cardData);
         return response.data.data.submission;
     },
+    async offerUnpaidSubmission(submissionId: number): Promise<Submission> {
+        const response = await api.post<ApiResponse<SubmissionResponse>>(`/submissions/${submissionId}/offer-unpaid`);
+        return response.data.data.submission;
+    },
     async submitWork(submissionId: number, workLink: string): Promise<Submission> {
         const response = await api.post<ApiResponse<SubmissionResponse>>(`/submissions/${submissionId}/submit-work`, { workLink });
         return response.data.data.submission;
     },
+    async respondToOffer(submissionId: number, response: 'accept' | 'reject'): Promise<Submission> {
+        const res = await api.post<ApiResponse<SubmissionResponse>>(`/submissions/${submissionId}/offer-response`, { accept: response === 'accept' });
+        return res.data.data.submission;
+    },
+    async verifyGuarantee(token: string): Promise<{ studentName: string; companyName: string; taskTitle: string; completedAt: string; rewardType: string }> {
+        const response = await api.get<ApiResponse<any>>(`/submissions/verify-guarantee/${token}`);
+        return response.data.data;
+    }
 };
 

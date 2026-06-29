@@ -71,6 +71,7 @@ export default function SavedTasksPage() {
               companyName={task.company?.company_name || "Şirket Bilgisi Yok"}
               companyId={task.company?.user_id}
               rating={5}
+              onRemove={handleUnsave}
             />
           ))}
         </div>

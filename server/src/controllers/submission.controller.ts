@@ -5,7 +5,10 @@ import { AppError } from '../utils/AppError';
 import { notificationService } from '../services/notification.service';
 import { getIO, userSockets } from '../socket';
 
+import { MailService } from '../services/mail.service';
+
 const submissionService = new SubmissionService();
+const mailService = new MailService();
 
 export class SubmissionController {
   async createSubmission(req: Request, res: Response, next: NextFunction) {
@@ -118,10 +121,40 @@ export class SubmissionController {
             '/student/applications'
           );
 
+          if (status === 'approved' && submission.guarantee_token) {
+              const studentName = submission.student?.user?.first_name 
+                ? `${submission.student.user.first_name} ${submission.student.user.last_name}` 
+                : 'Öğrenci';
+              const companyName = submission.task?.company?.company_name || 'Sinerji Şirketi';
+              
+              const guaranteeUrl = `http://localhost:3000/verify/${submission.guarantee_token}`;
+              
+              const studentEmail = submission.student?.user?.email;
+              if (studentEmail) {
+                  await mailService.sendInternshipGuaranteeEmail(studentEmail, studentName, companyName, guaranteeUrl);
+              }
+          }
+
           res.status(200).json({
               status: 'success',
               data: { submission }
           });
+      } catch (error) {
+          next(error);
+      }
+  }
+
+  async offerUnpaid(req: Request, res: Response, next: NextFunction) {
+      try {
+          const companyUserId = req.user!.id;
+          const submissionId = parseInt(req.params.id);
+
+          const submission = await submissionService.offerUnpaidSubmission(
+              submissionId,
+              companyUserId
+          );
+
+          res.json({ success: true, data: submission });
       } catch (error) {
           next(error);
       }
@@ -144,11 +177,11 @@ export class SubmissionController {
               req.user!.email
           );
 
-          // Notify student that payment is escrowed
+          // Notify student that payment is escrowed and offer is made
           await notificationService.createNotification(
               submission.student_user_id,
-              'Bütçe Güvence Altına Alındı',
-              `"${submission.task.title}" görevi için bütçe şirketi tarafından güvenceye alındı (Escrow kilitlendi).`,
+              'Yeni İş Teklifi ve Bütçe Güvencesi',
+              `"${submission.task.title}" görevi için şirket bütçeyi güvenceye aldı. Lütfen teklifi inceleyip yanıtlayın.`,
               'success',
               '/student/applications'
           );
@@ -193,5 +226,53 @@ export class SubmissionController {
           next(error);
       }
   }
-}
+  async respondToOffer(req: Request, res: Response, next: NextFunction) {
+      try {
+          const studentId = req.user!.id;
+          const submissionId = parseInt(req.params.id);
+          const { accept } = req.body;
 
+          if (typeof accept !== 'boolean') {
+              throw new AppError('Accept status must be a boolean (true/false).', 400);
+          }
+
+          const submission = await submissionService.respondToOffer(submissionId, studentId, accept);
+
+          // Notify company
+          const statusText = accept ? 'Kabul Etti' : 'Reddetti';
+          await notificationService.createNotification(
+              submission.task.company_user_id,
+              'Teklif Yanıtlandı',
+              `"${submission.task.title}" görevi için çalışan teklifinizi ${statusText}.`,
+              accept ? 'success' : 'error',
+              `/company/tasks/${submission.task_id}/applicants/${submission.id}`
+          );
+
+          res.status(200).json({
+              status: 'success',
+              message: accept ? 'Teklifi başarıyla kabul ettiniz.' : 'Teklifi reddettiniz.',
+              data: { submission }
+          });
+      } catch (error) {
+          next(error);
+      }
+  }
+
+  async verifyGuarantee(req: Request, res: Response, next: NextFunction) {
+      try {
+          const { token } = req.params;
+          if (!token) {
+              throw new AppError('Sertifika kodu gerekli.', 400);
+          }
+
+          const details = await submissionService.getGuaranteeDetails(token);
+
+          res.status(200).json({
+              status: 'success',
+              data: details
+          });
+      } catch (error) {
+          next(error);
+      }
+  }
+}

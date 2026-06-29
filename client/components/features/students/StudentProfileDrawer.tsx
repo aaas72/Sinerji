@@ -40,14 +40,15 @@ export default function StudentProfileDrawer({ isOpen, onClose, student }: Stude
 
       {/* Drawer */}
       <div
-        className={`fixed top-0 right-0 h-full w-full sm:w-[560px] md:w-[600px] bg-[#fdfdfc] shadow-2xl z-[101] transform transition-transform duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] overflow-y-auto ${
+        className={`fixed top-0 right-0 h-full w-full sm:w-[560px] md:w-[600px] shadow-2xl z-[101] transform transition-transform duration-500 ease-[cubic-bezier(0.32,0.72,0,1)] ${
           isOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
+        <div className="w-full h-full hero-gradient" style={{ overflowY: 'auto' }}>
         {student && (
-          <div className="flex flex-col h-full">
+          <div className="flex flex-col h-full relative z-10">
             {/* Header / Cover (Green Section) */}
-            <div className="relative bg-gradient-to-br from-[#00342b] to-[#004d40] shrink-0 pt-16 px-8 pb-8 text-white">
+            <div className="relative shrink-0 pt-16 px-8 pb-8 text-white">
               {/* Close Button */}
               <button
                 onClick={onClose}
@@ -100,43 +101,44 @@ export default function StudentProfileDrawer({ isOpen, onClose, student }: Stude
               </div>
             </div>
 
-            {/* Profile Info (Light Section) */}
+            {/* Profile Info (Dark Section) */}
             <div className="p-8 flex-1">
+              <div className="relative z-10">
+                {/* About / Bio Placeholder */}
+                <div className="mb-8">
+                  <h3 className="text-[15px] font-bold text-white mb-3 flex items-center gap-2">
+                    <FiBookOpen className="text-[#e28743]" />
+                    Hakkında
+                  </h3>
+                  <p className="text-sm text-white/80 leading-relaxed">
+                    {student.bio || "Öğrenci profili detayları henüz API tarafından tam olarak dönülmüyor. Bu alanda öğrencinin kendisi hakkında yazdığı detaylı biyografi yer alacak."}
+                  </p>
+                </div>
 
-              {/* About / Bio Placeholder */}
-              <div className="mb-8">
-                <h3 className="text-[15px] font-bold text-[#0b1c30] mb-3 flex items-center gap-2">
-                  <FiBookOpen className="text-[#e28743]" />
-                  Hakkında
-                </h3>
-                <p className="text-sm text-[#565e74] leading-relaxed">
-                  {student.bio || "Öğrenci profili detayları henüz API tarafından tam olarak dönülmüyor. Bu alanda öğrencinin kendisi hakkında yazdığı detaylı biyografi yer alacak."}
-                </p>
-              </div>
-
-              {/* Skills */}
-              <div className="mb-8">
-                <h3 className="text-[15px] font-bold text-[#0b1c30] mb-4 flex items-center gap-2">
-                  <FiAward className="text-[#e28743]" />
-                  Teknik Yetenekler
-                </h3>
-                <div className="flex flex-wrap gap-2">
-                  {student.skills && student.skills.length > 0 ? (
-                    student.skills.map((skill, idx) => (
-                      <SkillBadge
-                        key={idx}
-                        label={typeof skill === "string" ? skill : (skill as any).skill?.name || "Bilinmeyen Yetenek"}
-                      />
-                    ))
-                  ) : (
-                    <span className="text-sm text-gray-400">Yetenek eklenmemiş.</span>
-                  )}
+                {/* Skills */}
+                <div className="mb-8">
+                  <h3 className="text-[15px] font-bold text-white mb-4 flex items-center gap-2">
+                    <FiAward className="text-[#e28743]" />
+                    Teknik Yetenekler
+                  </h3>
+                  <div className="flex flex-wrap gap-2">
+                    {student.skills && student.skills.length > 0 ? (
+                      student.skills.map((skill, idx) => (
+                        <SkillBadge
+                          key={idx}
+                          label={typeof skill === "string" ? skill : (skill as any).skill?.name || "Bilinmeyen Yetenek"}
+                        />
+                      ))
+                    ) : (
+                      <span className="text-sm text-white/50">Yetenek eklenmemiş.</span>
+                    )}
+                  </div>
                 </div>
               </div>
-
             </div>
           </div>
         )}
+        </div>
       </div>
     </>
   );

@@ -148,6 +148,20 @@ export default function SubmissionDetailPage() {
     }
   };
 
+  const handleOfferUnpaid = async () => {
+    if (!submission) return;
+    setPayLoading(true);
+    try {
+      const updated = await submissionService.offerUnpaidSubmission(submission.id);
+      setSubmission(updated);
+      showToast("Öğrenciye görev teklifi başarıyla gönderildi.", "success");
+    } catch (err: any) {
+      showToast(err.response?.data?.message || err.message || "Teklif gönderilemedi.", "error");
+    } finally {
+      setPayLoading(false);
+    }
+  };
+
   const autoFillTestCard = () => {
     setCardForm({
       cardHolderName: "Sinerji Test Company",
@@ -166,6 +180,7 @@ export default function SubmissionDetailPage() {
   const studentHasBank = !!submission.student.sub_merchant_key;
   const isPaid = submission.payment_status === "escrow_locked";
   const isReleased = submission.payment_status === "released";
+  const isMonetaryTask = task?.reward_type === "money";
 
   const reviewSteps: StepItem[] = [
     {
@@ -175,8 +190,8 @@ export default function SubmissionDetailPage() {
     },
     {
       id: 2,
-      title: "Escrow / Ödeme",
-      status: isPaid || isReleased ? "completed" : "inactive",
+      title: isMonetaryTask ? "Escrow / Ödeme" : "Teklif / Onay",
+      status: (!isMonetaryTask && submission.status !== "pending") || isPaid || isReleased ? "completed" : "inactive",
     },
     {
       id: 3,
@@ -215,7 +230,7 @@ export default function SubmissionDetailPage() {
       <MainSection hideHeader variant="transparent" bordered={false} padding="none">
         {/* Header Bar */}
         <div className="mb-8 mt-2">
-          <h1 className="text-2xl font-extrabold text-[#00342b]">Aday İnceleme ve Ödeme</h1>
+          <h1 className="text-2xl font-extrabold text-[#00342b]">Aday İnceleme ve {isMonetaryTask ? "Ödeme" : "Onay"}</h1>
         </div>
 
         {/* Main Columns Content - Mockup style */}
@@ -293,9 +308,11 @@ export default function SubmissionDetailPage() {
                     <div className="flex justify-between items-center pt-2 border-t border-[#DFDED6]">
                       <span className="text-gray-500 font-medium flex items-center gap-1.5">
                         <FiDollarSign className="text-gray-400 w-3.5 h-3.5 shrink-0" />
-                        <span>Bütçe:</span>
+                        <span>Ödül / Bütçe:</span>
                       </span>
-                      <span className="font-bold text-[#00342b]">₺{task.budget || task.reward_amount || budgetAmount}</span>
+                      <span className="font-bold text-[#00342b]">
+                        {isMonetaryTask ? `₺${task.budget || task.reward_amount || budgetAmount}` : (task?.reward_type === 'certificate' ? 'Sertifika' : (task?.reward_type === 'internship' ? 'Staj / Deneyim' : 'Gönüllü / Deneyim'))}
+                      </span>
                     </div>
                     <div className="flex justify-between items-center">
                       <span className="text-gray-500 font-medium flex items-center gap-1.5">
@@ -380,8 +397,8 @@ export default function SubmissionDetailPage() {
                 {/* SECTION 2: AI Strengths & Weaknesses Grid */}
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
                   <div className="bg-transparent p-0">
-                    <p className="text-xs font-bold text-[#00342b] flex items-center gap-1.5 mb-2.5">
-                      <FiCheckCircle className="text-[#e28743] w-4.5 h-4.5" /> Güçlü Yönler
+                    <p className="text-xs font-bold text-[#00342b] mb-2.5">
+                      Güçlü Yönler
                     </p>
                     <ul className="text-xs text-[#00342b] space-y-1.5 list-disc list-inside pl-1">
                       {submission.ai_match_details?.strengths?.map((s, idx) => (
@@ -390,8 +407,8 @@ export default function SubmissionDetailPage() {
                     </ul>
                   </div>
                   <div className="bg-transparent p-0">
-                    <p className="text-xs font-bold text-[#565e74] flex items-center gap-1.5 mb-2.5">
-                      <FiAlertCircle className="text-[#e28743] w-4.5 h-4.5" /> Gelişim Alanları
+                    <p className="text-xs font-bold text-[#565e74] mb-2.5">
+                      Gelişim Alanları
                     </p>
                     <ul className="text-xs text-[#00342b] space-y-1.5 list-disc list-inside pl-1">
                       {submission.ai_match_details?.weaknesses?.map((w, idx) => (
@@ -402,14 +419,14 @@ export default function SubmissionDetailPage() {
                 </div>
 
               {/* SECTION 3: Decision & Payment Workflow */}
-              {submission.status === "pending" || submission.status === "accepted" || submission.status === "submitted" ? (
+              {submission.status === "pending" || submission.status === "offered" || submission.status === "accepted" || submission.status === "submitted" ? (
                 <section className="space-y-6 pt-6 border-t border-[#DFDED6]">
                   {submission.status === "pending" && (
                     <>
                       <h3 className="text-base font-bold text-[#00342b]">Güvenli Ödeme ve Karar Süreci</h3>
                       
                       {/* 1. Banking check: Student must have bank details */}
-                      {!studentHasBank && (
+                      {isMonetaryTask && !studentHasBank && (
                         <div className="text-xs text-[#00342b] flex items-start gap-2.5 pl-0 py-1">
                           <FiAlertCircle className="w-5 h-5 text-[#e28743] shrink-0 mt-0.5" />
                           <div>
@@ -420,7 +437,7 @@ export default function SubmissionDetailPage() {
                       )}
 
                       {/* 2. If student has bank details but payment not locked yet */}
-                      {studentHasBank && !isPaid && !isReleased && (
+                      {isMonetaryTask && studentHasBank && !isPaid && !isReleased && (
                         <div className="relative overflow-hidden">
                           {/* Button Container */}
                           <div
@@ -560,37 +577,61 @@ export default function SubmissionDetailPage() {
                           </div>
                         </div>
                       )}
+
+                      {/* 3. Non-Monetary Task Offer button */}
+                      {!isMonetaryTask && submission.status === 'pending' && (
+                        <div className="relative overflow-hidden">
+                           <div className="flex flex-col gap-3 pb-4">
+                              <div className="text-xs text-[#00342b] flex items-start gap-2.5 pl-0 py-1">
+                                <FiInfo className="w-5 h-5 text-[#e28743] shrink-0 mt-0.5" />
+                                <div>
+                                  <span className="font-bold block text-[#e28743]">Staj / Referans Görevi</span>
+                                  Bu görev finansal bir ödül içermemektedir. Herhangi bir ödeme yapmadan öğrenciye doğrudan teklif gönderebilirsiniz.
+                                </div>
+                              </div>
+                              <button
+                                onClick={handleOfferUnpaid}
+                                disabled={payLoading}
+                                className="w-fit py-3.5 px-8 bg-[#00342b] relative overflow-hidden text-white rounded-full font-bold text-sm shadow-lg shadow-[#00342b]/20 hover:bg-[#004d40] transition-all active:scale-95 cursor-pointer group disabled:opacity-50"
+                              >
+                                <div className="relative z-10 flex items-center justify-center gap-2">
+                                  <FiCheck className="w-3.5 h-3.5" />
+                                  {payLoading ? "Gönderiliyor..." : "Öğrenciye Teklif Gönder"}
+                                </div>
+                              </button>
+                            </div>
+                        </div>
+                      )}
                     </>
                   )}
 
+                  {submission.status === "offered" && (
+                    <div className="flex flex-col items-center justify-center text-center py-6">
+                      <h4 className="text-lg font-extrabold text-[#00342b]">Öğrencinin Yanıtı Bekleniyor</h4>
+                      <p className="text-sm text-[#565e74] mt-2 max-w-md mx-auto leading-relaxed">
+                        Teklifiniz öğrenciye iletildi. Şu anda adayın teklifi kabul etmesi bekleniyor.
+                      </p>
+                    </div>
+                  )}
+
                   {submission.status === "accepted" && (
-                    <div className="bg-[#00342b]/5 border border-[#00342b]/20 p-8 rounded-2xl flex flex-col items-center justify-center text-center gap-4">
-                      <div className="w-16 h-16 bg-[#00342b] text-white rounded-full flex items-center justify-center text-3xl shadow-lg">
-                        <FiClock />
-                      </div>
-                      <div>
-                        <h4 className="text-lg font-bold text-[#00342b]">Öğrencinin Teslimatı Bekleniyor</h4>
-                        <p className="text-sm text-[#00342b]/80 mt-2 max-w-sm">
-                          Bütçe başarıyla güvence altına alındı. Öğrenci çalışmayı teslim ettiğinde burada inceleyip onaylayabilirsiniz.
-                        </p>
-                      </div>
+                    <div className="flex flex-col items-center justify-center text-center py-6">
+                      <h4 className="text-lg font-extrabold text-[#00342b]">Öğrencinin Teslimatı Bekleniyor</h4>
+                      <p className="text-sm text-[#565e74] mt-2 max-w-sm">
+                        {isMonetaryTask ? "Bütçe başarıyla güvence altına alındı. Öğrenci çalışmayı teslim ettiğinde burada inceleyip onaylayabilirsiniz." : "Teklif kabul edildi. Öğrenci çalışmayı teslim ettiğinde burada inceleyip onaylayabilirsiniz."}
+                      </p>
                     </div>
                   )}
 
                   {submission.status === "submitted" && (
                     <div className="space-y-6">
-                      <div className="bg-[#e28743]/10 border border-[#e28743]/30 p-8 rounded-2xl flex flex-col items-center justify-center text-center gap-4">
-                        <div className="w-16 h-16 bg-[#e28743] text-white rounded-full flex items-center justify-center text-3xl shadow-lg">
-                          <FiCheckCircle />
-                        </div>
-                        <div>
-                          <h4 className="text-lg font-bold text-[#e28743]">Çalışma Teslim Edildi</h4>
-                          <p className="text-sm text-[#e28743]/80 mt-2 max-w-sm">
-                            Öğrenci çalışmayı teslim etti. Lütfen inceleyin ve ödemeyi serbest bırakın.
-                          </p>
-                        </div>
-                        <div className="mt-4 px-4 py-2 bg-white rounded-lg border border-[#e28743]/20 text-xs font-bold text-gray-600 truncate max-w-full">
-                          Teslim Edilen Link: <a href={submission.submission_content || undefined} target="_blank" className="text-blue-500 hover:underline">{submission.submission_content}</a>
+                      <div className="flex flex-col items-center justify-center text-center py-6">
+                        <h4 className="text-lg font-extrabold text-[#00342b]">Çalışma Teslim Edildi</h4>
+                        <p className="text-sm text-[#565e74] mt-2 max-w-sm">
+                          {isMonetaryTask ? "Öğrenci çalışmayı teslim etti. Lütfen inceleyin ve ödemeyi serbest bırakın." : "Öğrenci çalışmayı teslim etti. Lütfen inceleyin ve onaylayın."}
+                        </p>
+                        <div className="mt-4 text-sm font-bold text-[#565e74] truncate max-w-full">
+                          Teslim Edilen Link: <a href={submission.submission_content || undefined} target="_blank" className="hover:underline text-[#00342b]">{submission.submission_content}</a>
                         </div>
                       </div>
 
@@ -610,7 +651,7 @@ export default function SubmissionDetailPage() {
                         >
                           <div className="relative z-10 flex items-center justify-center gap-2">
                             <FiCheck className="w-4 h-4" />
-                            {actionLoading === "approved" ? "İşleniyor..." : "Onayla ve Öde"}
+                            {actionLoading === "approved" ? "İşleniyor..." : (isMonetaryTask ? "Onayla ve Öde" : "Onayla")}
                           </div>
                         </button>
                       </div>
@@ -621,10 +662,11 @@ export default function SubmissionDetailPage() {
                 <section className="space-y-6 pt-6 border-t border-[#DFDED6]">
                   {/* Status Banner */}
                   <div className="text-xs text-[#00342b] flex items-start gap-2.5 pl-0 py-1">
-                    <FiCheckCircle className="w-5 h-5 text-[#e28743] shrink-0 mt-0.5" />
                     <div>
-                      <span className="font-bold block text-[#e28743]">Ödeme Serbest Bırakıldı!</span>
-                      Öğrenciye hak ettiği tutar (Komisyon düşülerek) başarıyla transfer edildi. Şimdi adayı değerlendirebilirsiniz.
+                      <span className="font-bold block text-[#e28743]">
+                        {isMonetaryTask ? "Ödeme Serbest Bırakıldı!" : "Görev Başarıyla Tamamlandı!"}
+                      </span>
+                      {isMonetaryTask ? "Öğrenciye hak ettiği tutar (Komisyon düşülerek) başarıyla transfer edildi. Şimdi adayı değerlendirebilirsiniz." : "Öğrenci görevini başarıyla tamamladı. Şimdi adayı değerlendirebilirsiniz."}
                     </div>
                   </div>
 
@@ -709,9 +751,11 @@ export default function SubmissionDetailPage() {
             </div>
 
             {/* Information Disclaimer */}
-            <p className="text-center text-[10px] font-bold text-[#565e74] uppercase tracking-wider px-12 pt-6 border-t border-[#DFDED6]">
-              Your payment is held securely in escrow and will only be released once the review validation process is finalized.
-            </p>
+            {isMonetaryTask && (
+              <p className="text-center text-[10px] font-bold text-[#565e74] uppercase tracking-wider px-12 pt-6 border-t border-[#DFDED6]">
+                Your payment is held securely in escrow and will only be released once the review validation process is finalized.
+              </p>
+            )}
           </div>
         </div>
         </div>

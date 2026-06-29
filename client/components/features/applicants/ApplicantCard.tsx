@@ -13,7 +13,7 @@ interface ApplicantCardProps {
 export default function ApplicantCard({ submission, onClick }: ApplicantCardProps) {
   // Format score to 2 decimal places if it's a number
   const scoreNum = typeof submission.ai_match_score === "number" ? Number(submission.ai_match_score) : 0;
-  const formattedScore = submission.ai_match_score != null ? scoreNum.toFixed(2) : null;
+  const formattedScore = scoreNum.toFixed(2);
 
   // Format submission content for preview
   const formatSubmissionContent = (content: string | null | undefined, fallback: string): string => {
@@ -42,7 +42,7 @@ export default function ApplicantCard({ submission, onClick }: ApplicantCardProp
   return (
     <div
       onClick={onClick}
-      className="bg-transparent border border-[#dfded6] rounded-2xl overflow-hidden hover:rounded-none relative group cursor-pointer flex flex-col justify-between hover-card-effect"
+      className="bg-white border border-[#dfded6] rounded-2xl overflow-hidden hover:rounded-none relative group cursor-pointer flex flex-col justify-between hover-card-effect"
     >
       {/* ── Top Progress Bar Header ── */}
       {formattedScore !== null && (
@@ -87,7 +87,7 @@ export default function ApplicantCard({ submission, onClick }: ApplicantCardProp
           </div>
 
           <div className="mb-3">
-            <h3 className="text-base font-bold text-[#00342b] group-hover:text-[#e28743] transition-colors line-clamp-1">
+            <h3 className="text-base font-bold text-[#00342b] transition-colors line-clamp-1">
               {submission.student.full_name}
             </h3>
             <p className="text-xs text-[#565e74] mt-0.5 line-clamp-1 flex items-center gap-1.5">
@@ -121,7 +121,7 @@ export default function ApplicantCard({ submission, onClick }: ApplicantCardProp
           <div className="flex items-center gap-3 text-[10px] font-bold text-[#565e74]">
             <StatusBadge status={submission.status} />
           </div>
-          <button className="text-[#00342b] group-hover:text-[#e28743] font-bold text-xs flex items-center gap-1 group-hover:translate-x-1 transition-transform cursor-pointer bg-transparent border-0 outline-none">
+          <button className="text-[#00342b] font-bold text-xs flex items-center gap-1 group-hover:translate-x-1 transition-transform cursor-pointer bg-transparent border-0 outline-none">
             İncele <FiChevronRight className="w-3.5 h-3.5" />
           </button>
         </div>

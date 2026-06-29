@@ -5,7 +5,7 @@ export default function PageLoadingSkeleton() {
   return (
     <div className="max-w-5xl mx-auto w-full p-4 md:p-8 space-y-6">
       {/* Header Skeleton */}
-      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-[#F1F0EA] p-6 rounded-2xl border border-[#DFDED6] shadow-sm">
+      <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 bg-[#F1F0EA] p-6 rounded-2xl border border-[#DFDED6]">
         <div className="flex items-center gap-4 w-full md:w-auto">
           <Skeleton className="w-16 h-16 rounded-xl shrink-0" />
           <div className="space-y-3 w-full md:w-48">
@@ -22,7 +22,7 @@ export default function PageLoadingSkeleton() {
       {/* Content Body Skeleton */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         <div className="lg:col-span-2 space-y-6">
-          <div className="bg-[#F1F0EA] p-6 rounded-2xl border border-[#DFDED6] shadow-sm space-y-4">
+          <div className="bg-[#F1F0EA] p-6 rounded-2xl border border-[#DFDED6] space-y-4">
             <Skeleton className="w-1/3 h-7 mb-6" />
             <Skeleton className="w-full h-4" />
             <Skeleton className="w-full h-4" />
@@ -33,7 +33,7 @@ export default function PageLoadingSkeleton() {
           </div>
         </div>
         <div className="space-y-6">
-          <div className="bg-[#F1F0EA] p-6 rounded-2xl border border-[#DFDED6] shadow-sm space-y-4">
+          <div className="bg-[#F1F0EA] p-6 rounded-2xl border border-[#DFDED6] space-y-4">
             <Skeleton className="w-1/2 h-6 mb-4" />
             <div className="flex gap-2 flex-wrap">
               <Skeleton className="w-16 h-6 rounded-full" />
@@ -42,7 +42,7 @@ export default function PageLoadingSkeleton() {
               <Skeleton className="w-24 h-6 rounded-full" />
             </div>
           </div>
-          <div className="bg-[#F1F0EA] p-6 rounded-2xl border border-[#DFDED6] shadow-sm space-y-4">
+          <div className="bg-[#F1F0EA] p-6 rounded-2xl border border-[#DFDED6] space-y-4">
             <Skeleton className="w-1/2 h-6 mb-4" />
             <Skeleton className="w-full h-12 rounded-lg" />
             <Skeleton className="w-full h-12 rounded-lg" />

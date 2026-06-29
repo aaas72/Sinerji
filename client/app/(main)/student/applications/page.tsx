@@ -67,9 +67,12 @@ export default function ApplicationsPage() {
   const mapBackendStatus = (status: string): ApplicationStatus => {
     switch (status?.toLowerCase()) {
       case "pending": return "Bekliyor";
+      case "offered": return "Teklif Alındı";
+      case "accepted": return "Devam Ediyor";
+      case "submitted":
       case "reviewing": return "İnceleniyor";
       case "approved":
-      case "accepted": return "Kabul Edildi";
+      case "reviewed": return "Tamamlandı";
       case "rejected": return "Reddedildi";
       default: return "Bekliyor";
     }
@@ -77,11 +80,11 @@ export default function ApplicationsPage() {
 
   const filteredApplications = applications.filter((app) => {
     if (activeTab === "Beklemede") {
-      return app.status === "Bekliyor" || app.status === "İnceleniyor";
+      return app.status === "Bekliyor" || app.status === "İnceleniyor" || app.status === "Teklif Alındı";
     } else if (activeTab === "Devam Eden") {
-      return app.status === "Kabul Edildi";
+      return app.status === "Devam Ediyor";
     } else if (activeTab === "Tamamlanan") {
-      return app.status === "Reddedildi";
+      return app.status === "Tamamlandı" || app.status === "Reddedildi" || app.status === "Değerlendirildi";
     }
     return true;
   });
@@ -108,9 +111,9 @@ export default function ApplicationsPage() {
           tabs={tabs.map(tab => {
             const count = applications.filter((app) => {
               if (tab.key === "Beklemede")
-                return app.status === "Bekliyor" || app.status === "İnceleniyor";
-              if (tab.key === "Devam Eden") return app.status === "Kabul Edildi";
-              if (tab.key === "Tamamlanan") return app.status === "Reddedildi";
+                return app.status === "Bekliyor" || app.status === "İnceleniyor" || app.status === "Teklif Alındı";
+              if (tab.key === "Devam Eden") return app.status === "Devam Ediyor";
+              if (tab.key === "Tamamlanan") return app.status === "Tamamlandı" || app.status === "Reddedildi" || app.status === "Değerlendirildi";
               return false;
             }).length;
             

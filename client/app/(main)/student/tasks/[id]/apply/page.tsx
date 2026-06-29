@@ -157,29 +157,28 @@ export default function ApplyPage() {
 
   if (!isProfileComplete) {
     return (
-      <div className="max-w-4xl mx-auto px-6 py-12 mt-10">
-        <div className="bg-[#fffdf9] border border-[#dfded6] rounded-2xl p-8 md:p-12 text-center space-y-6 shadow-sm">
-          <div className="w-16 h-16 bg-[#e28743]/10 text-[#e28743] rounded-full flex items-center justify-center mx-auto mb-2">
-            <FiMapPin className="w-8 h-8" />
-          </div>
-          <h2 className="text-2xl font-bold text-[#00342b] tracking-tight">Profiliniz Eksik!</h2>
-          <p className="text-[#565e74] max-w-lg mx-auto text-sm font-medium leading-relaxed">
-            Yapay zeka (AI) eşleştirme algoritmasının düzgün çalışabilmesi ve şirketlerin size güvenebilmesi için profilinizdeki zorunlu alanları (Bölüm, Mezuniyet Yılı, Yetenekler ve Portfolyo/GitHub bağlantısı) doldurmanız gerekmektedir.
+      <div className="w-full max-w-[1280px] mx-auto px-6 md:px-16 py-16 mt-4">
+        <div className="w-full h-full min-h-[250px] bg-[#F1F0EA] rounded-2xl border border-[#dfded6] shadow-2xs p-12 text-center flex flex-col items-center justify-center">
+          <h3 className="font-bold text-gray-900 mb-2">Profiliniz Eksik!</h3>
+          <p className="text-sm text-[#565e74] font-medium max-w-lg mx-auto">
+            Profilinizin güçlü olması ve kabul oranınızın artması bizim için önemli. Görevlere başvurabilmek için lütfen profilinizdeki eksik bilgileri tamamlayın.
           </p>
-          <div className="pt-4 flex justify-center gap-4">
-            <FormButton variant="outline" onClick={() => router.back()} className="!rounded-full px-6">Geri Dön</FormButton>
-            <FormButton variant="primary" onClick={() => router.push('/student/settings')} className="!rounded-full px-8 bg-[#004d40] hover:bg-[#00342b]">Profilimi Tamamla</FormButton>
+          <div className="pt-6 flex justify-center">
+            <FormButton variant="primary" onClick={() => router.push('/student/settings')} className="px-8 !rounded-full bg-[#004d40] hover:bg-[#00342b]">Profilimi Tamamla</FormButton>
           </div>
         </div>
       </div>
     );
   }
 
+  const isMoneyTask = task.reward_type?.toLowerCase() === 'money';
+  const isProjectTask = !task.reward_type || ['money', 'certificate', 'recommendation'].includes(task.reward_type.toLowerCase());
+
   const isVerified = profile.is_verified;
   const isUniEmailVerified = profile.is_university_email_verified;
   const hasIban = !!profile.sub_merchant_key;
 
-  if (!isVerified || !isUniEmailVerified || !hasIban) {
+  if (!isVerified || !isUniEmailVerified || (isMoneyTask && !hasIban)) {
     return (
       <div className="max-w-5xl mx-auto px-6 py-16 mt-10 flex flex-col md:flex-row items-center justify-center gap-12 md:gap-16 select-none">
         {/* Left Column: Graphic/Illustration */}
@@ -198,7 +197,7 @@ export default function ApplyPage() {
               Eksik Doğrulama veya IBAN Bilgisi!
             </h2>
             <p className="text-sm text-[#565e74] font-medium leading-relaxed">
-              Görevlere başvurabilmek için profilinizin e-Devlet Öğrenci Belgesi ve üniversite e-postası ile doğrulanmış olması ve banka hesap bilgilerinizin (IBAN) girilmiş olması gerekmektedir.
+              Görevlere başvurabilmek için profilinizin e-Devlet Öğrenci Belgesi ve üniversite e-postası ile doğrulanmış olması {isMoneyTask ? "ve banka hesap bilgilerinizin (IBAN) girilmiş olması " : ""}gerekmektedir.
             </p>
           </div>
 
@@ -226,17 +225,17 @@ export default function ApplyPage() {
                 <span className="text-xs font-bold tracking-wide text-emerald-700">Üniversite E-postası Doğrulanmış</span>
               </div>
             )}
-            {!hasIban ? (
+            {isMoneyTask && !hasIban ? (
               <div className="flex items-center gap-3 text-red-500 justify-center md:justify-start">
                 <FiX className="w-5 h-5 shrink-0 stroke-[2.5]" />
                 <span className="text-xs font-bold tracking-wide">Banka Bilgileri (IBAN) Girilmemiş</span>
               </div>
-            ) : (
+            ) : isMoneyTask && hasIban ? (
               <div className="flex items-center gap-3 text-emerald-650 justify-center md:justify-start">
                 <FiCheckCircle className="w-5 h-5 shrink-0 text-emerald-600" />
                 <span className="text-xs font-bold tracking-wide text-emerald-700">Banka Bilgileri Girilmiş</span>
               </div>
-            )}
+            ) : null}
           </div>
 
           {/* Action Buttons */}
@@ -261,8 +260,6 @@ export default function ApplyPage() {
     );
   }
 
-  const isMoneyTask = task.reward_type?.toLowerCase() === 'money';
-  const isProjectTask = !task.reward_type || ['money', 'certificate', 'recommendation'].includes(task.reward_type.toLowerCase());
   const hasFixedBudget = Boolean(task.reward_amount && task.reward_amount.toString().trim() !== '' && task.reward_amount.toString() !== '0');
 
   const steps = [
@@ -340,9 +337,9 @@ export default function ApplyPage() {
             </div>
 
             {/* StepsTracker in Sidebar */}
-            <div className="py-4 border-t border-b border-[#DFDED6]">
-              <h4 className="text-[10px] font-bold text-[#565e74] uppercase tracking-wider mb-4">Başvuru Aşamaları</h4>
-              <StepsTracker steps={steps} currentStepId={currentStep} layout="inline" />
+            <div className="py-5 border-t border-b border-[#DFDED6]">
+              <h4 className="text-[10px] font-bold text-[#565e74] uppercase tracking-wider mb-5">Başvuru Aşamaları</h4>
+              <StepsTracker steps={steps} currentStepId={currentStep} layout="vertical" />
             </div>
 
             {/* Task and Terms details */}
@@ -420,7 +417,7 @@ export default function ApplyPage() {
                       title="Gereksinim Onayı"
                     >
                       <div className="bg-[#fffdf9] border border-[#dfded6] p-5 rounded-2xl mb-4 select-none">
-                        <p className="text-[10px] font-extrabold text-[#565e74] uppercase tracking-wider mb-3">Bu görev için aranan temel yetenekler:</p>
+                        <p className="text-[10px] font-bold text-[#565e74] uppercase tracking-wider mb-3">BU GÖREV İÇİN ARANAN TEMEL YETENEKLER:</p>
                         <div className="flex flex-wrap gap-2">
                           {task.requiredSkills && task.requiredSkills.length > 0 ? (
                             task.requiredSkills.map((s: any, idx) => (
@@ -524,4 +521,4 @@ export default function ApplyPage() {
       </MainSection>
     </div>
   );
-}
+} 

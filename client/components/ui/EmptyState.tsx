@@ -13,8 +13,7 @@ export default function EmptyState({
   icon: Icon = FiInbox 
 }: EmptyStateProps) {
   return (
-    <div className="w-full h-full min-h-[250px] bg-[#F1F0EA] rounded-2xl border border-[#dfded6] shadow-2xs p-12 text-center text-gray-500 flex flex-col items-center justify-center">
-      <Icon className="w-12 h-12 text-[#004d40]/10 mb-3" />
+    <div className="w-full h-full min-h-[250px] bg-transparent p-12 text-center text-gray-500 flex flex-col items-center justify-center">
       <h3 className="font-bold text-gray-900 mb-1">{title}</h3>
       <p className="text-xs text-[#565e74] font-medium max-w-xs mx-auto">
         {message}

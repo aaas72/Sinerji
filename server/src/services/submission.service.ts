@@ -3,9 +3,10 @@ import { AppError } from '../utils/AppError';
 import { createSubmissionSchema } from '../utils/validation';
 import { z } from 'zod';
 import { MatchingService } from './matching.service';
-
+import { MailService } from './mail.service';
 
 const matchingService = new MatchingService();
+const mailService = new MailService();
 
 export class SubmissionService {
   async createSubmission(studentId: number, taskId: number, data: z.infer<typeof createSubmissionSchema>) {
@@ -21,6 +22,10 @@ export class SubmissionService {
 
     if (task.status !== 'Open' && task.status !== 'open') {
       throw new AppError('Task is not open for submissions', 400);
+    }
+
+    if (task.deadline && new Date(task.deadline) < new Date()) {
+      throw new AppError('Görev başvuru süresi dolmuştur.', 400);
     }
 
     // Enforce Student Profile Completion requirements
@@ -42,7 +47,7 @@ export class SubmissionService {
         throw new AppError('Hesabınız doğrulanmamış. Lütfen başvurmadan önce e-Devlet Öğrenci Belgeniz ile profilinizi doğrulayın.', 403);
     }
 
-    if (!student.sub_merchant_key) {
+    if (task.reward_type === 'money' && !student.sub_merchant_key) {
         throw new AppError('Banka hesap (IBAN) bilgileriniz girilmemiş. Lütfen başvurmadan önce profil ayarlarınızdan IBAN adresinizi tanımlayın.', 400);
     }
 
@@ -166,6 +171,11 @@ export class SubmissionService {
       if (submission.task.company_user_id !== companyUserId) {
           throw new AppError('Not authorized to update this submission', 403);
       }
+      if (status === 'approved') {
+          if (submission.status !== 'submitted') {
+              throw new AppError('Çalışma henüz teslim edilmediği için onaylanamaz ve ödeme serbest bırakılamaz.', 400);
+          }
+      }
 
       let paymentStatusUpdate = undefined;
       
@@ -188,22 +198,103 @@ export class SubmissionService {
               const errMsg = error.response?.data?.error || error.message;
               throw new AppError(`Ödeme serbest bırakma işlemi microservice tarafında başarısız oldu: ${errMsg}`, error.response?.status || 500);
           }
+      } else if (status === 'rejected' && submission.payment_status === 'escrow_locked' && submission.payment_transaction_id) {
+          await this.cancelPayment(submission.payment_transaction_id);
+          paymentStatusUpdate = 'cancelled';
       }
 
-      return prisma.submission.update({
+      let guaranteeTokenUpdate = undefined;
+      const validRewardTypes = ['Internship', 'Certificate', 'Recommendation', 'internship', 'certificate', 'recommendation'];
+      if (status === 'approved' && submission.task.reward_type && validRewardTypes.includes(submission.task.reward_type)) {
+          const crypto = require('crypto');
+          guaranteeTokenUpdate = crypto.randomUUID();
+      }
+
+      const updatedSubmission = await prisma.submission.update({
           where: { id: submissionId },
           data: { 
               status,
-              ...(paymentStatusUpdate ? { payment_status: paymentStatusUpdate } : {})
+              ...(paymentStatusUpdate ? { payment_status: paymentStatusUpdate } : {}),
+              ...(guaranteeTokenUpdate ? { guarantee_token: guaranteeTokenUpdate } : {})
           },
           include: {
               student: {
-                  include: { user: { select: { email: true } } }
+                  include: { user: { select: { email: true, first_name: true, last_name: true } } }
               },
               review: true,
-              task: true
+              task: {
+                  include: { company: true }
+              }
           }
       });
+
+      // Check Task Completion
+      const activeSubmissions = await prisma.submission.findMany({
+        where: {
+          task_id: submission.task_id,
+          status: { in: ['offered', 'accepted', 'submitted', 'approved', 'reviewed'] }
+        }
+      });
+
+      if (activeSubmissions.length > 0) {
+        const allFinished = activeSubmissions.every((sub: any) => ['approved', 'reviewed'].includes(sub.status));
+        if (allFinished) {
+          await prisma.task.update({
+            where: { id: submission.task_id },
+            data: { status: 'Completed' }
+          });
+        }
+      } else if (submission.task.status === 'in_progress') {
+        // If there are no active submissions left (e.g. all were rejected)
+        await prisma.task.update({
+          where: { id: submission.task_id },
+          data: { status: 'Open' }
+        });
+      }
+
+      return updatedSubmission;
+  }
+
+  async offerUnpaidSubmission(submissionId: number, companyUserId: number) {
+    const submission = await prisma.submission.findUnique({
+      where: { id: submissionId },
+      include: {
+        task: { include: { company: true } },
+        student: { include: { user: true } }
+      }
+    });
+
+    if (!submission) throw new AppError('Submission not found', 404);
+    if (submission.task.company_user_id !== companyUserId) throw new AppError('Not authorized', 403);
+    if (submission.task.reward_type === 'money') throw new AppError('Bu görev ücretlidir. Lütfen ödeme yapın.', 400);
+    
+    if (submission.status === 'pending') {
+        const acceptedSubmissionsCount = await prisma.submission.count({
+          where: {
+            task_id: submission.task_id,
+            status: { in: ['offered', 'accepted', 'submitted', 'approved', 'reviewed'] }
+          }
+        });
+        const positions = submission.task.positions || 1;
+        if (acceptedSubmissionsCount >= positions) {
+          throw new AppError('Görev için belirlenen kontenjan dolmuştur.', 400);
+        }
+    }
+
+    const updatedSubmission = await prisma.submission.update({
+        where: { id: submissionId },
+        data: { status: 'offered' },
+        include: { task: { include: { company: true } }, student: { include: { user: true } } }
+    });
+
+    await mailService.sendOfferEmail(
+        updatedSubmission.student.user.email,
+        updatedSubmission.student.full_name,
+        updatedSubmission.task.title,
+        updatedSubmission.task.company.company_name
+    );
+
+    return updatedSubmission;
   }
 
   async paySubmission(submissionId: number, companyUserId: number, cardData: any, buyerEmail: string) {
@@ -215,7 +306,9 @@ export class SubmissionService {
             company: true
           }
         },
-        student: true
+        student: {
+          include: { user: true }
+        }
       }
     });
 
@@ -229,6 +322,19 @@ export class SubmissionService {
 
     if (submission.payment_status === 'escrow_locked' || submission.payment_status === 'released') {
       throw new AppError('Ödeme zaten yapıldı veya serbest bırakıldı.', 400);
+    }
+
+    if (submission.status === 'pending') {
+      const acceptedSubmissionsCount = await prisma.submission.count({
+        where: {
+          task_id: submission.task_id,
+          status: { in: ['offered', 'accepted', 'submitted', 'approved', 'reviewed'] }
+        }
+      });
+      const positions = submission.task.positions || 1;
+      if (acceptedSubmissionsCount >= positions) {
+        throw new AppError('Görev için belirlenen kontenjan dolmuştur.', 400);
+      }
     }
 
     const subMerchantKey = submission.student.sub_merchant_key;
@@ -276,7 +382,7 @@ export class SubmissionService {
           payment_id: paymentId,
           payment_transaction_id: paymentTransactionId,
           payment_status: 'escrow_locked',
-          status: 'accepted'
+          status: 'offered'
         },
         include: {
           task: true,
@@ -284,11 +390,13 @@ export class SubmissionService {
         }
       });
 
-      // Update Task status to in_progress
-      await prisma.task.update({
-        where: { id: submission.task_id },
-        data: { status: 'in_progress' }
-      });
+      // Send Email Offer
+      await mailService.sendOfferEmail(
+        submission.student.user.email,
+        submission.student.full_name,
+        submission.task.title,
+        submission.task.company.company_name
+      );
 
       return updatedSubmission;
     } catch (error: any) {
@@ -324,5 +432,109 @@ export class SubmissionService {
       }
     });
   }
-}
 
+  async respondToOffer(submissionId: number, studentUserId: number, accept: boolean) {
+    const submission = await prisma.submission.findUnique({
+      where: { id: submissionId },
+      include: { task: true }
+    });
+
+    if (!submission) throw new AppError('Submission not found', 404);
+    if (submission.student_user_id !== studentUserId) {
+      throw new AppError('Not authorized', 403);
+    }
+    if (submission.status !== 'offered') {
+      throw new AppError('Geçerli bir teklif bulunmamaktadır.', 400);
+    }
+
+    if (accept) {
+      const updatedSubmission = await prisma.submission.update({
+        where: { id: submissionId },
+        data: { status: 'accepted' },
+        include: { task: true, student: true }
+      });
+
+      // Check if task positions are filled before setting to in_progress
+      const acceptedCount = await prisma.submission.count({
+        where: {
+          task_id: submission.task_id,
+          status: { in: ['accepted', 'submitted', 'approved', 'reviewed'] }
+        }
+      });
+
+      if (acceptedCount >= (submission.task.positions || 1)) {
+        await prisma.task.update({
+          where: { id: submission.task_id },
+          data: { status: 'in_progress' }
+        });
+      }
+
+      return updatedSubmission;
+    } else {
+      // Reject Offer
+      let paymentStatusUpdate = undefined;
+      if (submission.payment_status === 'escrow_locked' && submission.payment_transaction_id) {
+        await this.cancelPayment(submission.payment_transaction_id);
+        paymentStatusUpdate = 'cancelled';
+      }
+
+      const updatedSubmission = await prisma.submission.update({
+        where: { id: submissionId },
+        data: { 
+          status: 'rejected',
+          ...(paymentStatusUpdate ? { payment_status: paymentStatusUpdate } : {})
+        },
+        include: { task: true, student: true }
+      });
+      
+      return updatedSubmission;
+    }
+  }
+  
+  private async cancelPayment(paymentTransactionId: string) {
+    const paymentServiceUrl = process.env.PAYMENT_SERVICE_URL || 'http://localhost:5001';
+    const axios = require('axios');
+    try {
+      const response = await axios.post(`${paymentServiceUrl}/api/payments/cancel`, {
+        paymentTransactionId
+      });
+      if (!response.data || !response.data.success) {
+        throw new AppError(response.data?.error || 'Ödeme iptal edilemedi.', 400);
+      }
+      return true;
+    } catch (error: any) {
+      if (error instanceof AppError) throw error;
+      const errMsg = error.response?.data?.error || error.message;
+      throw new AppError(`Ödeme iptal işlemi microservice tarafında başarısız oldu: ${errMsg}`, error.response?.status || 500);
+    }
+  }
+
+  async getGuaranteeDetails(token: string) {
+    const submission = await prisma.submission.findUnique({
+      where: { guarantee_token: token },
+      include: {
+        student: {
+          include: { user: { select: { first_name: true, last_name: true } } }
+        },
+        task: {
+          include: { company: { select: { company_name: true } } }
+        }
+      }
+    });
+
+    if (!submission) {
+      throw new AppError('Geçersiz veya süresi dolmuş sertifika kodu.', 404);
+    }
+    if (submission.status !== 'approved' && submission.status !== 'reviewed') {
+      throw new AppError('Bu çalışma henüz onaylanmamış.', 400);
+    }
+
+    return {
+      studentName: `${submission.student.user.first_name} ${submission.student.user.last_name}`,
+      companyName: submission.task.company.company_name,
+      taskTitle: submission.task.title,
+      completedAt: submission.submitted_at, // or updated_at, submitted_at is fine for now
+      rewardType: submission.task.reward_type
+    };
+  }
+}

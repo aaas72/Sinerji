@@ -146,12 +146,73 @@ export default function StudentSettingsPage() {
   const [codeSent, setCodeSent] = useState(false);
   const [emailLoading, setEmailLoading] = useState(false);
   const [devCode, setDevCode] = useState("");
+  const [timerSeconds, setTimerSeconds] = useState(0);
+
+  // Load remaining timer on mount to persist across page refreshes
+  useEffect(() => {
+    const sentAtStr = localStorage.getItem("uni_email_code_sent_at");
+    const codeSentStr = localStorage.getItem("uni_email_code_sent");
+    const savedEmail = localStorage.getItem("uni_email_code_address");
+    
+    if (codeSentStr === "true" && sentAtStr) {
+      const sentAt = parseInt(sentAtStr, 10);
+      const elapsedSeconds = Math.floor((Date.now() - sentAt) / 1000);
+      const remaining = 120 - elapsedSeconds;
+      
+      if (remaining > 0) {
+        setCodeSent(true);
+        setTimerSeconds(remaining);
+        if (savedEmail) {
+          setUniEmail(savedEmail);
+        }
+      } else {
+        localStorage.removeItem("uni_email_code_sent_at");
+        localStorage.removeItem("uni_email_code_sent");
+        localStorage.removeItem("uni_email_code_address");
+      }
+    }
+  }, []);
 
   useEffect(() => {
-    if (user?.studentProfile?.university_email) {
+    let interval: NodeJS.Timeout;
+    if (codeSent && timerSeconds > 0) {
+      interval = setInterval(() => {
+        setTimerSeconds((prev) => {
+          if (prev <= 1) {
+            localStorage.removeItem("uni_email_code_sent_at");
+            localStorage.removeItem("uni_email_code_sent");
+            localStorage.removeItem("uni_email_code_address");
+            return 0;
+          }
+          return prev - 1;
+        });
+      }, 1000);
+    }
+    return () => {
+      if (interval) clearInterval(interval);
+    };
+  }, [codeSent, timerSeconds]);
+
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, "0")}`;
+  };
+
+  const resetEmailVerificationState = () => {
+    setCodeSent(false);
+    setDevCode("");
+    setTimerSeconds(0);
+    localStorage.removeItem("uni_email_code_sent_at");
+    localStorage.removeItem("uni_email_code_sent");
+    localStorage.removeItem("uni_email_code_address");
+  };
+
+  useEffect(() => {
+    if (user?.studentProfile?.university_email && !codeSent) {
       setUniEmail(user.studentProfile.university_email);
     }
-  }, [user]);
+  }, [user, codeSent]);
 
   const handleSendEmailCode = async (e: React.MouseEvent) => {
     e.preventDefault();
@@ -164,6 +225,13 @@ export default function StudentSettingsPage() {
       const res = await studentService.sendUniversityEmailVerification(uniEmail);
       showToast(res.message, "success");
       setCodeSent(true);
+      setTimerSeconds(120); // 2 minutes countdown
+      
+      // Save state to localStorage to persist across refreshes
+      localStorage.setItem("uni_email_code_sent_at", Date.now().toString());
+      localStorage.setItem("uni_email_code_sent", "true");
+      localStorage.setItem("uni_email_code_address", uniEmail);
+
       if (res.code) {
         setDevCode(res.code);
       }
@@ -184,9 +252,7 @@ export default function StudentSettingsPage() {
     try {
       await studentService.verifyUniversityEmail(emailCode);
       showToast("Üniversite e-postanız başarıyla doğrulandı!", "success");
-      setCodeSent(false);
-      setEmailCode("");
-      setDevCode("");
+      resetEmailVerificationState();
       setShowEmailEdit(false);
       await checkAuth();
     } catch (err: any) {
@@ -378,18 +444,6 @@ export default function StudentSettingsPage() {
                         <span className="text-[10px] uppercase tracking-wider text-[#8b91a0] font-semibold">Kayıtlı E-posta Adresi</span>
                         <p className="font-bold text-[#0b1c30] mt-0.5">{user.studentProfile?.university_email}</p>
                       </div>
-                      <div className="pt-2 border-t border-[#dfded6]/40 flex justify-end">
-                        <button
-                          type="button"
-                          onClick={() => {
-                            setUniEmail(user.studentProfile?.university_email || "");
-                            setShowEmailEdit(true);
-                          }}
-                          className="text-xs font-bold text-[#004d40] hover:text-[#00342b] hover:underline"
-                        >
-                          E-postayı Değiştir / Güncelle
-                        </button>
-                      </div>
                     </div>
                   </div>
                 ) : (
@@ -430,7 +484,7 @@ export default function StudentSettingsPage() {
                         <div className="flex gap-2">
                           <FormButton
                             type="button"
-                            onClick={() => { setCodeSent(false); setDevCode(""); }}
+                            onClick={() => resetEmailVerificationState()}
                             variant="outline"
                             className="!rounded-full px-6 text-xs"
                           >
@@ -439,7 +493,7 @@ export default function StudentSettingsPage() {
                           {showEmailEdit && (
                             <FormButton
                               type="button"
-                              onClick={() => { setCodeSent(false); setShowEmailEdit(false); setDevCode(""); }}
+                              onClick={() => { resetEmailVerificationState(); setShowEmailEdit(false); }}
                               variant="outline"
                               className="!rounded-full px-6 text-xs"
                             >
@@ -453,7 +507,18 @@ export default function StudentSettingsPage() {
                     {codeSent && (
                       <div className="bg-gradient-to-br from-[#ffffff] to-[#fafaf9] border border-[#dfded6]/60 p-5 rounded-2xl shadow-[0_2px_12px_rgba(0,0,0,0.01)] animate-slideDown space-y-4">
                         <div>
-                          <h4 className="text-sm font-bold text-[#00342b]">Doğrulama Kodunu Girin</h4>
+                          <div className="flex items-center justify-between gap-4">
+                            <h4 className="text-sm font-bold text-[#00342b]">Doğrulama Kodunu Girin</h4>
+                            {timerSeconds > 0 ? (
+                              <span className="text-xs font-mono font-bold text-[#565e74] shrink-0">
+                                {formatTime(timerSeconds)}
+                              </span>
+                            ) : (
+                              <span className="text-xs font-bold text-[#565e74] shrink-0">
+                                Süre Doldu
+                              </span>
+                            )}
+                          </div>
                           <p className="text-xs text-[#565e74] mt-1">Lütfen e-posta adresinize gönderilen 6 haneli kodu aşağıdaki alana girin.</p>
                         </div>
                         
@@ -465,15 +530,30 @@ export default function StudentSettingsPage() {
                             placeholder="123456"
                             maxLength={6}
                             className="!rounded-full pl-5 text-xs"
+                            disabled={timerSeconds === 0 || emailLoading}
                           />
-                          <FormButton
-                            type="button"
-                            onClick={handleVerifyEmailCode}
-                            isLoading={emailLoading}
-                            className="!rounded-full px-8 text-xs bg-[#004d40] hover:bg-[#00342b]"
-                          >
-                            Kodu Doğrula
-                          </FormButton>
+                          <div className="flex gap-2 w-full sm:w-auto">
+                            {timerSeconds > 0 ? (
+                              <FormButton
+                                type="button"
+                                onClick={handleVerifyEmailCode}
+                                isLoading={emailLoading}
+                                disabled={emailLoading}
+                                className="!rounded-full px-8 text-xs bg-[#004d40] hover:bg-[#00342b]"
+                              >
+                                Kodu Doğrula
+                              </FormButton>
+                            ) : (
+                              <FormButton
+                                type="button"
+                                onClick={handleSendEmailCode}
+                                isLoading={emailLoading}
+                                className="!rounded-full px-6 text-xs bg-[#e28743] hover:bg-[#c97537] text-white"
+                              >
+                                Yeni Kod Gönder
+                              </FormButton>
+                            )}
+                          </div>
                         </div>
                       </div>
                     )}

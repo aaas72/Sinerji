@@ -50,8 +50,10 @@ export interface Submission {
         id: number;
         title: string;
         budget?: string | null;
+        reward_type?: string | null;
         company?: {
             company_name: string;
+            logo_url?: string | null;
         };
     };
 }

@@ -399,6 +399,10 @@ export class StudentService {
       throw new AppError('Öğrenci profili bulunamadı.', 404);
     }
 
+    if (profile.is_university_email_verified) {
+      throw new AppError('Üniversite e-posta adresiniz zaten doğrulanmış durumda. Değişiklik yapılamaz.', 400);
+    }
+
     const verificationCode = Math.floor(100000 + Math.random() * 900000).toString();
 
     await prisma.studentProfile.update({
@@ -440,12 +444,12 @@ export class StudentService {
       throw new AppError('Geçersiz veya süresi dolmuş doğrulama kodu.', 400);
     }
 
-    // Expiration check: 3 minutes (180,000 milliseconds)
-    const expirationLimit = 3 * 60 * 1000;
+    // Expiration check: 2 minutes (120,000 milliseconds)
+    const expirationLimit = 2 * 60 * 1000;
     if (profile.university_email_code_sent_at) {
       const timePassed = Date.now() - new Date(profile.university_email_code_sent_at).getTime();
       if (timePassed > expirationLimit) {
-        throw new AppError('Doğrulama kodunun süresi dolmuş (3 dakika). Lütfen yeni bir kod isteyin.', 400);
+        throw new AppError('Doğrulama kodunun süresi dolmuş (2 dakika). Lütfen yeni bir kod isteyin.', 400);
       }
     }
 

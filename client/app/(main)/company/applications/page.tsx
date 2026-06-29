@@ -185,7 +185,7 @@ export default function ApplicationsPage() {
       </FilterContainer>
 
       {/* Applications List */}
-      <section className="border border-[#dfded6] rounded-2xl divide-y divide-[#dfded6] relative bg-white/50 mt-4">
+      <section className="bg-white border border-[#dfded6] rounded-2xl divide-y divide-[#dfded6] relative mt-4">
         {loading ? (
           <div className="flex justify-center items-center py-20">
             <FiLoader className="w-8 h-8 text-[#00342b] animate-spin" />
@@ -198,7 +198,7 @@ export default function ApplicationsPage() {
         ) : filteredApps.length > 0 ? (
           <>
             {visibleApps.map((app) => (
-              <div key={app.id} onClick={() => setSelectedApp(app)} className="p-4 flex items-center group cursor-pointer bg-transparent border border-transparent hover:rounded-none hover-card-effect transition-colors">
+              <div key={app.id} onClick={() => setSelectedApp(app)} className="p-4 flex items-center group cursor-pointer bg-transparent border border-transparent hover:rounded-none hover-card-effect">
                 <div className="flex items-center gap-4 min-w-0 flex-1">
                   <div className="w-12 h-12 rounded-full bg-[#00342b]/5 border border-[#dfded6] flex items-center justify-center text-[#00342b] font-bold text-sm shrink-0">
                     {app.studentInitials}
@@ -307,33 +307,22 @@ export default function ApplicationsPage() {
             </div>
 
             {/* Modal Footer / Actions */}
-            <div className="p-6 border-t border-[#dfded6] bg-gray-50 flex flex-col sm:flex-row items-center justify-end gap-3 shrink-0">
-              {selectedApp.status === "pending" ? (
-                <>
-                  <PrimaryButton
-                    variant="outline"
-                    className="w-full sm:w-auto px-6 text-red-600 hover:text-red-700 hover:bg-red-50 hover:border-red-200"
-                    onClick={() => handleUpdateStatus("rejected")}
-                    isLoading={actionLoading}
-                    icon={FiXCircle}
-                  >
-                    Reddet
-                  </PrimaryButton>
-                  <PrimaryButton
-                    variant="primary"
-                    className="w-full sm:w-auto px-8 bg-green-600 hover:bg-green-700 border-none shadow-lg shadow-green-600/20"
-                    onClick={() => handleUpdateStatus("approved")}
-                    isLoading={actionLoading}
-                    icon={FiCheckCircle}
-                  >
-                    Kabul Et
-                  </PrimaryButton>
-                </>
-              ) : (
-                <div className="w-full text-center text-sm font-medium text-gray-500">
-                  Bu başvuru değerlendirildi.
-                </div>
-              )}
+            <div className="p-6 border-t border-[#dfded6] bg-gray-50 flex flex-col sm:flex-row items-center justify-between gap-3 shrink-0">
+              <div className="w-full sm:w-auto text-sm font-bold">
+                {selectedApp.status === "pending" && <span className="text-gray-500">Durum: Bekliyor</span>}
+                {selectedApp.status === "offered" && <span className="text-[#e28743]">Durum: Teklif Gönderildi. Öğrencinin yanıtı bekleniyor...</span>}
+                {selectedApp.status === "accepted" && <span className="text-[#004d40]">Durum: Öğrenci çalışıyor...</span>}
+                {selectedApp.status === "submitted" && <span className="text-[#00342b]">Durum: Çalışma teslim edildi.</span>}
+                {(selectedApp.status === "approved" || selectedApp.status === "reviewed") && <span className="text-green-600">Durum: Tamamlandı.</span>}
+                {selectedApp.status === "rejected" && <span className="text-red-500">Durum: Reddedildi.</span>}
+              </div>
+              <PrimaryButton
+                variant="primary"
+                className="w-full sm:w-auto px-6 bg-[#00342b] hover:bg-[#004d40] border-none shadow-lg shadow-[#00342b]/20"
+                onClick={() => router.push(`/company/tasks/${selectedApp.taskId}/applicants/${selectedApp.id}`)}
+              >
+                İşlem Yap (Gelişmiş Panel)
+              </PrimaryButton>
             </div>
           </div>
         </div>

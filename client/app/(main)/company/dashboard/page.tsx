@@ -166,7 +166,7 @@ export default function CompanyDashboardPage() {
               </Link>
           </div>
 
-          <div className="border border-[#dfded6] rounded-2xl divide-y divide-[#dfded6] relative">
+          <div className="bg-white border border-[#dfded6] rounded-2xl divide-y divide-[#dfded6] relative overflow-hidden">
             {stats.recentApplications.length === 0 ? (
               <div className="p-8 text-center text-[#565e74] bg-transparent">
                 <FiUsers className="w-12 h-12 text-[#00342b]/10 mx-auto mb-3 animate-pulse" />
@@ -225,7 +225,7 @@ export default function CompanyDashboardPage() {
         <section className="lg:col-span-4">
           <h2 className="text-[20px] font-semibold leading-[28px] text-[#0b1c30] mb-6">Active Tasks</h2>
 
-          <div className="border border-[#dfded6] rounded-2xl divide-y divide-[#dfded6] relative mb-6">
+          <div className="bg-white border border-[#dfded6] rounded-2xl divide-y divide-[#dfded6] relative mb-6 overflow-hidden">
             {stats.recentTasks.length === 0 ? (
               <div className="p-8 text-center text-[#565e74] bg-transparent">
                 <FiBriefcase className="w-12 h-12 text-[#00342b]/10 mx-auto mb-3" />

@@ -65,7 +65,7 @@ export class MailService {
    * @param studentName Student full name
    */
   async sendVerificationCode(to: string, code: string, studentName: string): Promise<boolean> {
-    const from = process.env.SMTP_FROM || '"Sinerji" <noreply@sinerji.com>';
+    const from = process.env.SMTP_FROM || `"Sinerji" <${process.env.SMTP_USER}>`;
     const subject = 'Sinerji - Üniversite E-posta Doğrulama Kodu';
 
     const htmlContent = `
@@ -256,74 +256,74 @@ export class MailService {
           }
         </style>
       </head>
-      <body>
-        <div class="email-wrapper">
-          <div class="header-bg">
-            <h1 class="header-title">Sinerji</h1>
-          </div>
-          
-          <div class="card-container">
-            <div class="badge-container">
-              <span class="badge-icon">✓</span>
-            </div>
-            
-            <span class="badge-sub">Security Verification</span>
-            <h2 class="headline">Identity Confirmation</h2>
-            <p class="intro-text">
-              Merhaba <strong>${studentName}</strong>,<br><br>
-              Sinerji üniversite portalı çift aşamalı öğrenci kimlik doğrulama işlemini tamamlamak için lütfen aşağıdaki tek kullanımlık güvenlik kodunu kullanın.
-            </p>
-            
-            <div class="otp-box">
-              <span class="otp-label">Doğrulama Kodunuz</span>
-              <div class="otp-code">${code}</div>
-              <div class="expiry-text">
-                ⏱ Geçerlilik süresi: 3 dakikadır
-              </div>
-            </div>
-            
-            <div style="margin-top: 24px;">
-              <a href="http://localhost:3000/student/settings" class="cta-btn">Portala Devam Et</a>
-            </div>
-            
-            <div style="margin-top: 12px;">
-              <a href="#" class="security-link">İşlemi siz başlatmadıysanız hesabınızı güvenceye alın</a>
-            </div>
-            
-            <div class="divider"></div>
-            
-            <table width="100%" cellpadding="0" cellspacing="0" border="0">
-              <tr>
-                <td style="text-align: left; vertical-align: top; width: 60%;">
-                  <h3 style="font-family: 'Outfit', sans-serif; font-size: 16px; font-weight: 600; color: #00342b; margin: 0 0 8px 0;">Akademik Güvenilirlik</h3>
-                  <p style="font-size: 12px; line-height: 18px; color: #707975; margin: 0;">
-                    Sinerji, akademik verilerinizi ve kişisel kayıtlarınızı korumak için en yüksek güvenlik standartlarını uygular.
-                  </p>
-                </td>
-                <td style="text-align: right; width: 40%; padding-left: 20px;">
-                  <img src="https://lh3.googleusercontent.com/aida-public/AB6AXuAxWfG-JKfxT3CMenypM0pKFbPvhpcyh_dJ2lDzf-iOIi0-Em3wIO-l1T63b6hHRB4_fPFHbWwEwe7URZ1r6Nquq5Ta6Rvpf4wawbl2zmShWDRu6geDMbHUlzmbp3L4Ssxmap_uKzmyi4G2JJglkJk9wVQdvmuPIbYBzC7-Zldf0SX2BTp3GSieaKcTvn6pPyL08hSv0_ThIAoVOgHz9Yi-5aAPmuuUkRTQ1BbqtoNskl8xiHGD6dItv4pfevZR8MBWo__zsLevPRwZ" 
-                       style="width: 120px; height: 80px; object-fit: cover; border-radius: 8px; filter: grayscale(30%);" 
-                       alt="University architecture">
-                </td>
-              </tr>
-            </table>
-          </div>
-          
-          <div class="footer">
-            <div class="footer-title">SINERJI UNIVERSITY</div>
-            <p class="footer-text">
-              © 2026 Sinerji University Verification Portal. All rights reserved.
-            </p>
-            <div class="footer-links">
-              <a href="#">Gizlilik Politikası</a>
-              <a href="#">Destek Talebi</a>
-              <a href="#">Abonelikten Çık</a>
-            </div>
-            <div class="encrypted-badge">
-              🔒 ENCRYPTED TRANSACTION
-            </div>
-          </div>
-        </div>
+      <body style="margin:0;padding:0;background-color:#f6f5f0;">
+        <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#f6f5f0;">
+          <tr>
+            <td align="center" style="padding-bottom:50px;">
+
+              <!-- Header -->
+              <table width="100%" cellpadding="0" cellspacing="0" border="0" style="background-color:#00342b;">
+                <tr>
+                  <td align="center" style="padding:14px 0;">
+                    <h1 style="font-family:'Outfit',sans-serif;font-size:22px;font-weight:700;color:#ffffff;letter-spacing:0.05em;margin:0;text-transform:uppercase;">Sinerji</h1>
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Card -->
+              <table width="540" cellpadding="0" cellspacing="0" border="0" align="center" style="max-width:540px;width:100%;background:#ffffff;border-radius:16px;border:1px solid rgba(223,222,214,0.8);box-shadow:0 20px 40px -10px rgba(0,77,64,0.06);margin-top:-40px;">
+                <tr>
+                  <td align="center" style="padding:40px;">
+
+                    <!-- Badge -->
+                    <div style="width:64px;height:64px;border-radius:50%;background-color:rgba(148,211,193,0.15);border:1px solid rgba(148,211,193,0.3);margin:0 auto 24px auto;text-align:center;line-height:64px;">
+                      <span style="color:#004d40;font-size:30px;font-weight:bold;line-height:64px;">✓</span>
+                    </div>
+
+                    <span style="font-family:'Inter',sans-serif;font-size:11px;font-weight:700;color:#735c00;letter-spacing:0.15em;text-transform:uppercase;display:block;margin-bottom:8px;">Security Verification</span>
+                    <h2 style="font-family:'Outfit',sans-serif;font-size:26px;font-weight:700;color:#00342b;margin:0 0 16px 0;letter-spacing:-0.01em;">Identity Confirmation</h2>
+                    <p style="font-size:14px;line-height:22px;color:#707975;max-width:400px;margin:0 auto 32px auto;text-align:center;">
+                      Merhaba <strong>${studentName}</strong>,<br><br>
+                      Sinerji üniversite portalı çift aşamalı öğrenci kimlik doğrulama işlemini tamamlamak için lütfen aşağıdaki tek kullanımlık güvenlik kodunu kullanın.
+                    </p>
+
+                    <!-- OTP Box -->
+                    <div style="padding:20px 0 28px 0;text-align:center;">
+                      <span style="font-size:11px;font-weight:700;color:#707975;letter-spacing:0.1em;text-transform:uppercase;display:block;margin-bottom:12px;">Doğrulama Kodunuz</span>
+                      <div style="font-family:'Outfit',sans-serif;font-size:42px;font-weight:700;color:#00342b;letter-spacing:0.25em;margin:0 0 10px 0;">${code}</div>
+                      <div style="font-size:11px;color:#707975;text-align:center;">⏱ Geçerlilik süresi: 2 dakikadır</div>
+                    </div>
+
+                    <!-- CTA Button -->
+                    <div style="margin-top:24px;margin-bottom:20px;">
+                      <a href="http://localhost:3000/student/settings" style="display:inline-block;background-color:#00342b;color:#ffffff;font-family:'Inter',sans-serif;font-size:14px;font-weight:600;text-decoration:none;padding:14px 36px;border-radius:12px;box-shadow:0 10px 20px rgba(0,52,43,0.15);">Portala Devam Et</a>
+                    </div>
+
+
+
+                  </td>
+                </tr>
+              </table>
+
+              <!-- Footer -->
+              <table width="540" cellpadding="0" cellspacing="0" border="0" align="center" style="max-width:540px;width:100%;padding-top:32px;">
+                <tr>
+                  <td align="center">
+                    <div style="font-size:11px;font-weight:700;color:#707975;letter-spacing:0.15em;margin-bottom:12px;text-transform:uppercase;">SINERJI UNIVERSITY</div>
+                    <p style="font-size:12px;color:#707975;line-height:18px;margin:0 0 16px 0;">© 2026 Sinerji University Verification Portal. All rights reserved.</p>
+                    <div>
+                      <a href="#" style="font-size:11px;color:#707975;text-decoration:none;margin:0 10px;">Gizlilik Politikası</a>
+                      <a href="#" style="font-size:11px;color:#707975;text-decoration:none;margin:0 10px;">Destek Talebi</a>
+                      <a href="#" style="font-size:11px;color:#707975;text-decoration:none;margin:0 10px;">Abonelikten Çık</a>
+                    </div>
+                    <div style="margin-top:24px;font-size:9px;font-weight:700;color:#bfc9c4;letter-spacing:0.1em;">🔒 ENCRYPTED TRANSACTION</div>
+                  </td>
+                </tr>
+              </table>
+
+            </td>
+          </tr>
+        </table>
       </body>
       </html>
     `;
@@ -340,7 +340,13 @@ export class MailService {
           subject,
           html: htmlContent,
         });
-        this.writeDebugLog(`SUCCESS: Verification email sent successfully to ${to}`);
+        this.writeDebugLog(`SUCCESS: Verification email sent successfully!
+           - From: ${from}
+           - To: ${to}
+           - Subject: ${subject}
+           - SMTP Host: ${process.env.SMTP_HOST}
+           - SMTP Port: ${process.env.SMTP_PORT}
+           - Verification Code: ${code}`);
         logger.info(`[MailService] Verification email sent successfully to ${to}`);
         return true;
       } catch (error: any) {
@@ -375,6 +381,96 @@ Verification Code: ${code}
 ${htmlContent}
 =============================================================================
 `);
+    return false;
+  }
+
+  /**
+   * Sends an offer email to the student.
+   */
+  async sendOfferEmail(to: string, studentName: string, taskTitle: string, companyName: string): Promise<boolean> {
+    const from = process.env.SMTP_FROM || `"Sinerji" <${process.env.SMTP_USER}>`;
+    const subject = `Sinerji - Yeni İş Teklifi: ${taskTitle}`;
+
+    const htmlContent = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="utf-8">
+      </head>
+      <body style="margin:0;padding:20px;font-family:sans-serif;background-color:#f6f5f0;">
+        <div style="max-width:540px;margin:0 auto;background:#fff;padding:40px;border-radius:16px;">
+          <h2>Tebrikler ${studentName}! 🎉</h2>
+          <p><strong>${companyName}</strong> şirketi, <strong>"${taskTitle}"</strong> başlıklı göreviniz için başvurunuzu onayladı ve ödeme güvence altına alındı.</p>
+          <p>Görevi kabul etmek veya reddetmek için lütfen Sinerji portalına giriş yapın.</p>
+          <a href="http://localhost:3000/student/applications" style="display:inline-block;padding:12px 24px;background-color:#00342b;color:#fff;text-decoration:none;border-radius:8px;margin-top:20px;">Başvurularıma Git</a>
+        </div>
+      </body>
+      </html>
+    `;
+
+    this.writeDebugLog(`Attempting to send offer email to: ${to}`);
+
+    if (this.transporter) {
+      try {
+        await this.transporter.sendMail({
+          from,
+          to,
+          subject,
+          html: htmlContent,
+        });
+        logger.info(`[MailService] Offer email sent successfully to ${to}`);
+        return true;
+      } catch (error: any) {
+        logger.error(`[MailService] Failed to send offer email to ${to}:`, error);
+      }
+    } else {
+      logger.info(`[MOCK EMAIL] Offer Email sent to ${to} for task ${taskTitle}`);
+    }
+    return false;
+  }
+
+  /**
+   * Sends an internship guarantee certificate email to the student.
+   */
+  async sendInternshipGuaranteeEmail(to: string, studentName: string, companyName: string, guaranteeUrl: string): Promise<boolean> {
+    const from = process.env.SMTP_FROM || `"Sinerji" <${process.env.SMTP_USER}>`;
+    const subject = `Tebrikler! ${companyName} şirketinden Resmi Başarı Onayı kazandınız`;
+
+    const htmlContent = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <meta charset="utf-8">
+      </head>
+      <body style="margin:0;padding:20px;font-family:sans-serif;background-color:#f6f5f0;">
+        <div style="max-width:540px;margin:0 auto;background:#fff;padding:40px;border-radius:16px;">
+          <h2>Tebrikler ${studentName}! 🎉</h2>
+          <p><strong>${companyName}</strong> şirketi, tamamladığınız görev sonrasında size bir staj, sertifika veya tavsiye sunduğunu resmi olarak onayladı.</p>
+          <p>Şirketin bu taahhüdünü gösteren dijital kabul belgeniz oluşturuldu.</p>
+          <a href="${guaranteeUrl}" style="display:inline-block;padding:12px 24px;background-color:#00342b;color:#fff;text-decoration:none;border-radius:8px;margin-top:20px;">Kabul Belgesini Görüntüle</a>
+        </div>
+      </body>
+      </html>
+    `;
+
+    this.writeDebugLog(`Attempting to send guarantee email to: ${to}`);
+
+    if (this.transporter) {
+      try {
+        await this.transporter.sendMail({
+          from,
+          to,
+          subject,
+          html: htmlContent,
+        });
+        logger.info(`[MailService] Guarantee email sent successfully to ${to}`);
+        return true;
+      } catch (error: any) {
+        logger.error(`[MailService] Failed to send guarantee email to ${to}:`, error);
+      }
+    } else {
+      logger.info(`[MOCK EMAIL] Guarantee Email sent to ${to}`);
+    }
     return false;
   }
 }

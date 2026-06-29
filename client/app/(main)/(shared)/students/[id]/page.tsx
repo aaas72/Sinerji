@@ -268,6 +268,35 @@ export default function ProfilePage() {
               </div>
             </SectionCard>
 
+            {/* Guaranteed Certificates & Recommendations */}
+            {profile.submissions && profile.submissions.some((sub: any) => sub.guarantee_token) && (
+              <SectionCard title="Doğrulanmış Başarılar" icon={FiCheckCircle}>
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  {profile.submissions.filter((sub: any) => sub.guarantee_token).map((sub: any) => (
+                    <div key={sub.id} className="p-4 border border-[#004d40]/20 rounded-xl bg-gradient-to-br from-[#004d40]/5 to-transparent flex flex-col justify-between hover:border-[#004d40]/40 transition-colors">
+                      <div>
+                        <div className="flex justify-between items-start mb-2">
+                          <h4 className="font-bold text-[#00342b] text-sm">{sub.task.title}</h4>
+                          <span className="text-[10px] font-bold px-2 py-1 bg-[#004d40] text-white rounded-md uppercase">
+                            {sub.task.reward_type === 'Internship' || sub.task.reward_type?.toLowerCase() === 'internship' ? 'Staj' : sub.task.reward_type === 'Certificate' || sub.task.reward_type?.toLowerCase() === 'certificate' ? 'Sertifika' : 'Tavsiye'}
+                          </span>
+                        </div>
+                        <p className="text-xs text-[#565e74] mb-4">
+                          <span className="font-semibold text-[#004d40]">{sub.task.company.company_name}</span> tarafından onaylanmıştır.
+                        </p>
+                      </div>
+                      <div className="pt-3 border-t border-[#004d40]/10 flex justify-between items-center">
+                         <span className="text-[10px] font-mono text-[#565e74] bg-white px-2 py-1 rounded border border-gray-100" title={sub.guarantee_token}>Ref: {sub.guarantee_token.split('-')[0]}</span>
+                         <a href={`/company/verify-guarantee`} target="_blank" rel="noopener noreferrer" className="text-xs font-bold text-[#004d40] hover:underline flex items-center gap-1">
+                           Doğrula <FiGlobe size={12} />
+                         </a>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+              </SectionCard>
+            )}
+
             {/* Badges & Achievements */}
             <SectionCard title="Rozetler ve Başarılar" icon={FiAward}>
               {profile.submissions && profile.submissions.some((sub: any) => sub.review?.awardedBadges?.length > 0) ? (

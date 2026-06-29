@@ -56,6 +56,9 @@ export class TaskService {
         },
         requiredSkills: {
           include: { skill: true }
+        },
+        _count: {
+          select: { submissions: true }
         }
       }
     });
@@ -114,6 +117,18 @@ export class TaskService {
     if (!task) throw new AppError('Task not found', 404);
     if (task.company_user_id !== companyUserId) throw new AppError('Not authorized to update this task', 403);
 
+    // Prevent update if there are active submissions
+    const activeSubmissionsCount = await prisma.submission.count({
+      where: {
+        task_id: taskId,
+        status: { in: ['offered', 'accepted', 'submitted', 'approved', 'reviewed'] }
+      }
+    });
+
+    if (activeSubmissionsCount > 0) {
+      throw new AppError('Görev üzerinde aktif çalışanlar veya teklifler bulunduğu için görev güncellenemez.', 400);
+    }
+
     const { hardSkills, softSkills, requiredSkills, deadline, ...updateData } = data;
 
     await prisma.task.update({
@@ -150,6 +165,21 @@ export class TaskService {
 
     if (!task) throw new AppError('Task not found', 404);
     if (task.company_user_id !== companyUserId) throw new AppError('Not authorized to delete this task', 403);
+
+    // Prevent deletion if there are active submissions
+    const activeSubmissionsCount = await prisma.submission.count({
+      where: {
+        task_id: taskId,
+        OR: [
+          { status: { in: ['offered', 'accepted', 'submitted', 'approved', 'reviewed'] } },
+          { payment_status: { in: ['escrow_locked', 'released'] } }
+        ]
+      }
+    });
+
+    if (activeSubmissionsCount > 0) {
+      throw new AppError('Görev üzerinde aktif çalışanlar veya kilitli ödemeler bulunduğu için görev silinemez.', 400);
+    }
 
     // Delete relations first or rely on cascade
     // Delete reviews and awarded badges for submissions of this task

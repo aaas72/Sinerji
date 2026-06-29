@@ -22,6 +22,11 @@ export class ReviewService {
             throw new AppError('Not authorized to review this submission', 403);
         }
 
+        // Verify the submission is completed and approved
+        if (submission.status !== 'approved') {
+            throw new AppError('Görev henüz tamamlanıp onaylanmadığı için değerlendirme yapılamaz.', 400);
+        }
+
         // Check if review already exists
         const existingReview = await prisma.review.findUnique({
             where: { submission_id: submissionId }

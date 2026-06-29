@@ -14,7 +14,7 @@ export interface StepItem {
 interface StepsTrackerProps {
   steps: StepItem[];
   currentStepId?: number | string;
-  layout?: "horizontal" | "inline";
+  layout?: "horizontal" | "inline" | "vertical";
   className?: string;
 }
 
@@ -56,6 +56,52 @@ export default function StepsTracker({
       isInactive,
     };
   });
+
+  if (layout === "vertical") {
+    return (
+      <div className={cn("flex flex-col select-none", className)}>
+        {stepStates.map((step, index) => {
+          const isLast = index === stepStates.length - 1;
+          const isSegmentCompleted = step.isCompleted && (stepStates[index + 1]?.isCompleted || stepStates[index + 1]?.isActive);
+
+          return (
+            <div key={step.id} className="flex flex-col">
+              <div className="flex items-center gap-3">
+                <div
+                  className={cn(
+                    "w-8 h-8 rounded-full flex items-center justify-center font-bold text-xs transition-all duration-300 z-10 shrink-0",
+                    step.isActive && "bg-[#e28743] text-white shadow-sm scale-105",
+                    step.isCompleted && "bg-[#00342b] text-white shadow-sm",
+                    step.isInactive && "bg-[#e9e8e2] text-gray-500 border border-[#dfded6]"
+                  )}
+                >
+                  {step.isCompleted ? <FiCheck size={16} className="stroke-[3]" /> : index + 1}
+                </div>
+                <span
+                  className={cn(
+                    "text-[13px] transition-colors duration-300 font-semibold",
+                    step.isActive && "text-[#e28743]",
+                    step.isCompleted && "text-[#00342b]",
+                    step.isInactive && "text-gray-400 font-medium"
+                  )}
+                >
+                  {step.title}
+                </span>
+              </div>
+              {!isLast && (
+                <div
+                  className={cn(
+                    "ml-[15px] w-[2px] h-6 my-1 transition-all duration-500 rounded-full",
+                    isSegmentCompleted ? "bg-[#00342b]" : "bg-[#DFDED6]"
+                  )}
+                />
+              )}
+            </div>
+          );
+        })}
+      </div>
+    );
+  }
 
   if (layout === "inline") {
     return (

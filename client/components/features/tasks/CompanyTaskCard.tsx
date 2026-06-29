@@ -43,24 +43,21 @@ export default function CompanyTaskCard({
     };
   }, []);
 
-  const statusConfig: Record<string, { label: string; cls: string; hasDot?: boolean; dotCls?: string }> = {
-    Open: { label: "Açık", cls: "bg-[#065043]/10 text-[#065043]", hasDot: true, dotCls: "bg-[#065043]" },
-    "In Progress": { label: "Devam ediyor", cls: "bg-[#004d40]/10 text-[#004d40]", hasDot: true, dotCls: "bg-[#004d40]" },
-    Completed: { label: "Tamamlandı", cls: "bg-[#3f4945]/15 text-[#3f4945]" },
-    Review: { label: "İnceleniyor", cls: "bg-[#e28743]/10 text-[#e28743]", hasDot: true, dotCls: "bg-[#e28743] animate-pulse" },
+  const statusConfig: Record<string, { label: string; cls: string }> = {
+    Open: { label: "Açık", cls: "text-[#065043]" },
+    "In Progress": { label: "Devam ediyor", cls: "text-[#004d40]" },
+    Completed: { label: "Tamamlandı", cls: "text-[#3f4945]" },
+    Review: { label: "İnceleniyor", cls: "text-[#e28743]" },
   };
 
   const currentStatus = statusConfig[status] || statusConfig.Open;
 
   return (
-    <div className="bg-transparent border border-[#dfded6] rounded-2xl p-6 hover:rounded-none relative group hover-card-effect">
+    <div className="bg-white border border-[#dfded6] rounded-2xl p-6 hover:rounded-none relative group hover-card-effect">
       <div className="flex justify-between items-start mb-4">
         <div>
            <div className="flex items-center gap-3 mb-2">
-                <span className={cn("px-4 py-1.5 rounded-full text-[12px] font-semibold tracking-[0.05em] leading-[16px] shrink-0 inline-flex items-center gap-1.5", currentStatus.cls)}>
-                  {currentStatus.hasDot && (
-                    <span className={cn("w-1.5 h-1.5 rounded-full", currentStatus.dotCls)} />
-                  )}
+                <span className={cn("text-[12px] font-semibold tracking-[0.05em] leading-[16px] shrink-0 inline-flex items-center", currentStatus.cls)}>
                   {currentStatus.label}
                 </span>
                 <span className="text-gray-400 text-xs font-semibold">{date}</span>

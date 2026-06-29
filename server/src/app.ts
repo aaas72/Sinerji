@@ -24,6 +24,7 @@ import supportRoutes from './routes/support.routes';
 import messageRoutes from './routes/message.routes';
 import notificationRoutes from './routes/notification.routes';
 import uploadRoutes from './routes/upload.routes';
+import cronRoutes from './routes/cron.routes';
 
 // Load environment variables early
 dotenv.config({ path: path.resolve(__dirname, '../.env') });
@@ -76,6 +77,7 @@ app.use('/api/support', supportRoutes);
 app.use('/api/messages', messageRoutes);
 app.use('/api/notifications', notificationRoutes);
 app.use('/api/upload', uploadRoutes);
+app.use('/api/cron', cronRoutes);
 app.get('/', (req, res) => {
     res.json({ message: 'Welcome to the Backend API' });
 });

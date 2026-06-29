@@ -153,6 +153,7 @@ model Submission {
   payment_id              String?
   payment_transaction_id  String?
   payment_status          String?        @default("unpaid")
+  guarantee_token         String?        @unique
   review                  Review?
   student                 StudentProfile @relation(fields: [student_user_id], references: [user_id])
   task                    Task           @relation(fields: [task_id], references: [id])
