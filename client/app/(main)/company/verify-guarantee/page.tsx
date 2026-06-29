@@ -115,35 +115,62 @@ export default function CompanyVerifyGuaranteePage() {
               </p>
             </div>
 
-            <div className="bg-white rounded-2xl p-8 border border-[#f1f0ea] shadow-sm">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <div>
-                  <p className="text-[11px] font-extrabold text-[#565e74] uppercase tracking-wider mb-2">Öğrenci</p>
-                  <p className="text-lg font-bold text-[#00342b]">{data.studentName}</p>
+            <div className="bg-white rounded-md border-[8px] border-[#f1f0ea] p-1.5 shadow-sm w-full relative overflow-hidden mt-4">
+              <div className="border border-[#dfded6] p-8 md:p-12 bg-[#faf9f6] flex flex-col items-center text-center relative z-10 min-h-[400px] justify-center">
+                
+                {/* Watermark */}
+                <div className="absolute inset-0 flex items-center justify-center opacity-[0.03] pointer-events-none z-0">
+                  <FiAward className="w-64 h-64 text-[#004d40]" />
                 </div>
-                <div>
-                  <p className="text-[11px] font-extrabold text-[#565e74] uppercase tracking-wider mb-2">Veren Şirket</p>
-                  <p className="text-lg font-bold text-[#00342b]">{data.companyName}</p>
-                </div>
-                <div className="md:col-span-2">
-                  <p className="text-[11px] font-extrabold text-[#565e74] uppercase tracking-wider mb-2">Görev Adı</p>
-                  <p className="text-lg font-bold text-[#00342b]">{data.taskTitle}</p>
-                </div>
-                <div>
-                  <p className="text-[11px] font-extrabold text-[#565e74] uppercase tracking-wider mb-2">Kazanım Türü</p>
-                  <span className="inline-flex items-center px-3 py-1 rounded-md text-[13px] font-bold uppercase tracking-wider bg-[#004d40]/10 text-[#004d40]">
-                    {data.rewardType === 'Internship' || data.rewardType?.toLowerCase() === 'internship' ? 'Staj Hakkı' : data.rewardType === 'Certificate' || data.rewardType?.toLowerCase() === 'certificate' ? 'Sertifika' : 'Tavsiye'}
-                  </span>
-                </div>
-                <div>
-                  <p className="text-[11px] font-extrabold text-[#565e74] uppercase tracking-wider mb-2">Tamamlanma Tarihi</p>
-                  <p className="text-lg font-bold text-[#00342b]">
-                    {new Date(data.completedAt).toLocaleDateString('tr-TR', {
-                      year: 'numeric',
-                      month: 'long',
-                      day: 'numeric'
-                    })}
+
+                <div className="relative z-10 w-full flex flex-col items-center">
+                  {/* Header */}
+                  <h4 className="text-[13px] md:text-sm font-extrabold text-[#e28743] tracking-[0.2em] uppercase mb-4">
+                    {data.rewardType === 'Internship' || data.rewardType?.toLowerCase() === 'internship' ? 'Staj Garanti Belgesi' : data.rewardType === 'Certificate' || data.rewardType?.toLowerCase() === 'certificate' ? 'Başarı Sertifikası' : 'Tavsiye Mektubu'}
+                  </h4>
+                  
+                  <p className="text-[#565e74] text-sm md:text-[15px] mb-8 max-w-lg leading-relaxed">
+                    Bu belge, aşağıdaki öğrencinin belirtilen görevi başarıyla tamamladığını onaylamak amacıyla <strong>{data.companyName}</strong> adına Sinerji tarafından düzenlenmiştir.
                   </p>
+
+                  {/* Student Name */}
+                  <h2 className="text-3xl md:text-4xl font-black text-[#00342b] mb-6">
+                    {data.studentName}
+                  </h2>
+
+                  {/* Divider */}
+                  <div className="w-12 h-1 bg-[#e28743] mb-6 rounded-full opacity-80"></div>
+
+                  {/* Task Title */}
+                  <p className="text-[#004d40] text-lg md:text-xl font-bold mb-2 max-w-xl">
+                    {data.taskTitle}
+                  </p>
+                  
+                  {/* Footer Area */}
+                  <div className="mt-12 flex justify-between items-end w-full px-2 md:px-8 border-t border-[#dfded6]/60 pt-6">
+                    <div className="text-left">
+                      <p className="text-[10px] font-extrabold text-[#565e74] uppercase tracking-widest mb-1">Tarih</p>
+                      <p className="text-[13px] font-bold text-[#00342b]">
+                        {new Date(data.completedAt).toLocaleDateString('tr-TR', {
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric'
+                        })}
+                      </p>
+                    </div>
+                    
+                    <div className="flex flex-col items-center">
+                       <div className="w-10 h-10 bg-[#004d40]/10 rounded-full flex items-center justify-center mb-1.5">
+                         <FiCheckCircle className="text-[#004d40] w-5 h-5" />
+                       </div>
+                       <p className="text-[10px] font-extrabold text-[#004d40] uppercase tracking-widest">Doğrulandı</p>
+                    </div>
+
+                    <div className="text-right">
+                      <p className="text-[10px] font-extrabold text-[#565e74] uppercase tracking-widest mb-1">Kurum</p>
+                      <p className="text-[13px] font-bold text-[#00342b]">Sinerji Platformu</p>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
