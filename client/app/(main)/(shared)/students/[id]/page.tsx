@@ -348,7 +348,7 @@ export default function ProfilePage() {
                   ))}
                 </div>
               ) : (
-                <div className="text-center py-8 text-[#565e74] border border-dashed border-[#f1f0ea] rounded-xl bg-gray-50/50">
+                <div className="text-center py-4 text-[#565e74]">
                   <p className="text-sm font-medium">Henüz bir rozet veya başarı kazanılmadı.</p>
                 </div>
               )}
@@ -376,7 +376,7 @@ export default function ProfilePage() {
                   ))}
                 </div>
               ) : (
-                <div className="text-center py-8 text-[#565e74] border border-dashed border-[#f1f0ea] rounded-xl bg-gray-50/50">
+                <div className="text-center py-4 text-[#565e74]">
                   <p className="text-sm font-medium">Henüz bir tavsiye bulunmuyor.</p>
                 </div>
               )}
