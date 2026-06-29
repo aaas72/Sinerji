@@ -20,6 +20,7 @@ import {
   FiSave,
   FiImage,
   FiCheck,
+  FiLinkedin,
 } from "react-icons/fi";
 import PageLoadingSkeleton from "@/components/ui/PageLoadingSkeleton";
 import EmptyState from "@/components/ui/EmptyState";
@@ -63,6 +64,7 @@ export default function EditCompanyProfilePage() {
     location: string;
     logo_url: string;
     website_url: string;
+    linkedin_url: string;
     description: string;
   };
   const [form, setForm] = useState<FormData>({
@@ -71,6 +73,7 @@ export default function EditCompanyProfilePage() {
     location: "",
     logo_url: "",
     website_url: "",
+    linkedin_url: "",
     description: "",
   });
 
@@ -85,6 +88,7 @@ export default function EditCompanyProfilePage() {
           location: profileData.location ?? "",
           logo_url: profileData.logo_url ?? "",
           website_url: profileData.website_url ?? "",
+          linkedin_url: profileData.linkedin_url ?? "",
           description: profileData.description ?? "",
         });
       } catch (error) {
@@ -125,6 +129,7 @@ export default function EditCompanyProfilePage() {
         location: form.location || null,
         logo_url: form.logo_url || null,
         website_url: form.website_url || null,
+        linkedin_url: form.linkedin_url || null,
         description: form.description || null,
       } as Partial<CompanyProfile>);
       
@@ -269,6 +274,11 @@ export default function EditCompanyProfilePage() {
             <div className="flex items-center gap-4 py-3.5 border-b border-[#f1f0ea] -mx-6 px-6 bg-gray-50/30">
               <FiGlobe className="text-[#004d40] shrink-0" size={18} />
               <input {...field("website_url")} placeholder="Website (https://...)" className="w-full bg-white border border-gray-200 focus:border-[#004d40] rounded-lg px-3 py-1.5 text-sm text-gray-800 outline-none transition-all" />
+            </div>
+
+            <div className="flex items-center gap-4 py-3.5 border-b border-[#f1f0ea] -mx-6 px-6 bg-gray-50/30">
+              <FiLinkedin className="text-[#004d40] shrink-0" size={18} />
+              <input {...field("linkedin_url")} placeholder="LinkedIn URL" className="w-full bg-white border border-gray-200 focus:border-[#004d40] rounded-lg px-3 py-1.5 text-sm text-gray-800 outline-none transition-all" />
             </div>
           </SectionCard>
           

@@ -8,7 +8,7 @@ import { CompanyProfile } from "@/types/company";
 import { Task } from "@/types/task";
 import TaskCard from '@/components/features/tasks/TaskCard';
 import SectionCard from "@/components/ui/cards/SectionCard";
-import { FiMapPin, FiGlobe, FiBriefcase, FiMail, FiEdit2, FiStar, FiTrendingUp, FiLayers } from "react-icons/fi";
+import { FiMapPin, FiGlobe, FiBriefcase, FiMail, FiEdit2, FiStar, FiTrendingUp, FiLayers, FiLinkedin } from "react-icons/fi";
 
 import PageLoadingSkeleton from "@/components/ui/PageLoadingSkeleton";
 
@@ -197,15 +197,7 @@ export default function CompanyProfilePage() {
 
           {/* Contact Info */}
           <SectionCard icon={FiMail} title="İletişim Bilgileri">
-            <div className="space-y-1">
-               {profile.website_url && (
-                 <div className="flex items-center gap-4 py-3.5 border-b border-[#dfded6]/40 last:border-0 transition-colors -mx-2 px-2 hover:bg-[#dfded6]/20 rounded-xl">
-                   <FiGlobe className="text-[#004d40] shrink-0" size={18} />
-                   <a href={profile.website_url} target="_blank" rel="noopener noreferrer" className="text-[14px] font-medium text-[#0b1c30] hover:text-[#004d40] transition-colors truncate">
-                     {profile.website_url}
-                   </a>
-                 </div>
-               )}
+            <div className="space-y-1 pb-2">
                <div className="flex items-center gap-4 py-3.5 border-b border-[#dfded6]/40 last:border-0 transition-colors -mx-2 px-2 hover:bg-[#dfded6]/20 rounded-xl">
                  <FiMail className="text-[#004d40] shrink-0" size={18} />
                  <span className="text-[14px] font-medium text-[#0b1c30] truncate">{profile.user.email}</span>
@@ -216,6 +208,20 @@ export default function CompanyProfilePage() {
                    <span className="text-[14px] font-medium text-[#0b1c30] truncate">{profile.location}</span>
                  </div>
                )}
+            </div>
+
+            {/* Social Links Row */}
+            <div className="flex items-center gap-3 pt-4 px-2 border-t border-[#f1f0ea]">
+              {profile.linkedin_url && (
+                <a href={profile.linkedin_url} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full border border-[#f1f0ea] flex items-center justify-center text-[#565e74] hover:text-[#0077b5] hover:border-[#0077b5] transition-colors" title="LinkedIn">
+                  <FiLinkedin size={18} />
+                </a>
+              )}
+              {profile.website_url && (
+                <a href={profile.website_url} target="_blank" rel="noopener noreferrer" className="w-10 h-10 rounded-full border border-[#f1f0ea] flex items-center justify-center text-[#565e74] hover:text-[#004d40] hover:border-[#004d40] transition-colors" title="Website">
+                  <FiGlobe size={18} />
+                </a>
+              )}
             </div>
           </SectionCard>
         </div>

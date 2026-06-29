@@ -56,6 +56,7 @@ export const updateCompanyProfileSchema = z.object({
   company_name: z.string().min(1, "Company name cannot be empty").optional(),
   description: z.string().max(1000, "Description must be less than 1000 characters").optional(),
   website_url: z.string().url("Invalid URL format").optional().or(z.literal('')),
+  linkedin_url: z.string().url().optional().or(z.literal('')),
   industry: z.string().optional(),
   location: z.string().optional(),
   logo_url: z.string().url("Invalid URL format").optional().or(z.literal('')),

@@ -60,6 +60,7 @@ model CompanyProfile {
   company_name           String
   description            String?
   website_url            String?
+  linkedin_url           String?
   industry               String?
   location               String?
   logo_url               String?

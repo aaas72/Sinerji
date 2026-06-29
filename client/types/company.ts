@@ -3,6 +3,7 @@ export interface CompanyProfile {
     company_name: string;
     description: string | null;
     website_url: string | null;
+    linkedin_url: string | null;
     industry: string | null;
     location: string | null;
     logo_url: string | null;
