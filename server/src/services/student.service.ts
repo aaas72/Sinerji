@@ -46,7 +46,7 @@ export class StudentService {
         },
         submissions: {
           where: {
-            status: 'approved',
+            status: { in: ['approved', 'reviewed'] },
           },
           include: {
             task: {
