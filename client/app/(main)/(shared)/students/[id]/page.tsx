@@ -156,11 +156,13 @@ export default function ProfilePage() {
             
             <div className="space-y-2">
               <div className="flex flex-wrap items-center gap-2.5">
-                <StatusBadge 
-                  status={profile.availability_status === "available" ? "active" : "inactive"} 
-                  customLabel={profile.availability_status === "available" ? "Müsait" : "Meşgul"}
-                />
-
+                <span className={`px-2.5 py-1 rounded-md text-[11px] font-bold uppercase tracking-wider ${
+                  profile.availability_status === "available" 
+                    ? "bg-[#004d40]/10 text-[#004d40]" 
+                    : "bg-red-100 text-red-700"
+                }`}>
+                  {profile.availability_status === "available" ? "Müsait" : "Meşgul"}
+                </span>
               </div>
               <h1 className="text-[28px] md:text-[36px] font-bold leading-tight text-[#00342b] font-sans break-words tracking-tight">
                 {profile.full_name}
