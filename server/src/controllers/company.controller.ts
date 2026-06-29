@@ -49,7 +49,7 @@ export const updateMyProfile = async (req: Request, res: Response, next: NextFun
     const validation = updateCompanyProfileSchema.safeParse(req.body);
 
     if (!validation.success) {
-      const errorMessages = (validation.error as any).errors.map((e: any) => e.message).join(', ');
+      const errorMessages = (validation.error as any).issues.map((e: any) => e.message).join(', ');
       return next(new AppError(errorMessages, 400));
     }
 
