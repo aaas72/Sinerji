@@ -15,6 +15,7 @@ import {
   FiX,
   FiList,
   FiMessageSquare,
+  FiCheckCircle,
 } from "react-icons/fi";
 import PrimaryButton from "@/components/ui/PrimaryButton";
 import NotificationBell from "@/components/ui/NotificationBell";
@@ -24,7 +25,6 @@ const navLinks = [
   { href: "/company/tasks", label: "Görevlerim" },
   { href: "/company/applications", label: "Başvurular" },
   { href: "/company/explore", label: "Keşfet" },
-  { href: "/company/verify-guarantee", label: "Sertifika Doğrula" },
 ];
 
 export default function CompanyNavbar() {
@@ -186,6 +186,14 @@ export default function CompanyNavbar() {
                     Profilim
                   </Link>
                   <Link
+                    href="/company/verify-guarantee"
+                    className="flex items-center gap-2 px-4 py-2 text-xs font-semibold text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors"
+                    onClick={() => setIsDropdownOpen(false)}
+                  >
+                    <FiCheckCircle size={14} />
+                    Sertifika Doğrula
+                  </Link>
+                  <Link
                     href="/company/settings"
                     className="flex items-center gap-2 px-4 py-2 text-xs font-semibold text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-colors"
                     onClick={() => setIsDropdownOpen(false)}
@@ -235,6 +243,13 @@ export default function CompanyNavbar() {
                 </Link>
               );
             })}
+            <Link
+              href="/company/verify-guarantee"
+              onClick={() => setIsMobileMenuOpen(false)}
+              className="text-[13px] font-medium transition-all py-2.5 border-b border-gray-50/60 block text-gray-500 hover:text-gray-900"
+            >
+              Sertifika Doğrula
+            </Link>
             <button
               onClick={handleLogout}
               className="w-full text-left flex items-center gap-2 py-2.5 text-xs font-semibold text-red-600 hover:bg-red-50 transition-colors mt-2"
