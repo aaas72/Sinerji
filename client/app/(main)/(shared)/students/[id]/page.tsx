@@ -156,10 +156,10 @@ export default function ProfilePage() {
             
             <div className="space-y-2">
               <div className="flex flex-wrap items-center gap-2.5">
-                <span className={`px-2.5 py-1 rounded-md text-[11px] font-bold uppercase tracking-wider ${
+                <span className={`text-[13px] font-bold uppercase tracking-wider ${
                   profile.availability_status === "available" 
-                    ? "bg-[#004d40]/10 text-[#004d40]" 
-                    : "bg-red-100 text-red-700"
+                    ? "text-[#004d40]" 
+                    : "text-red-700"
                 }`}>
                   {profile.availability_status === "available" ? "Müsait" : "Meşgul"}
                 </span>
