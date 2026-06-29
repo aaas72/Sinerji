@@ -107,8 +107,8 @@ export default function CompanyVerifyGuaranteePage() {
 
       {data && (
         <div className="max-w-3xl mx-auto w-full animate-fadeIn">
-          <SectionCard title="Geçerli Sertifika" icon={() => null} className="border-[#004d40]/30 bg-gradient-to-br from-[#004d40]/5 to-transparent">
-            <div className="flex flex-col items-center text-center mb-6 pt-2">
+          <div className="rounded-2xl border border-[#004d40]/30 bg-gradient-to-br from-[#004d40]/5 to-transparent p-6 md:p-8 transition-all duration-300">
+            <div className="flex flex-col items-center text-center mb-6">
               <h3 className="text-lg font-bold text-[#00342b]">Doğrulanmış Başarı</h3>
               <p className="text-[#565e74] text-[13px] font-medium mt-1">
                 Bu belge Sinerji platformu tarafından resmi olarak onaylanmıştır.
@@ -147,7 +147,7 @@ export default function CompanyVerifyGuaranteePage() {
                 </div>
               </div>
             </div>
-          </SectionCard>
+          </div>
         </div>
       )}
     </div>
