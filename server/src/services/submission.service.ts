@@ -509,7 +509,7 @@ export class SubmissionService {
     }
   }
 
-  async getGuaranteeDetails(token: string) {
+  async getGuaranteeDetails(token: string, type?: string) {
     const submission = await prisma.submission.findUnique({
       where: { guarantee_token: token },
       include: {
@@ -525,6 +525,18 @@ export class SubmissionService {
     if (!submission) {
       throw new AppError('Geçersiz veya süresi dolmuş sertifika kodu.', 404);
     }
+    
+    // Type validation based on frontend tab selection
+    if (type) {
+        const isRec = submission.task.reward_type?.toLowerCase() === 'recommendation';
+        if (type === 'recommendation' && !isRec) {
+             throw new AppError('Geçersiz veya süresi dolmuş sertifika kodu.', 404);
+        }
+        if (type === 'certificate' && isRec) {
+             throw new AppError('Geçersiz veya süresi dolmuş sertifika kodu.', 404);
+        }
+    }
+
     if (submission.status !== 'approved' && submission.status !== 'reviewed') {
       throw new AppError('Bu çalışma henüz onaylanmamış.', 400);
     }

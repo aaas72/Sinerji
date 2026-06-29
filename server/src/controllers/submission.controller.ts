@@ -259,11 +259,12 @@ export class SubmissionController {
   async verifyGuarantee(req: Request, res: Response, next: NextFunction) {
       try {
           const { token } = req.params;
+          const { type } = req.query; // 'certificate' | 'recommendation'
           if (!token) {
               throw new AppError('Sertifika kodu gerekli.', 400);
           }
 
-          const details = await submissionService.getGuaranteeDetails(token);
+          const details = await submissionService.getGuaranteeDetails(token, type as string);
 
           res.status(200).json({
               status: 'success',

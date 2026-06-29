@@ -50,8 +50,10 @@ export const submissionService = {
         const res = await api.post<ApiResponse<SubmissionResponse>>(`/submissions/${submissionId}/offer-response`, { accept: response === 'accept' });
         return res.data.data.submission;
     },
-    async verifyGuarantee(token: string): Promise<{ studentName: string; companyName: string; taskTitle: string; completedAt: string; rewardType: string }> {
-        const response = await api.get<ApiResponse<any>>(`/submissions/verify-guarantee/${token}`);
+    async verifyGuarantee(token: string, type?: string): Promise<{ studentName: string; companyName: string; taskTitle: string; completedAt: string; rewardType: string }> {
+        const response = await api.get<ApiResponse<any>>(`/submissions/verify-guarantee/${token}`, {
+            params: { type }
+        });
         return response.data.data;
     }
 };
