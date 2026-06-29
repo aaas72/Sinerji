@@ -42,7 +42,7 @@ export default function CompanyProfileDrawer({ isOpen, onClose, company }: Compa
           isOpen ? "translate-x-0" : "translate-x-full"
         }`}
       >
-        <div className="w-full h-full hero-gradient [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none]" style={{ overflowY: 'auto' }}>
+        <div className="w-full h-full hero-gradient overflow-hidden">
         {company && (
           <div className="flex flex-col h-full relative z-10">
             {/* Header / Cover (Green Section) */}
