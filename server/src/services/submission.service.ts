@@ -203,7 +203,7 @@ export class SubmissionService {
           paymentStatusUpdate = 'cancelled';
       }
 
-      let guaranteeTokenUpdate = undefined;
+      let guaranteeTokenUpdate: string | undefined = undefined;
       const validRewardTypes = ['Internship', 'Certificate', 'Recommendation', 'internship', 'certificate', 'recommendation'];
       if (status === 'approved' && submission.task.reward_type && validRewardTypes.includes(submission.task.reward_type)) {
           const crypto = require('crypto');
@@ -219,7 +219,7 @@ export class SubmissionService {
           },
           include: {
               student: {
-                  include: { user: { select: { email: true, first_name: true, last_name: true } } }
+                  include: { user: { select: { email: true } } }
               },
               review: true,
               task: {
@@ -514,7 +514,7 @@ export class SubmissionService {
       where: { guarantee_token: token },
       include: {
         student: {
-          include: { user: { select: { first_name: true, last_name: true } } }
+          include: { user: { select: { email: true } } }
         },
         task: {
           include: { company: { select: { company_name: true } } }
@@ -530,7 +530,7 @@ export class SubmissionService {
     }
 
     return {
-      studentName: `${submission.student.user.first_name} ${submission.student.user.last_name}`,
+      studentName: submission.student.full_name,
       companyName: submission.task.company.company_name,
       taskTitle: submission.task.title,
       completedAt: submission.submitted_at, // or updated_at, submitted_at is fine for now

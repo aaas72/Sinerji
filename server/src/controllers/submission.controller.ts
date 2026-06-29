@@ -122,9 +122,7 @@ export class SubmissionController {
           );
 
           if (status === 'approved' && submission.guarantee_token) {
-              const studentName = submission.student?.user?.first_name 
-                ? `${submission.student.user.first_name} ${submission.student.user.last_name}` 
-                : 'Öğrenci';
+              const studentName = submission.student?.full_name || 'Öğrenci';
               const companyName = submission.task?.company?.company_name || 'Sinerji Şirketi';
               
               const guaranteeUrl = `http://localhost:3000/verify/${submission.guarantee_token}`;
