@@ -1,6 +1,6 @@
 import { Request, Response, NextFunction } from 'express';
 import { ReviewService } from '../services/review.service';
-import { createReviewSchema } from '../utils/validation';
+import { createReviewSchema, createCompanyReviewSchema } from '../utils/validation';
 import { AppError } from '../utils/AppError';
 
 const reviewService = new ReviewService();
@@ -33,6 +33,27 @@ export class ReviewController {
       const review = await reviewService.getReview(submissionId);
 
       res.status(200).json({
+        status: 'success',
+        data: { review },
+      });
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  async createCompanyReview(req: Request, res: Response, next: NextFunction) {
+    try {
+      const studentUserId = req.user!.id;
+      const submissionId = parseInt(req.params.submissionId);
+      
+      const validation = createCompanyReviewSchema.safeParse(req.body);
+      if (!validation.success) {
+        throw new AppError(validation.error.issues[0].message, 400);
+      }
+
+      const review = await reviewService.createCompanyReview(studentUserId, submissionId, validation.data);
+
+      res.status(201).json({
         status: 'success',
         data: { review },
       });

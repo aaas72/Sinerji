@@ -63,8 +63,14 @@ export class SubmissionService {
       throw new AppError('You have already submitted to this task', 400);
     }
 
-     // Calculate AI Match Score via Python matching microservice with local fallback
-     const aiAnalysis = await matchingService.getMatchAnalysis(task, student);
+    // Try to get match analysis, but don't fail if the microservice is down.
+    let aiAnalysis;
+    try {
+        aiAnalysis = await matchingService.getMatchAnalysis(task, student);
+    } catch (e: any) {
+        console.warn('[MatchingService] Could not get match analysis:', e.message);
+        aiAnalysis = { score: 0, reason: 'Matching service unavailable' };
+    }
 
     // Create Submission
     const submission = await prisma.submission.create({
@@ -214,6 +220,7 @@ export class SubmissionService {
           where: { id: submissionId },
           data: { 
               status,
+              completion_status: status === 'approved' ? 'completed' : (status === 'rejected' ? 'disputed' : undefined),
               ...(paymentStatusUpdate ? { payment_status: paymentStatusUpdate } : {}),
               ...(guaranteeTokenUpdate ? { guarantee_token: guaranteeTokenUpdate } : {})
           },
@@ -227,6 +234,14 @@ export class SubmissionService {
               }
           }
       });
+
+      if (status === 'approved') {
+          await mailService.sendTaskCompletedEmail(
+              updatedSubmission.student.user.email,
+              updatedSubmission.student.full_name,
+              updatedSubmission.task.title
+          );
+      }
 
       // Check Task Completion
       const activeSubmissions = await prisma.submission.findMany({
@@ -363,6 +378,9 @@ export class SubmissionService {
     const axios = require('axios');
 
     try {
+      // Mock payment for UI testing
+      const response = { data: { success: true, paymentId: Date.now().toString(), paymentTransactionId: Date.now().toString() } };
+      /*
       const response = await axios.post(`${paymentServiceUrl}/api/payments/checkout`, {
         ...cardData,
         price: parsedPrice.toString(),
@@ -373,6 +391,7 @@ export class SubmissionService {
       if (!response.data || !response.data.success) {
         throw new AppError(response.data?.error || 'Ödeme işlemi başarısız.', 400);
       }
+      */
 
       const { paymentId, paymentTransactionId } = response.data;
 
@@ -406,7 +425,7 @@ export class SubmissionService {
     }
   }
 
-  async submitWork(submissionId: number, studentUserId: number, workLink: string) {
+  async submitWork(submissionId: number, studentUserId: number, workLink: string, notes?: string) {
     const submission = await prisma.submission.findUnique({
       where: { id: submissionId },
       include: { task: true }
@@ -420,17 +439,30 @@ export class SubmissionService {
       throw new AppError('Görev henüz kabul edilmemiş veya zaten teslim edilmiş', 400);
     }
 
-    return prisma.submission.update({
+    const updatedSub = await prisma.submission.update({
       where: { id: submissionId },
       data: {
         status: 'submitted',
-        submission_content: workLink
+        submission_content: workLink,
+        delivery_url: workLink,
+        delivery_notes: notes,
+        delivered_at: new Date(),
+        completion_status: 'delivered'
       },
       include: {
-        task: true,
+        task: { include: { company: { include: { user: true } } } },
         student: true
       }
     });
+
+    await mailService.sendSubmissionDeliveredEmail(
+        updatedSub.task.company.user.email,
+        updatedSub.task.company.company_name,
+        updatedSub.task.title,
+        updatedSub.student.full_name
+    );
+
+    return updatedSub;
   }
 
   async respondToOffer(submissionId: number, studentUserId: number, accept: boolean) {

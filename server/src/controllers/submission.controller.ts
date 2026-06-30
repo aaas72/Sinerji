@@ -198,13 +198,13 @@ export class SubmissionController {
       try {
           const studentId = req.user!.id;
           const submissionId = parseInt(req.params.id);
-          const { workLink } = req.body;
+          const { workLink, notes } = req.body;
 
           if (!workLink) {
               throw new AppError('Çalışma linki (workLink) gereklidir.', 400);
           }
 
-          const submission = await submissionService.submitWork(submissionId, studentId, workLink);
+          const submission = await submissionService.submitWork(submissionId, studentId, workLink, notes);
 
           // Notify company
           await notificationService.createNotification(

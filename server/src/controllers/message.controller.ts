@@ -153,7 +153,13 @@ export const sendMessage = async (req: Request, res: Response, next: NextFunctio
         });
 
         if (!activeSubmission) {
-          return next(new AppError('Şirkete mesaj gönderebilmek için öncelikle ilanlarından birine başvurmuş olmanız veya şirketin size mesaj göndermiş olması gerekir.', 403));
+          return next(new AppError('Şirkete mesaj gönderebilmek için göreve kabul edilmiş olmanız veya şirketin size mesaj göndermiş olması gerekir.', 403));
+        }
+
+        // 3. Ensure the submission status allows messaging
+        const allowedStatuses = ['accepted', 'submitted', 'reviewed', 'approved', 'completed'];
+        if (!activeSubmission.status || !allowedStatuses.includes(activeSubmission.status)) {
+          return next(new AppError('Şirkete mesaj gönderebilmek için göreve kabul edilmiş olmanız veya şirketin size mesaj göndermiş olması gerekir.', 403));
         }
       }
     }

@@ -45,7 +45,26 @@ export class CompanyService {
       ? Math.round((hiredStudentsCount / totalApplicationsCount) * 100) 
       : 0;
 
-    return { ...profile, stats: { hiringRate, totalApplicationsCount, hiredStudentsCount } };
+    const ratingAggregate = await prisma.companyReview.aggregate({
+      where: {
+        submission: {
+          task: {
+            company_user_id: userId,
+          },
+        },
+      },
+      _avg: {
+        rating: true,
+      },
+      _count: {
+        rating: true,
+      },
+    });
+
+    const averageRating = ratingAggregate._avg.rating || 0;
+    const reviewCount = ratingAggregate._count.rating || 0;
+
+    return { ...profile, stats: { hiringRate, totalApplicationsCount, hiredStudentsCount, averageRating, reviewCount } };
   }
 
   async getAllCompanies() {

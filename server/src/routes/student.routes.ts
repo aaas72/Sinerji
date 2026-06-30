@@ -4,7 +4,20 @@ import { getAllStudents, getMyProfile, updateMyProfile, addSkill, removeSkill, g
 import { protect, restrictTo } from '../middlewares/auth.middleware';
 
 const router = express.Router();
-const upload = multer({ storage: multer.memoryStorage(), limits: { fileSize: 5 * 1024 * 1024 } });
+const fileFilter = (req: any, file: Express.Multer.File, cb: multer.FileFilterCallback) => {
+    const allowedMimeTypes = ['image/jpeg', 'image/png', 'image/jpg', 'application/pdf'];
+    if (allowedMimeTypes.includes(file.mimetype)) {
+        cb(null, true);
+    } else {
+        cb(new Error('Invalid file type. Only JPEG, PNG, and PDF are allowed.'));
+    }
+};
+
+const upload = multer({ 
+    storage: multer.memoryStorage(), 
+    limits: { fileSize: 5 * 1024 * 1024 },
+    fileFilter 
+});
 
 // Protect all routes after this middleware
 router.use(protect);

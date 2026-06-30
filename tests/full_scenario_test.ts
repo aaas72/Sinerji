@@ -307,6 +307,9 @@ async function main() {
   }
 
   // 4. Basvurular ─────────────────────────────────────────────────────────────
+  console.log(`\n=== 3.5 Ogrenciler Dogrulaniyor ===`);
+  require("child_process").execSync("npx ts-node ../server/scripts/verify_all.ts", { stdio: "inherit" });
+  
   console.log(`\n=== 4. Tum Ogrenciler Gorev ${taskId} icin Basvuruyor ===`);
   for (const s of STUDENTS) {
     const token = studentTokens[s.email];

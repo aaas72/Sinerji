@@ -473,4 +473,62 @@ ${htmlContent}
     }
     return false;
   }
+
+  async sendSubmissionDeliveredEmail(to: string, companyName: string, taskTitle: string, studentName: string): Promise<boolean> {
+    const from = process.env.SMTP_FROM || `"Sinerji" <${process.env.SMTP_USER}>`;
+    const subject = `Sinerji - Görev Teslim Edildi: ${taskTitle}`;
+
+    const htmlContent = `
+      <!DOCTYPE html>
+      <html>
+      <body style="margin:0;padding:20px;font-family:sans-serif;background-color:#f6f5f0;">
+        <div style="max-width:540px;margin:0 auto;background:#fff;padding:40px;border-radius:16px;">
+          <h2>Merhaba ${companyName},</h2>
+          <p><strong>${studentName}</strong>, <strong>"${taskTitle}"</strong> başlıklı görev için çalışmasını teslim etti.</p>
+          <p>Lütfen Sinerji portalına giriş yaparak teslim edilen çalışmayı inceleyin ve onaylayın.</p>
+          <a href="http://localhost:3000/company/tasks" style="display:inline-block;padding:12px 24px;background-color:#00342b;color:#fff;text-decoration:none;border-radius:8px;margin-top:20px;">Görevlere Git</a>
+        </div>
+      </body>
+      </html>
+    `;
+
+    this.writeDebugLog(`Attempting to send delivery email to: ${to}`);
+
+    if (this.transporter) {
+      try {
+        await this.transporter.sendMail({ from, to, subject, html: htmlContent });
+        return true;
+      } catch (error: any) {}
+    }
+    return false;
+  }
+
+  async sendTaskCompletedEmail(to: string, studentName: string, taskTitle: string): Promise<boolean> {
+    const from = process.env.SMTP_FROM || `"Sinerji" <${process.env.SMTP_USER}>`;
+    const subject = `Sinerji - Göreviniz Onaylandı: ${taskTitle}`;
+
+    const htmlContent = `
+      <!DOCTYPE html>
+      <html>
+      <body style="margin:0;padding:20px;font-family:sans-serif;background-color:#f6f5f0;">
+        <div style="max-width:540px;margin:0 auto;background:#fff;padding:40px;border-radius:16px;">
+          <h2>Tebrikler ${studentName}! 🎉</h2>
+          <p><strong>"${taskTitle}"</strong> başlıklı göreviniz şirket tarafından onaylandı!</p>
+          <p>Eğer görev ücretliyse, ödemeniz kısa süre içinde hesabınıza aktarılacaktır.</p>
+          <a href="http://localhost:3000/student/applications" style="display:inline-block;padding:12px 24px;background-color:#00342b;color:#fff;text-decoration:none;border-radius:8px;margin-top:20px;">Portala Git</a>
+        </div>
+      </body>
+      </html>
+    `;
+
+    this.writeDebugLog(`Attempting to send completion email to: ${to}`);
+
+    if (this.transporter) {
+      try {
+        await this.transporter.sendMail({ from, to, subject, html: htmlContent });
+        return true;
+      } catch (error: any) {}
+    }
+    return false;
+  }
 }

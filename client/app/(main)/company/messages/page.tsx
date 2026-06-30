@@ -116,7 +116,8 @@ function CompanyMessagesContent() {
       setNewMessage("");
     } catch (error: any) {
       console.error("Failed to send message", error);
-      alert(error.message || "Mesaj gönderilemedi");
+      const errorMsg = error.response?.data?.message || error.message || "Mesaj gönderilemedi";
+      showToast(errorMsg, "error");
     }
   };
 

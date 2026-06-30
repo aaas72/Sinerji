@@ -12,10 +12,12 @@ import { Skeleton } from "@/components/ui/Skeleton";
 import ListSkeleton from "@/components/ui/ListSkeleton";
 import PageLoadingSkeleton from "@/components/ui/PageLoadingSkeleton";
 import { useSocket } from "@/context/SocketContext";
+import { useToast } from "@/context/ToastContext";
 
 function StudentMessagesContent() {
   const { user } = useAuthStore();
   const searchParams = useSearchParams();
+  const { showToast } = useToast();
   const preSelectedCompanyId = searchParams.get("companyId");
   const { socket, connected } = useSocket();
 
@@ -122,8 +124,10 @@ function StudentMessagesContent() {
       const msg = await messageService.sendMessage(activeContact.id, newMessage.trim());
       setMessages([...messages, msg]);
       setNewMessage("");
-    } catch (error) {
+    } catch (error: any) {
       console.error("Failed to send message", error);
+      const errorMsg = error.response?.data?.message || error.message || "Mesaj gönderilemedi.";
+      showToast(errorMsg, "error");
     }
   };
 

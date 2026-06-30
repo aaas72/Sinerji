@@ -1,6 +1,6 @@
 import prisma from '../lib/prisma';
 import { AppError } from '../utils/AppError';
-import { createReviewSchema } from '../utils/validation';
+import { createReviewSchema, createCompanyReviewSchema } from '../utils/validation';
 import { z } from 'zod';
 
 
@@ -82,5 +82,40 @@ export class ReviewService {
 
         if (!review) throw new AppError('Review not found', 404);
         return review;
+    }
+
+    async createCompanyReview(studentUserId: number, submissionId: number, data: z.infer<typeof createCompanyReviewSchema>) {
+        const submission = await prisma.submission.findUnique({
+            where: { id: submissionId },
+            include: { task: true }
+        });
+
+        if (!submission) {
+            throw new AppError('Submission not found', 404);
+        }
+
+        if (submission.student_user_id !== studentUserId) {
+            throw new AppError('Not authorized', 403);
+        }
+
+        if (submission.status !== 'approved' && submission.status !== 'reviewed') {
+            throw new AppError('Görev henüz tamamlanmadığı için değerlendirme yapılamaz.', 400);
+        }
+
+        const existingReview = await prisma.companyReview.findUnique({
+            where: { submission_id: submissionId }
+        });
+
+        if (existingReview) {
+            throw new AppError('You have already reviewed this company for this task.', 400);
+        }
+
+        return prisma.companyReview.create({
+            data: {
+                submission_id: submissionId,
+                rating: data.rating,
+                feedback: data.feedback
+            }
+        });
     }
 }

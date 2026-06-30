@@ -1,12 +1,12 @@
 {
-  "olusturulma_tarihi": "2026-05-11T09:44:10.693Z",
+  "olusturulma_tarihi": "2026-06-29T21:17:47.897Z",
   "sirket": {
     "email": "techcorp@sinerji-test.com",
     "sifre": "Test@1234",
     "kullanici_id": 1
   },
   "gorev": {
-    "id": 2,
+    "id": 1,
     "baslik": "Full-Stack Web Gelistirici - E-Ticaret Platformu"
   },
   "ogrenciler": [
@@ -357,8 +357,110 @@
     }
   ],
   "ai_siralama": {
-    "task_id": 2,
-    "top_candidates": [],
-    "filtered_out": 0
+    "task_id": 1,
+    "candidates": [
+      {
+        "student_user_id": 2,
+        "score": 100,
+        "filtered": false,
+        "reasons": [
+          "Passed hard filtering and semantic analysis."
+        ],
+        "explanation": "Bu aday, %100.0 eşleşme oranıyla görev için mükemmel bir adaydır.\n\nAnaliz, (React, Node.js, PostgreSQL) gibi temel yeteneklerde mükemmel bir uyum gösteriyor.\n\nÖğrencinin kariyer yolu ve geçmiş deneyimleri bu projenin beklentileriyle derinlemesine örtüşüyor.\n\n📊 Yetenek Uyumu: %100.0 | Bağlamsal Uyum: %70.7",
+        "top_projects": []
+      },
+      {
+        "student_user_id": 6,
+        "score": 100,
+        "filtered": false,
+        "reasons": [
+          "Passed hard filtering and semantic analysis."
+        ],
+        "explanation": "Bu aday, %100.0 eşleşme oranıyla görev için mükemmel bir adaydır.\n\nAnaliz, (React, Node.js, PostgreSQL) gibi temel yeteneklerde mükemmel bir uyum gösteriyor.\n\nÖğrencinin kariyer yolu ve geçmiş deneyimleri bu projenin beklentileriyle derinlemesine örtüşüyor.\n\n📊 Yetenek Uyumu: %100.0 | Bağlamsal Uyum: %68.9",
+        "top_projects": []
+      },
+      {
+        "student_user_id": 7,
+        "score": 99.1912144534142,
+        "filtered": false,
+        "reasons": [
+          "Passed hard filtering and semantic analysis."
+        ],
+        "explanation": "Bu aday, %99.19 eşleşme oranıyla görev için mükemmel bir adaydır.\n\nAnaliz, (React, Node.js, PostgreSQL) gibi temel yeteneklerde mükemmel bir uyum gösteriyor.\n\nÖğrencinin kariyer yolu ve geçmiş deneyimleri bu projenin beklentileriyle derinlemesine örtüşüyor.\n\n📊 Yetenek Uyumu: %100.0 | Bağlamsal Uyum: %73.2",
+        "top_projects": []
+      },
+      {
+        "student_user_id": 4,
+        "score": 99.07693920969822,
+        "filtered": false,
+        "reasons": [
+          "Passed hard filtering and semantic analysis."
+        ],
+        "explanation": "Bu aday, %99.08 eşleşme oranıyla görev için mükemmel bir adaydır.\n\nAnaliz, (React, Node.js, PostgreSQL) gibi temel yeteneklerde mükemmel bir uyum gösteriyor.\n\nÖğrencinin kariyer yolu ve geçmiş deneyimleri bu projenin beklentileriyle derinlemesine örtüşüyor.\n\n📊 Yetenek Uyumu: %100.0 | Bağlamsal Uyum: %64.8",
+        "top_projects": []
+      },
+      {
+        "student_user_id": 5,
+        "score": 98.87707544668567,
+        "filtered": false,
+        "reasons": [
+          "Passed hard filtering and semantic analysis."
+        ],
+        "explanation": "Bu aday, %98.88 eşleşme oranıyla görev için mükemmel bir adaydır.\n\nAnaliz, (React, Node.js, PostgreSQL) gibi temel yeteneklerde mükemmel bir uyum gösteriyor.\n\nÖğrencinin kariyer yolu ve geçmiş deneyimleri bu projenin beklentileriyle derinlemesine örtüşüyor.\n\n📊 Yetenek Uyumu: %100.0 | Bağlamsal Uyum: %64.1",
+        "top_projects": []
+      },
+      {
+        "student_user_id": 8,
+        "score": 98.33751861026013,
+        "filtered": false,
+        "reasons": [
+          "Passed hard filtering and semantic analysis."
+        ],
+        "explanation": "Bu aday, %98.34 eşleşme oranıyla görev için mükemmel bir adaydır.\n\nAnaliz, (React, Node.js, PostgreSQL) gibi temel yeteneklerde mükemmel bir uyum gösteriyor.\n\nÖğrencinin kariyer yolu ve geçmiş deneyimleri bu projenin beklentileriyle derinlemesine örtüşüyor.\n\n📊 Yetenek Uyumu: %100.0 | Bağlamsal Uyum: %70.4",
+        "top_projects": []
+      },
+      {
+        "student_user_id": 11,
+        "score": 97.94635500266479,
+        "filtered": false,
+        "reasons": [
+          "Passed hard filtering and semantic analysis."
+        ],
+        "explanation": "Bu aday, %97.95 eşleşme oranıyla görev için mükemmel bir adaydır.\n\nAnaliz, (React, Node.js, PostgreSQL) gibi temel yeteneklerde mükemmel bir uyum gösteriyor.\n\nÖğrencinin kariyer yolu ve geçmiş deneyimleri bu projenin beklentileriyle derinlemesine örtüşüyor.\n\n📊 Yetenek Uyumu: %100.0 | Bağlamsal Uyum: %69.2",
+        "top_projects": []
+      },
+      {
+        "student_user_id": 9,
+        "score": 96.98689411193374,
+        "filtered": false,
+        "reasons": [
+          "Passed hard filtering and semantic analysis."
+        ],
+        "explanation": "Bu aday, %96.99 eşleşme oranıyla görev için mükemmel bir adaydır.\n\nAnaliz, (React, Node.js, PostgreSQL) gibi temel yeteneklerde mükemmel bir uyum gösteriyor.\n\nÖğrencinin kariyer yolu ve geçmiş deneyimleri bu projenin beklentileriyle derinlemesine örtüşüyor.\n\n📊 Yetenek Uyumu: %100.0 | Bağlamsal Uyum: %66.1",
+        "top_projects": []
+      },
+      {
+        "student_user_id": 10,
+        "score": 96.79884038580943,
+        "filtered": false,
+        "reasons": [
+          "Passed hard filtering and semantic analysis."
+        ],
+        "explanation": "Bu aday, %96.8 eşleşme oranıyla görev için mükemmel bir adaydır.\n\nAnaliz, (React, Node.js, PostgreSQL) gibi temel yeteneklerde mükemmel bir uyum gösteriyor.\n\nÖğrencinin kariyer yolu ve geçmiş deneyimleri bu projenin beklentileriyle derinlemesine örtüşüyor.\n\n📊 Yetenek Uyumu: %100.0 | Bağlamsal Uyum: %65.5",
+        "top_projects": []
+      },
+      {
+        "student_user_id": 3,
+        "score": 96.72705707852859,
+        "filtered": false,
+        "reasons": [
+          "Passed hard filtering and semantic analysis."
+        ],
+        "explanation": "Bu aday, %96.73 eşleşme oranıyla görev için mükemmel bir adaydır.\n\nAnaliz, (React, Node.js, PostgreSQL) gibi temel yeteneklerde mükemmel bir uyum gösteriyor.\n\nÖğrencinin kariyer yolu ve geçmiş deneyimleri bu projenin beklentileriyle derinlemesine örtüşüyor.\n\n📊 Yetenek Uyumu: %100.0 | Bağlamsal Uyum: %57.2",
+        "top_projects": []
+      }
+    ],
+    "filtered_out": 10,
+    "alpha": 0.5
   }
 }

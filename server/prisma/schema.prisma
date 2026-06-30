@@ -145,8 +145,12 @@ model Submission {
   task_id                 Int
   student_user_id         Int
   status                  String?
+  completion_status       String?        @default("pending")
   submission_content      String?
   submitted_at            DateTime       @default(now())
+  delivery_url            String?
+  delivery_notes          String?
+  delivered_at            DateTime?
   ai_match_score          Float?
   estimated_delivery_days Int?
   proposed_budget         String?
@@ -156,6 +160,8 @@ model Submission {
   payment_status          String?        @default("unpaid")
   guarantee_token         String?        @unique
   review                  Review?
+  companyReview           CompanyReview?
+  transaction             Transaction?
   student                 StudentProfile @relation(fields: [student_user_id], references: [user_id])
   task                    Task           @relation(fields: [task_id], references: [id])
 
@@ -261,4 +267,26 @@ model Notification {
   user        User     @relation(fields: [user_id], references: [id])
 
   @@map("notifications")
+}
+
+model Transaction {
+  id              Int        @id @default(autoincrement())
+  submission_id   Int        @unique
+  amount          Decimal    @db.Decimal(10, 2)
+  status          String     @default("held")
+  created_at      DateTime   @default(now())
+  released_at     DateTime?
+  submission      Submission @relation(fields: [submission_id], references: [id])
+
+  @@map("transactions")
+}
+
+model CompanyReview {
+  submission_id Int        @id
+  rating        Int?
+  feedback      String?
+  created_at    DateTime   @default(now())
+  submission    Submission @relation(fields: [submission_id], references: [id])
+
+  @@map("company_reviews")
 }

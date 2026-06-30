@@ -143,3 +143,10 @@ export const createRecommendationSchema = z.object({
   studentUserId: z.number().int().min(1, "Student ID is required"),
   content: z.string().min(10, "Recommendation content must be at least 10 characters"),
 });
+
+export const createCompanyReviewSchema = z.object({
+  rating: z.number().int().min(1).max(5).optional(),
+  feedback: z.string().optional(),
+}).refine(data => data.rating || data.feedback, {
+  message: "Either rating or feedback must be provided"
+});
