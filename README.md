@@ -1,61 +1,101 @@
-# Sinerji - Next-Gen Tech Talent Ecosystem 🚀
+# Sinerji — Tech Talent Ecosystem
 
-Sinerji is an advanced AI-powered platform designed to seamlessly connect university students and junior tech talent with companies through real-world tasks, internships, and mentorship programs. 
+An AI-powered platform that connects university students and junior developers with companies through real, paid tasks. Instead of screening CVs by hand, Sinerji matches people to work by their actual skills, verifies students automatically, and protects both sides with escrow payments.
 
-By leveraging intelligent Skill-Vector Matching, Sinerji ensures that the right candidates are paired with the right opportunities instantly, completely bypassing legacy, manual CV-screening bottlenecks.
+![Next.js](https://img.shields.io/badge/Next.js_16-000000?style=flat-square&logo=nextdotjs&logoColor=white)
+![React](https://img.shields.io/badge/React_19-20232A?style=flat-square&logo=react&logoColor=61DAFB)
+![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white)
+![Express](https://img.shields.io/badge/Express-000000?style=flat-square&logo=express&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=flat-square&logo=postgresql&logoColor=white)
+![Prisma](https://img.shields.io/badge/Prisma-2D3748?style=flat-square&logo=prisma&logoColor=white)
+![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=flat-square&logo=fastapi&logoColor=white)
+![Socket.io](https://img.shields.io/badge/Socket.io-010101?style=flat-square&logo=socketdotio&logoColor=white)
 
-## 🌟 Core Features & Modules
+## Core Features
 
-- **🧠 AI-Powered Skill Matching Engine:** A hybrid algorithm calculating a Match Score based on exact requirement matching (hard score) and NLP-based semantic similarity (semantic score).
-- **🛡️ e-Devlet Student Verification:** An automated Puppeteer-based microservice that verifies Turkish university student documents instantly via the e-Devlet portal.
-- **💳 Escrow Payment System:** Integrated with Iyzico, the platform locks task budgets safely upon agreement and releases funds to the student only upon task completion and company approval.
-- **💬 Real-Time Chat & Notifications:** Powered by Socket.io, enabling seamless, instant communication between companies and students during the task lifecycle.
-- **⏳ Automated Task Lifecycle (Cron Jobs):** System automatically cancels expired pending tasks and refunds escrowed amounts if deadlines pass without action.
-- **🏆 Gamification & Reviews:** Integrated 5-star review systems allow mutual feedback and verifiable badges for completed tasks.
+- **AI skill matching** — a hybrid score that combines exact requirement matching (hard score) with NLP semantic similarity (semantic score), so candidates are ranked by real fit
+- **e-Devlet student verification** — a Puppeteer microservice verifies Turkish university student documents automatically through the e-Devlet portal
+- **Escrow payments** — task budgets are locked with Iyzico when work is agreed and released only after the company approves the delivery
+- **Real-time chat and notifications** — Socket.io keeps companies and students in sync throughout the task lifecycle
+- **Automated lifecycle** — scheduled jobs cancel expired tasks and refund escrowed funds when deadlines pass without action
+- **Reviews and badges** — mutual 5-star reviews and verifiable badges for completed work
 
-## 🏗️ Technical Architecture (Microservices & Monorepo)
+## Architecture
 
-The project follows a decoupled architecture, split into client, main server, and independent microservices:
-- **Client (`/client`):** Built with `Next.js 16`, `React 19`, `TypeScript`, `Tailwind CSS v4`, and `Zod`.
-- **Main Server (`/server`):** Powered by `Node.js`, `Express`, and `TypeScript`. Handles core logic, JWT Auth, and routing.
-- **Database:** `PostgreSQL` managed by the `Prisma` ORM.
-- **Microservices:**
-  - **Matching Service:** Calculates match scores (running on port 8001).
-  - **Payment Service:** Handles Iyzico escrow workflows (running on port 5001).
-  - **Verification Service:** Puppeteer PDF parsing for e-Devlet (running on port 4000).
-
-## ⚙️ Local Development Setup
-
-To run Sinerji locally, follow these steps:
-
-### 1. Environment & Database Setup
-Ensure PostgreSQL is running locally. Create a `.env` file in the `/server` directory:
-```env
-DATABASE_URL="postgresql://user:password@localhost:5432/sinerji_db?schema=public"
-JWT_SECRET="your_secret"
-# See wiki for microservice .env configurations
+```text
+                    ┌────────────────────────────┐
+                    │  Client — Next.js 16       │
+                    └─────────────┬──────────────┘
+                                  │ REST + WebSocket
+                    ┌─────────────▼──────────────┐
+                    │  Main API — Express + TS   │──▶ PostgreSQL (Prisma)
+                    │  auth · tasks · chat · cron│
+                    └──┬──────────┬───────────┬──┘
+                       │          │           │
+        ┌──────────────▼─┐ ┌──────▼───────┐ ┌─▼──────────────────┐
+        │ AI Matching    │ │ Payment      │ │ Student            │
+        │ FastAPI :8001  │ │ Iyzico :5001 │ │ Verification :4000 │
+        └────────────────┘ └──────────────┘ └────────────────────┘
 ```
 
-### 2. Backend (Server & Microservices)
+```text
+Sinerji/
+├── client/                         # Next.js 16, React 19, Tailwind CSS 4, Zod
+├── server/                         # Express + TypeScript API (controllers, services, routes, middlewares)
+├── services/
+│   ├── ai-matching-service/        # Python / FastAPI hybrid matching engine
+│   ├── payment-service/            # Iyzico escrow workflows
+│   └── student-verification/       # Puppeteer e-Devlet document verification
+├── tests/                          # End-to-end scenario and payment-flow scripts
+├── Sinerji.wiki/                   # Project wiki
+└── run_sinerji.ps1                 # Starts every component in one step (Windows)
+```
+
+The matching engine is also published as a standalone repository: **[sinerji-matching-microservice](https://github.com/aaas72/sinerji-matching-microservice)**.
+
+## Getting Started
+
+**Requirements:** Node.js 20+, Python 3.10+, PostgreSQL
+
+### 1. Database and API
+
 ```bash
 cd server
+# .env → DATABASE_URL="postgresql://user:password@localhost:5432/sinerji_db?schema=public"
+#        JWT_SECRET="your_secret"
 npm install
-# Sync database schema & generate client
 npx prisma db push
 npx prisma generate
-
-# Run main server and microservices concurrently
 npm run dev
 ```
 
-### 3. Frontend (Client)
+### 2. Microservices
+
+```bash
+# AI matching (port 8001)
+cd services/ai-matching-service
+pip install -r requirements.txt
+uvicorn main:app --port 8001
+
+# Payments (port 5001)
+cd services/payment-service && npm install && npm run dev
+
+# Student verification (port 4000)
+cd services/student-verification && npm install && npm run dev
+```
+
+Service-specific environment variables are documented in the project wiki.
+
+### 3. Client
+
 ```bash
 cd client
 npm install
-# Run Next.js hot-reloading server
-npm run dev
+npm run dev      # http://localhost:3000
 ```
-The application will be available at `http://localhost:3000`.
 
----
-*Built to empower the next generation of software engineers and builders.*
+On Windows, `./run_sinerji.ps1` starts the API, client and all microservices in separate terminals.
+
+## Author
+
+**Abdellah Sheikh** — [abdellahsheikh.dev](https://abdellahsheikh.dev) · [LinkedIn](https://www.linkedin.com/in/abdellahsheikh)
