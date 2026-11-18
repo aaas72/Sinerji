@@ -2,6 +2,7 @@
 
 An AI-powered platform that connects university students and junior developers with companies through real, paid tasks. Instead of screening CVs by hand, Sinerji matches people to work by their actual skills, verifies students automatically, and protects both sides with escrow payments.
 
+[![CI](https://github.com/aaas72/Sinerji/actions/workflows/ci.yml/badge.svg)](https://github.com/aaas72/Sinerji/actions/workflows/ci.yml)
 ![Next.js](https://img.shields.io/badge/Next.js_16-000000?style=flat-square&logo=nextdotjs&logoColor=white)
 ![React](https://img.shields.io/badge/React_19-20232A?style=flat-square&logo=react&logoColor=61DAFB)
 ![TypeScript](https://img.shields.io/badge/TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white)
@@ -95,6 +96,15 @@ npm run dev      # http://localhost:3000
 ```
 
 On Windows, `./run_sinerji.ps1` starts the API, client and all microservices in separate terminals.
+
+## Testing
+
+```bash
+cd server && npm test                                   # Vitest: validation, JWT, auth and error middleware
+cd services/ai-matching-service && python -m pytest     # pytest: hard filter, ontology, scoring, explanations
+```
+
+Every push and pull request runs these suites, plus type-checking and builds for the server and client, in [GitHub Actions](.github/workflows/ci.yml).
 
 ## Author
 

@@ -1,0 +1,65 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  server:
+    name: Server (Express + Prisma)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: server
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: server/package-lock.json
+      - run: npm ci
+      - run: npx prisma generate
+      - run: npm run typecheck
+      - run: npm test
+      - run: npm run build
+
+  matching-service:
+    name: AI matching service (FastAPI)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: services/ai-matching-service
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+          cache: pip
+          cache-dependency-path: services/ai-matching-service/requirements.txt
+      # Tests run with the bag-of-words fallback, so the large
+      # sentence-transformers / torch install is skipped in CI.
+      - run: grep -v sentence-transformers requirements.txt > requirements-ci.txt
+      - run: pip install -r requirements-ci.txt
+      - run: python -m pytest -q
+
+  client:
+    name: Client (Next.js)
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: client
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: client/package-lock.json
+      - run: npm ci
+      - run: npx tsc --noEmit
